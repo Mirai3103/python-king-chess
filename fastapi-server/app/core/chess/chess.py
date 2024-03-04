@@ -52,43 +52,42 @@ class Chess:
     def __str__(self):
         return '\n'.join([' '.join([str(self._board[x + y * 8]) for x in range(8)]) for y in range(8)])
         
-    def move(self, move:InternalMove):
+    def _move(self, move:InternalMove):
         us = self._turn
         them = self._turn.swap()
 
-        # self._history.append(MoveEvent(move.moveType, self._board[move._from], move._from, move._to))
         self._board[move._to] = self._board[move._from]
-        #  remove the piece from the original square
+        #  xoá quân cờ ở vị trí cũ
         self._board[move._from] = Piece()
-        #   // if ep capture, remove the captured pawn
+        #   // nếu ăn quân , xóa quân cờ
         if move._moveType == MoveType.EP_CAPTURE:
             self._board[move._to + (1 if us == PieceColor.BLACK else -1) * 8] = Piece()
-        # // if pawn promotion, replace with new piece
+        # // nếu phong cấp, thay đổi quân cờ
         if move._moveType == MoveType.PROMOTION:
             self._board[move._to] = Piece(move._promotion, us)
-        # // if we moved the king
+        # // nếu ta di chuyển quân vua, tắt quyền nhập thành
+
         if self._board[move._to].pieceType == PieceType.KING:
             self._castling[us] = {'K': False, 'Q': False}
-            # // if we castled, move the rook next to the king
             if move._moveType == MoveType.KSIDE_CASTLE:
                 self._board[move._to - 1] = self._board[move._to + 1]
                 self._board[move._to + 1] = Piece()
             elif move._moveType == MoveType.QSIDE_CASTLE:
                 self._board[move._to + 1] = self._board[move._to - 2]
                 self._board[move._to - 2] = Piece()
-        # // turn off castling if we move a rook
+        # // tắt quyền nhập thành nếu ta di chuyển quân xe
         if self._board[move._to].pieceType == PieceType.ROOK:
             if move._from == 0:
                 self._castling[us]['Q'] = False
             elif move._from == 7:
                 self._castling[us]['K'] = False
-        # // turn off castling if we capture a rook
+        # // tắt quyền nhập thành nếu ta ăn quân xe
         if self._board[move._to].pieceType == PieceType.ROOK:
             if move._to == 0:
                 self._castling[them]['Q'] = False
             elif move._to == 7:
                 self._castling[them]['K'] = False
-        #  // if big pawn move, update the en passant square
+        #  // cập nhật vị trí quân tốt nếu tốt di chuyển 2 ô
         if move._moveType == MoveType.BIG_PAWN:
             if us == PieceColor.WHITE:
                 self._ep_square = move._to - 8
@@ -97,7 +96,7 @@ class Chess:
         else:
             self._ep_square = None
         
-        # // reset the 50 move counter if a pawn is moved or a piece is captured
+        # // cập nhật lịch sử
         if move._piece.pieceType == PieceType.PAWN:
             self._half_moves = 0
         elif move._moveType == MoveType.CAPTURE:
@@ -148,10 +147,23 @@ class Chess:
         res += ' '
         res += str(self._move_number)
         return res
-    
-    
+    # // trả về danh sách các nước đi hợp lệ từ ô cờ đang xét
+    def moves(self, from_cell:CellName)->list[str]:
+  
+        pass
+    def move(self, from_cell:CellName , to_cell:CellName):
+        # // kiểm tra xem nước đi có hợp lệ không
+        # // nếu hợp lệ, di chuyển quân cờ và cập nhật lịch sử
+        pass
+       
+
 
         
+
+
+        
+        
+    
 
 
 if __name__ == "__main__":

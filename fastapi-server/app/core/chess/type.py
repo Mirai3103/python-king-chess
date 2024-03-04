@@ -4,12 +4,19 @@ from enum import Enum
 from fastapi.background import P
 
 class PieceType(Enum):
+    # quân tốt 
     PAWN = 'p' 
+    # quân mã
     KNIGHT = 'n'
+    # quân tượng
     BISHOP = 'b'
+    # quân xe
     ROOK = 'r'
+    # quân hậu
     QUEEN = 'q'
+    # quân vua
     KING = 'k'
+    # ô trống
     EMPTY = '0'
 
 class PieceColor(Enum):
@@ -125,13 +132,13 @@ class Piece:
 
 
 class MoveType(Enum):
-    NORMAL = 'normal'
-    CAPTURE = 'capture'
-    BIG_PAWN = 'big_pawn'
-    EP_CAPTURE = 'ep_capture'
-    PROMOTION = 'promotion'
-    KSIDE_CASTLE = 'kside_castle'
-    QSIDE_CASTLE = 'qside_castle'
+    NORMAL = 'normal' # di chuyển bình thường
+    CAPTURE = 'capture' # ăn quân
+    BIG_PAWN = 'big_pawn' # tốt di chuyển 2 ô
+    EP_CAPTURE = 'ep_capture' # bắt quân qua đường
+    PROMOTION = 'promotion' # phong cấp eg: tốt phong cấp thành hậu
+    KSIDE_CASTLE = 'kside_castle' # nhập thành vua
+    QSIDE_CASTLE = 'qside_castle' # nhập thành tướng
 
 
 
