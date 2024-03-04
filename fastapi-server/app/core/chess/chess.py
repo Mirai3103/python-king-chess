@@ -155,7 +155,8 @@ class Chess:
 
 
 if __name__ == "__main__":
-    chess = Chess("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b -kq - 1 2")
-    print(chess)
+    chess = Chess()
     print(chess.fen())
-    # 
+
+    chess.move(InternalMove(CellName.to_1d('e2'), CellName.to_1d('e4'), PieceType.EMPTY, Piece(), Piece(PieceType.PAWN, PieceColor.WHITE), MoveType.NORMAL))
+    print(chess.fen())

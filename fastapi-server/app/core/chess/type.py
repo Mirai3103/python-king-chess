@@ -1,3 +1,4 @@
+from ast import Tuple
 from enum import Enum
 
 from fastapi.background import P
@@ -95,11 +96,12 @@ class CellName(Enum):
     @staticmethod
     def from_1d(i:int)->'CellName':
         return CellName.from_2d(i % 8, i // 8)
-    def to_2d(self)->(int, int):
-        return ord(self.value[0]) - 97, 8 - int(self.value[1])
-    def to_1d(self)->int:
-        x, y = self.to_2d()
-        return x + y * 8
+    @staticmethod
+    def to_2d(s:str):
+        return ord(s[0]) - 97, 8 - int(s[1])
+    @staticmethod
+    def to_1d(s:str)->int:
+        return CellName.to_2d(s)[0] + CellName.to_2d(s)[1] * 8
     
 
 DEFAULT_FEN_POSITION ='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
