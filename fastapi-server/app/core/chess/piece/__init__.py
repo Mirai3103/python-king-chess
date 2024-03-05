@@ -12,7 +12,7 @@ class PieceStrategyFactory:
         return self._strategies[piece_type]
     
 
-default_factory = PieceStrategyFactory()
+default_piece_strategy_factory = PieceStrategyFactory()
     # # quân tốt 
     # PAWN = 'p' 
     # # quân mã
