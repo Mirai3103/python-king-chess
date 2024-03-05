@@ -28,3 +28,8 @@ class UserCreate(BaseModel):
     password: str
     email: str
 
+class UserUpdate(UserBase):
+    password: Optional[str] = None
+    email: Optional[str] = None
+ 
+

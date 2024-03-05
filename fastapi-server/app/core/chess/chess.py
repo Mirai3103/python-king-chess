@@ -55,49 +55,62 @@ class Chess:
     def _move(self, move:InternalMove):
         us = self._turn
         them = self._turn.swap()
-
-        self._board[move._to] = self._board[move._from]
-        #  xoá quân cờ ở vị trí cũ
-        self._board[move._from] = Piece()
-        #   // nếu ăn quân , xóa quân cờ
+        from_1d = CellName.to_1d(move._from)
+        to_1d = CellName.to_1d(move._to)
+   
         if move._moveType == MoveType.EP_CAPTURE:
-            self._board[move._to + (1 if us == PieceColor.BLACK else -1) * 8] = Piece()
+            self._board[to_1d + (1 if us == PieceColor.BLACK else -1) * 8] = Piece()
+        # // di chuyển quân cờ
+        self._board[to_1d] = self._board[from_1d]
+
+     
+   
         # // nếu phong cấp, thay đổi quân cờ
         if move._moveType == MoveType.PROMOTION:
-            self._board[move._to] = Piece(move._promotion, us)
+            self._board[to_1d] = Piece(move._promotion, us)
         # // nếu ta di chuyển quân vua, tắt quyền nhập thành
+        key_castling_us_k = 'K' if us == PieceColor.WHITE else 'k'
+        key_castling_us_q = 'Q' if us == PieceColor.WHITE else 'q'
+        key_castling_them_k = 'k' if them == PieceColor.WHITE else 'K'
+        key_castling_them_q = 'q' if them == PieceColor.WHITE else 'Q'
 
-        if self._board[move._to].pieceType == PieceType.KING:
-            key1 = 'K' if us == PieceColor.WHITE else 'k'
-            key2 = 'Q' if us == PieceColor.WHITE else 'q'
-            self._castling[us] = {key1: False, key2: False}
+        if self._board[to_1d].pieceType == PieceType.KING:
+      
+            self._castling[us] = {key_castling_us_k: False, key_castling_us_q: False}
             if move._moveType == MoveType.KSIDE_CASTLE:
-                self._board[move._to - 1] = self._board[move._to + 1]
-                self._board[move._to + 1] = Piece()
+                self._board[to_1d - 1] = self._board[to_1d + 1]
+                self._board[to_1d + 1] = Piece()
             elif move._moveType == MoveType.QSIDE_CASTLE:
-                self._board[move._to + 1] = self._board[move._to - 2]
-                self._board[move._to - 2] = Piece()
+                self._board[to_1d + 1] = self._board[to_1d - 2]
+                self._board[to_1d - 2] = Piece()
         # // tắt quyền nhập thành nếu ta di chuyển quân xe
-        if self._board[move._to].pieceType == PieceType.ROOK:
-            if move._from == 0:
-                self._castling[us]['Q'] = False
-            elif move._from == 7:
-                self._castling[us]['K'] = False
+     
+        if self._board[from_1d].pieceType == PieceType.ROOK:
+            if from_1d  == 0:
+                self._castling[us][key_castling_us_q] = False
+            elif from_1d  == 7:
+                self._castling[us][key_castling_us_k] = False
+            elif from_1d  == 56:
+                self._castling[us][key_castling_us_q] = False
+            elif from_1d  == 63:
+                self._castling[us][key_castling_us_k] = False
+
         # // tắt quyền nhập thành nếu ta ăn quân xe
-        if self._board[move._to].pieceType == PieceType.ROOK:
-            if move._to == 0:
-                self._castling[them]['Q'] = False
-            elif move._to == 7:
-                self._castling[them]['K'] = False
+        if self._board[to_1d].pieceType == PieceType.ROOK:
+            if to_1d == 0:
+                self._castling[them][key_castling_them_q] = False
+            elif to_1d == 7:
+                self._castling[them][key_castling_them_k] = False
         #  // cập nhật vị trí quân tốt nếu tốt di chuyển 2 ô
         if move._moveType == MoveType.BIG_PAWN:
             if us == PieceColor.WHITE:
-                self._ep_square = move._to - 8
+                self._ep_square = to_1d - 8
             else:
-                self._ep_square = move._to + 8
+                self._ep_square = to_1d + 8
         else:
             self._ep_square = None
-        
+           #  xoá quân cờ ở vị trí cũ
+        self._board[from_1d ] = Piece()
         # // cập nhật lịch sử
         if move._piece.pieceType == PieceType.PAWN:
             self._half_moves = 0
@@ -110,7 +123,7 @@ class Chess:
             self._move_number += 1
 
         self._turn = them   
-        self._history.append(MoveEvent(move._moveType, self._board[move._to], move._from, move._to))
+        self._history.append(MoveEvent(move._moveType, self._board[to_1d], move._from , move._to))
         
     def fen(self)->str:
         res = ''
@@ -170,35 +183,18 @@ import json
 
 
 if __name__ == "__main__":
+    # test
     chess = Chess()
-    '''
-file moves.txt
-{"from":"g1","to":"h3","piece":"n","capturedColor":"b","type":"n","color":"w"}
-{"from":"b8","to":"c6","piece":"n","capturedColor":"w","type":"n","color":"b"}
-{"from":"h3","to":"g1","piece":"n","capturedColor":"b","type":"n","color":"w"}
-{"from":"f7","to":"f5","piece":"p","capturedColor":"w","type":"b","color":"b"}
-{"from":"b1","to":"c3","piece":"n","capturedColor":"b","type":"n","color":"w"}
-{"from":"f5","to":"f4","piece":"p","capturedColor":"w","type":"n","color":"b"}
-    '''
-#  fs.appendFileSync('moves.txt', JSON.stringify({
-#     from: moveObj.from,
-#     to: moveObj.to,
-#     promotion: moveObj.promotion,
-#     piece: moveObj.piece,
-#     captured: moveObj.captured,
-#     capturedColor: moveObj.color === 'w' ? 'b' : 'w',
-#     type: moveObj.flags,
-#     color: moveObj.color
-#  }) + '\n')
-    # read moves from file
+
+
     moves =[]
     f1 = open('fen2.txt', 'a')
     f1.write(chess.fen() + '\n')
     with open('moves.txt', 'r') as f:
         for line in f:
             raw = json.loads(line)
-            from_cell = CellName.to_1d(raw['from'])
-            to_cell = CellName.to_1d(raw['to'])
+            from_cell = CellName(raw['from'])
+            to_cell = CellName(raw['to'])
             piecet = PieceType(raw['piece'])
             piece_color = PieceColor(raw['color'])
             piece = Piece(piecet, piece_color)
@@ -210,6 +206,7 @@ file moves.txt
             moves.append(InternalMove(from_cell, to_cell,prom,captured,piece,move_type))
     for move in moves:
         chess._move(move)
+    
         f1.write(chess.fen() + '\n')
     f.close()
     

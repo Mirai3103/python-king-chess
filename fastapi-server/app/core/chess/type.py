@@ -97,6 +97,8 @@ class CellName(str,Enum):
     F1 = 'f1'
     G1 = 'g1'
     H1 = 'h1'
+    def to_1d(self)->int:
+        return CellName.to_1d(self)
     @staticmethod
     def from_2d(x:int, y:int)->'CellName':
         return CellName(chr(97 + x) + str(8 - y))

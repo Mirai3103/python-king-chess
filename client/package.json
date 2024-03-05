@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@nextui-org/react": "^2.2.9",
+    "@tanstack/react-router": "^1.19.1",
     "chess.js": "1.0.0-beta.8",
     "framer-motion": "^11.0.6",
     "react": "^18.2.0",
@@ -20,6 +21,8 @@
     "socket.io-client": "^4.7.4"
   },
   "devDependencies": {
+    "@tanstack/router-devtools": "^1.19.1",
+    "@tanstack/router-vite-plugin": "^1.19.0",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@typescript-eslint/eslint-plugin": "^7.0.2",

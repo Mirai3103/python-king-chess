@@ -1,16 +1,19 @@
-from typing import Union
 
 from fastapi import FastAPI
 from app.sockets import socket_io
 from app.database.database import init_db
 from app.routers.user import UserRouter
-from fastapi.middleware.cors import CORSMiddleware
-
-app = FastAPI(
-)
+app = FastAPI()
 
 
-app.mount("/", socket_io.sio_app)
 
 app.include_router(UserRouter)
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+#  đường dẫn /socket.io
+app.mount("/", socket_io.sio_app)
+
 init_db()
