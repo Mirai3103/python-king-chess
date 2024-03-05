@@ -3,7 +3,7 @@ from enum import Enum
 
 from fastapi.background import P
 
-class PieceType(Enum):
+class PieceType(str,Enum):
     # quân tốt 
     PAWN = 'p' 
     # quân mã
@@ -19,7 +19,7 @@ class PieceType(Enum):
     # ô trống
     EMPTY = '0'
 
-class PieceColor(Enum):
+class PieceColor(str,Enum):
     WHITE = 'w'
     BLACK = 'b'
     NONE = 'n'
@@ -32,7 +32,7 @@ class PieceColor(Enum):
         else:
             return PieceColor.NONE
 
-class CellName(Enum):
+class CellName(str,Enum):
     A8 = 'a8'
     B8 = 'b8'
     C8 = 'c8'
@@ -131,14 +131,14 @@ class Piece:
     
 
 
-class MoveType(Enum):
-    NORMAL = 'normal' # di chuyển bình thường
-    CAPTURE = 'capture' # ăn quân
-    BIG_PAWN = 'big_pawn' # tốt di chuyển 2 ô
-    EP_CAPTURE = 'ep_capture' # bắt quân qua đường
-    PROMOTION = 'promotion' # phong cấp eg: tốt phong cấp thành hậu
-    KSIDE_CASTLE = 'kside_castle' # nhập thành vua
-    QSIDE_CASTLE = 'qside_castle' # nhập thành tướng
+class MoveType(str,Enum):
+    NORMAL = 'n' # di chuyển bình thường
+    CAPTURE = 'c' # ăn quân
+    BIG_PAWN = 'b' # tốt di chuyển 2 ô
+    EP_CAPTURE = 'e' # bắt quân qua đường
+    PROMOTION = 'p' # phong cấp eg: tốt phong cấp thành hậu
+    KSIDE_CASTLE = 'k' # nhập thành vua
+    QSIDE_CASTLE = 'q' # nhập thành tướng
 
 
 
@@ -168,3 +168,8 @@ class InternalMove:
         self._captured = _captured
         self._piece = _piece
         self._moveType = _moveType
+
+    def __str__(self):
+        return f'{self._from} -> {self._to} , {self._moveType} , {self._piece}'
+
+    

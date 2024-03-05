@@ -68,7 +68,9 @@ class Chess:
         # // nếu ta di chuyển quân vua, tắt quyền nhập thành
 
         if self._board[move._to].pieceType == PieceType.KING:
-            self._castling[us] = {'K': False, 'Q': False}
+            key1 = 'K' if us == PieceColor.WHITE else 'k'
+            key2 = 'Q' if us == PieceColor.WHITE else 'q'
+            self._castling[us] = {key1: False, key2: False}
             if move._moveType == MoveType.KSIDE_CASTLE:
                 self._board[move._to - 1] = self._board[move._to + 1]
                 self._board[move._to + 1] = Piece()
@@ -141,7 +143,7 @@ class Chess:
             castling += 'q'
         res += castling if castling else '-'
         res += ' '
-        res += '-' if self._ep_square is None else CellName.to_2d(self._ep_square)
+        res += '-' #if self._ep_square is None else CellName.from_1d(self._ep_square)
         res += ' '
         res += str(self._half_moves)
         res += ' '
@@ -164,11 +166,51 @@ class Chess:
         
         
     
+import json
 
 
 if __name__ == "__main__":
     chess = Chess()
-    print(chess.fen())
-
-    chess.move(InternalMove(CellName.to_1d('e2'), CellName.to_1d('e4'), PieceType.EMPTY, Piece(), Piece(PieceType.PAWN, PieceColor.WHITE), MoveType.NORMAL))
-    print(chess.fen())
+    '''
+file moves.txt
+{"from":"g1","to":"h3","piece":"n","capturedColor":"b","type":"n","color":"w"}
+{"from":"b8","to":"c6","piece":"n","capturedColor":"w","type":"n","color":"b"}
+{"from":"h3","to":"g1","piece":"n","capturedColor":"b","type":"n","color":"w"}
+{"from":"f7","to":"f5","piece":"p","capturedColor":"w","type":"b","color":"b"}
+{"from":"b1","to":"c3","piece":"n","capturedColor":"b","type":"n","color":"w"}
+{"from":"f5","to":"f4","piece":"p","capturedColor":"w","type":"n","color":"b"}
+    '''
+#  fs.appendFileSync('moves.txt', JSON.stringify({
+#     from: moveObj.from,
+#     to: moveObj.to,
+#     promotion: moveObj.promotion,
+#     piece: moveObj.piece,
+#     captured: moveObj.captured,
+#     capturedColor: moveObj.color === 'w' ? 'b' : 'w',
+#     type: moveObj.flags,
+#     color: moveObj.color
+#  }) + '\n')
+    # read moves from file
+    moves =[]
+    f1 = open('fen2.txt', 'a')
+    f1.write(chess.fen() + '\n')
+    with open('moves.txt', 'r') as f:
+        for line in f:
+            raw = json.loads(line)
+            from_cell = CellName.to_1d(raw['from'])
+            to_cell = CellName.to_1d(raw['to'])
+            piecet = PieceType(raw['piece'])
+            piece_color = PieceColor(raw['color'])
+            piece = Piece(piecet, piece_color)
+            move_type = MoveType(raw['type'])
+            piece_captured = PieceType.EMPTY if raw.get('captured') is None else PieceType(raw['captured'])
+            prom = PieceType.EMPTY if raw.get('promotion') is None else PieceType(raw['promotion'])
+            piece_captured_color = PieceColor.BLACK if raw['capturedColor'] == 'b' else PieceColor.WHITE
+            captured = Piece(piece_captured, piece_captured_color)
+            moves.append(InternalMove(from_cell, to_cell,prom,captured,piece,move_type))
+    for move in moves:
+        chess._move(move)
+        f1.write(chess.fen() + '\n')
+    f.close()
+    
+            
