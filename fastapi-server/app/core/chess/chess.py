@@ -1,23 +1,22 @@
 # white is upper case, black is lower case
 
-from type import DEFAULT_FEN_POSITION, CellName, InternalMove, MoveEvent, MoveType, Piece, PieceColor, PieceType
+from type import DEFAULT_FEN_POSITION, Board, CellName, InternalMove, MoveEvent, MoveType, Piece, PieceColor, PieceType
 from typing import Dict
 
 
-class Chess:
-    
-    def __init__(self, fen:str=DEFAULT_FEN_POSITION):
-        self._board = [Piece() for _ in range(64)]
-        self._turn : PieceColor =PieceColor.WHITE
-        self._history :MoveEvent = []
-        self._castling: Dict[PieceColor, Dict[str, bool]] = {
-            PieceColor.WHITE: {'K': True, 'Q': True},
-            PieceColor.BLACK: {'k': True, 'q': True}
-        }
-        self._move_number = 0
-        self._ep_square = None
-        self._half_moves = 0
 
+class Chess:
+    _board: Board= [Piece() for _ in range(64)]
+    _turn: PieceColor =PieceColor.WHITE
+    _history: MoveEvent = []
+    _castling: Dict[PieceColor, Dict[str, bool]] = {
+        PieceColor.WHITE: {'K': True, 'Q': True},
+        PieceColor.BLACK: {'k': True, 'q': True}
+    }
+    _move_number: int = 0
+    _ep_square: int = None
+    _half_moves: int = 0
+    def __init__(self, fen:str=DEFAULT_FEN_POSITION):
         self.load(fen)
     
     def load(self, fen:str):

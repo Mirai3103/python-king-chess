@@ -1,4 +1,3 @@
-from ast import Tuple
 from enum import Enum
 
 from fastapi.background import P
@@ -174,4 +173,5 @@ class InternalMove:
     def __str__(self):
         return f'{self._from} -> {self._to} , {self._moveType} , {self._piece}'
 
-    
+Board = list[Piece]
+
