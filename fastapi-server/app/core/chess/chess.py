@@ -1,6 +1,6 @@
 # white is upper case, black is lower case
 
-from type import DEFAULT_FEN_POSITION, Board, CellName, InternalMove, MoveEvent, MoveType, Piece, PieceColor, PieceType
+from .type import DEFAULT_FEN_POSITION, Board, CellName, InternalMove, MoveEvent, MoveType, Piece, PieceColor, PieceType
 from typing import Dict
 from .piece import default_piece_strategy_factory
 
