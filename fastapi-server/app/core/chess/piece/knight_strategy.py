@@ -1,7 +1,7 @@
 
 
 from app.core.chess.chess import Chess
-from ..type import Board, Piece,InternalMove
+from ..type import InternalMove
 from .picece_strategy import PieceStrategy
 
 class KnightStrategy(PieceStrategy):
