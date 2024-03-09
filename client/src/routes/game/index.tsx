@@ -1,4 +1,4 @@
-import { createFileRoute, createLazyFileRoute } from '@tanstack/react-router'
+import { createFileRoute} from '@tanstack/react-router'
 import { Chessboard } from 'react-chessboard'
 
 export const Route = createFileRoute('/game/')({
