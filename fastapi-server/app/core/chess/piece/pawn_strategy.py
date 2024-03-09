@@ -1,5 +1,6 @@
 
 
+from app.core.chess.chess import Chess
 from ..type import Board, CellName, MoveType, Piece,InternalMove,PieceColor, PieceType
 from .picece_strategy import PieceStrategy
 # class InternalMove(
@@ -22,7 +23,8 @@ from .picece_strategy import PieceStrategy
 
 
 class PawnStrategy(PieceStrategy):
-    def get_moves(self, board: Board, from_2d:tuple[int,int]) -> list[InternalMove]:
+    def get_moves(self, game: Chess, from_2d:tuple[int,int]) -> list[InternalMove]:
+        board = game._board
         fromX, fromY = from_2d
         piece = board[fromX][fromY]
         moves = []
@@ -48,5 +50,5 @@ class PawnStrategy(PieceStrategy):
         
 
 
-    def check_move(self, board: Board, from_2d:tuple[int,int], to_2d:tuple[int,int]) -> InternalMove:
+    def check_move(self,  game: Chess, from_2d:tuple[int,int], to_2d:tuple[int,int]) -> InternalMove:
         pass
