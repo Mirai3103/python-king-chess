@@ -96,20 +96,13 @@ class CellName(str,Enum):
     F1 = 'f1'
     G1 = 'g1'
     H1 = 'h1'
-    def to_1d(self)->int:
-        return CellName.to_1d(self)
     @staticmethod
     def from_2d(x:int, y:int)->'CellName':
         return CellName(chr(97 + x) + str(8 - y))
     @staticmethod
-    def from_1d(i:int)->'CellName':
-        return CellName.from_2d(i % 8, i // 8)
-    @staticmethod
     def to_2d(s:str):
         return ord(s[0]) - 97, 8 - int(s[1])
-    @staticmethod
-    def to_1d(s:str)->int:
-        return CellName.to_2d(s)[0] + CellName.to_2d(s)[1] * 8
+    
     
 
 DEFAULT_FEN_POSITION ='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
@@ -140,19 +133,11 @@ class MoveType(str,Enum):
     PROMOTION = 'p' # phong cấp eg: tốt phong cấp thành hậu
     KSIDE_CASTLE = 'k' # nhập thành vua
     QSIDE_CASTLE = 'q' # nhập thành tướng
+    CAPTURE_AND_PROMOTION = 'cp' # bắt quân qua đường và phong cấp 
 
 
 
-class MoveEvent:
-    moveType:MoveType
-    piece:Piece
-    fromCell:CellName
-    toCell:CellName
-    def __init__(self, moveType:MoveType, piece:Piece, fromCell:CellName, toCell:CellName):
-        self.moveType = moveType
-        self.piece = piece
-        self.fromCell = fromCell
-        self.toCell = toCell
+
 
 
 class InternalMove:
@@ -173,5 +158,5 @@ class InternalMove:
     def __str__(self):
         return f'{self._from} -> {self._to} , {self._moveType} , {self._piece}'
 
-Board = list[Piece]
+Board = list[list[Piece]]
 
