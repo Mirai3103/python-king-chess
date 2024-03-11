@@ -1,3 +1,4 @@
+import math
 import unittest
 
 
@@ -40,7 +41,7 @@ class TestPawnMove(unittest.TestCase):
             chess.load(startFen)
             moves = testcase['moves']
             cell = CellName(testcase['cell'])
-            validMoves = strategy.get_moves(chess._board, CellName.to_2d(cell))
+            validMoves = strategy.get_moves(chess, CellName.to_2d(cell))
             assert len(validMoves) == len(moves)
     def test_same_move(self):
         chess = Chess()
@@ -51,7 +52,7 @@ class TestPawnMove(unittest.TestCase):
             chess.load(startFen)
             moves = testcase['moves']
             cell = CellName(testcase['cell'])
-            validMoves = strategy.get_moves(chess._board, CellName.to_2d(cell))
+            validMoves = strategy.get_moves(chess, CellName.to_2d(cell))
             for i in range(len(validMoves)):
                 exist = False
                 for move in moves:
@@ -62,10 +63,21 @@ class TestPawnMove(unittest.TestCase):
                         print('-------------------')
                         break
                 assert exist
-                
-            
-                
-                
+    def test_valid_move(seft):
+        chess = Chess()
+        data = readTestcaseData()
+        strategy = PawnStrategy()
+        for testcase in data:
+            startFen = testcase['startFen']
+            chess.load(startFen)
+            moves = testcase['moves']
+            cell = CellName(testcase['cell'])
+            randomed_move = moves[math.floor(math.random() * moves.length)]
+            move = strategy.check_move(chess, CellName.to_2d(cell), CellName.to_2d(randomed_move['to']))
+            seft.assertIsNotNone(move)
+            seft.assertEqual(move._from, CellName(randomed_move['from']))
+            seft.assertEqual(move._to, CellName(randomed_move['to']))
+            seft.assertEqual(move._moveType, MoveType(randomed_move['type']))
 
 if __name__ == '__main__':
     unittest.main()
