@@ -1,7 +1,8 @@
 
 
+from typing import Optional
 from app.core.chess.chess import Chess
-from ..type import Board, CellName, MoveType, Piece,InternalMove,PieceColor, PieceType
+from ..type import  CellName, MoveType, Piece,InternalMove,PieceColor, PieceType
 from .picece_strategy import PieceStrategy
 # class InternalMove(
 #     _from: CellName,
@@ -50,7 +51,7 @@ class PawnStrategy(PieceStrategy):
         
 
 
-    def check_move(self,  game: Chess, from_2d:tuple[int,int], to_2d:tuple[int,int]) -> InternalMove|None:
+    def check_move(self,  game: Chess, from_2d:tuple[int,int], to_2d:tuple[int,int]) -> Optional[InternalMove]:
         board = game._board
         fromX, fromY = from_2d
         toX, toY = to_2d

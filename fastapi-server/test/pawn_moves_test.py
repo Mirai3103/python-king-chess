@@ -1,10 +1,12 @@
 import math
+from operator import le
+import random
 import unittest
 
 
 from app.core.chess.piece.pawn_strategy import PawnStrategy
 from app.core.chess.chess import Chess
-from app.core.chess.type import CellName, InternalMove, MoveType, Piece, PieceColor, PieceType
+from app.core.chess.type import CellName,  MoveType, Piece, PieceColor, PieceType
     
 import json
 
@@ -58,9 +60,6 @@ class TestPawnMove(unittest.TestCase):
                 for move in moves:
                     if validMoves[i]._from == CellName(move['from']) and validMoves[i]._to == CellName(move['to']) and validMoves[i]._moveType == MoveType(move['type']):
                         exist = True
-                        print(f'{validMoves[i]._from} -> {validMoves[i]._to} , {validMoves[i]._moveType} , {validMoves[i]._piece}')
-                        print(f'{CellName(move["from"])} -> {CellName(move["to"])} , {MoveType(move["type"])} , {Piece(PieceType(move["piece"]), PieceColor(move["color"]))}')
-                        print('-------------------')
                         break
                 assert exist
     def test_valid_move(seft):
@@ -72,13 +71,28 @@ class TestPawnMove(unittest.TestCase):
             chess.load(startFen)
             moves = testcase['moves']
             cell = CellName(testcase['cell'])
-            randomed_move = moves[math.floor(math.random() * moves.length)]
+            randomed_move = moves[math.floor(random.random() * len(moves))]
             move = strategy.check_move(chess, CellName.to_2d(cell), CellName.to_2d(randomed_move['to']))
             seft.assertIsNotNone(move)
             seft.assertEqual(move._from, CellName(randomed_move['from']))
             seft.assertEqual(move._to, CellName(randomed_move['to']))
             seft.assertEqual(move._moveType, MoveType(randomed_move['type']))
+    def test_invalid_move(seft):
+        chess = Chess()
+        strategy = PawnStrategy()
+        chess.load('4rk2/p1qb1p2/2p1p1r1/2P1P1Q1/pP4P1/b1P2PKN/R1B3P1/5NR1 b - - 1 29')
+        cell = CellName('a7')
+        move = strategy.check_move(chess, CellName.to_2d(cell), CellName.to_2d('c7'))
+        seft.assertIsNone(move)
+        move = strategy.check_move(chess, CellName.to_2d(cell), CellName.to_2d('a2'))
+        seft.assertIsNone(move)
+        chess.load('rnbqkbnr/ppppp1pp/8/5p2/5P2/8/PPPPP1PP/RNBQKBNR w KQkq - 0 1')
+        cell = CellName('f4')
+        move = strategy.check_move(chess, CellName.to_2d(cell), CellName.to_2d('f5'))
+        print(move)
+        seft.assertIsNone(move)
 
+    
 if __name__ == '__main__':
     unittest.main()
         
