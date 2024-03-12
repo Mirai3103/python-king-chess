@@ -1,9 +1,8 @@
 # white is upper case, black is lower case
 
-from calendar import c
 from .type import DEFAULT_FEN_POSITION, Board, CellName, InternalMove, MoveType, Piece, PieceColor, PieceType
 from typing import Dict
-from .piece import default_piece_strategy_factory
+from app.core.chess.piece import default_piece_strategy_factory
 
 
 class Chess:
