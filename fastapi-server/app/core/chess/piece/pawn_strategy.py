@@ -51,16 +51,9 @@ class PawnStrategy(PieceStrategy):
         
 
 
-    def check_move(self,  game: Chess, from_2d:tuple[int,int], to_2d:tuple[int,int]) -> Optional[InternalMove]:
-        board = game._board
-        fromX, fromY = from_2d
-        toX, toY = to_2d
-        piece = board[fromX][fromY]
-        direction = -1 if piece.pieceColor == PieceColor.WHITE else 1
-        if toX == fromX and toY == fromY + direction:
-            return InternalMove(CellName.from_2d(fromX, fromY), CellName.from_2d(toX, toY), PieceType.QUEEN, Piece(), piece, MoveType.PROMOTION if self.is_promotion((toX,toY),piece.pieceColor) else MoveType.NORMAL)
-        if toX == fromX and toY == fromY + 2 * direction:
-            return InternalMove(CellName.from_2d(fromX, fromY), CellName.from_2d(toX, toY), PieceType.QUEEN, Piece(), piece, MoveType.BIG_PAWN)
-        if (toX == fromX - 1 and toY == fromY + direction) or (toX == fromX + 1 and toY == fromY + direction):
-            return InternalMove(CellName.from_2d(fromX, fromY), CellName.from_2d(toX, toY), PieceType.QUEEN, board[toX][toY], piece, MoveType.CAPTURE_AND_PROMOTION if self.is_promotion((toX,toY),piece.pieceColor) else MoveType.CAPTURE)
+    def check_move(self, game: Chess, from_2d: tuple[int, int], to_2d: tuple[int, int]) -> Optional[InternalMove]:
+        valid_moves = self.get_moves(game, from_2d)
+        for move in valid_moves:
+            if move._to == CellName.from_2d(*to_2d):
+                return move
         return None
