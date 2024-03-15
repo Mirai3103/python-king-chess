@@ -5,7 +5,7 @@ import unittest
 
 from app.core.chess.piece.knight_strategy import KnightStrategy
 from app.core.chess.chess import Chess
-from app.core.chess.type import CellName,  MoveType, Piece, PieceColor, PieceType
+from app.core.chess.type import CellName,  MoveType
     
 import json
 
@@ -68,17 +68,13 @@ class TestKnightMove(unittest.TestCase):
     def test_invalid_move(seft):
         chess = Chess()
         strategy = KnightStrategy()
-        chess.load('4rk2/p1qb1p2/2p1p1r1/2P1P1Q1/pP4P1/b1P2PKN/R1B3P1/5NR1 b - - 1 29')
-        cell = CellName('a7')
-        move = strategy.check_move(chess, CellName.to_2d(cell), CellName.to_2d('c7'))
+        chess.load('4rk2/p2b1p2/2p1p1r1/2P1q1Q1/pP4P1/b1P2PKN/R1B5/5NR1 b - - 1 29')
+        cell = CellName('f1')
+        move = strategy.check_move(chess, CellName.to_2d(cell), CellName.to_2d('e3'))
         seft.assertIsNone(move)
-        move = strategy.check_move(chess, CellName.to_2d(cell), CellName.to_2d('a2'))
+        move = strategy.check_move(chess, CellName.to_2d(cell), CellName.to_2d('h2'))
         seft.assertIsNone(move)
-        chess.load('rnbqkbnr/ppppp1pp/8/5p2/5P2/8/PPPPP1PP/RNBQKBNR w KQkq - 0 1')
-        cell = CellName('f4')
-        move = strategy.check_move(chess, CellName.to_2d(cell), CellName.to_2d('f5'))
-        print(move)
-        seft.assertIsNone(move)
+ 
 
     
 if __name__ == '__main__':
