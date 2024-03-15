@@ -1,12 +1,11 @@
 import math
-from operator import le
 import random
 import unittest
 
 
 from app.core.chess.piece.pawn_strategy import PawnStrategy
 from app.core.chess.chess import Chess
-from app.core.chess.type import CellName,  MoveType, Piece, PieceColor, PieceType
+from app.core.chess.type import CellName,  MoveType
     
 import json
 
