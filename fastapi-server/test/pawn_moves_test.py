@@ -16,24 +16,11 @@ def readTestcaseData():
     data = []
     with open('test/pawn-move.json') as f:
         data = json.load(f)
+        print(f'Loaded {len(data)} testcases.')
     return data
 
 class TestPawnMove(unittest.TestCase):
-#     {
-#     "startFen": "4b1k1/5rq1/2p1pP2/2PQ3N/p1r5/2P2P1N/p5PK/b2R4 b - - 4 52",
-#     "cell": "c6",
-#     "moves": [
-#       {
-#         "from": "c6",
-#         "to": "d5",
-#         "piece": "p",
-#         "captured": "q",
-#         "capturedColor": "w",
-#         "type": "c",
-#         "color": "b"
-#       }
-#     ]
-#   },
+
     def test_same_len(self):
         chess = Chess()
         data = readTestcaseData()
@@ -71,6 +58,8 @@ class TestPawnMove(unittest.TestCase):
             chess.load(startFen)
             moves = testcase['moves']
             cell = CellName(testcase['cell'])
+            if(len(moves) == 0):
+                continue
             randomed_move = moves[math.floor(random.random() * len(moves))]
             move = strategy.check_move(chess, CellName.to_2d(cell), CellName.to_2d(randomed_move['to']))
             seft.assertIsNotNone(move)

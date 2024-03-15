@@ -1,144 +1,204 @@
 [
   {
-    "startFen": "r1b1k1nr/pp1p2pp/2qb1pN1/1Pp4P/2PpB3/N3BP2/P5P1/R2Q1K1R b k - 5 17",
-    "cell": "a7",
+    "startFen": "3k4/2rp4/p4P1r/P5n1/2P3pP/4bP1N/2R5/5K2 w - - 1 40",
+    "cell": "h4",
     "moves": [
       {
-        "from": "a7",
-        "to": "a6",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "n",
-        "color": "b"
-      },
-      {
-        "from": "a7",
-        "to": "a5",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "b",
-        "color": "b"
-      }
-    ]
-  },
-  {
-    "startFen": "r1b1k1nr/pp1pb1pp/1q3p2/1Pp1p2P/2PP1N2/N2B1P2/P5P1/R1BQ1K1R b k - 0 14",
-    "cell": "h7",
-    "moves": [
-      {
-        "from": "h7",
-        "to": "h6",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "n",
-        "color": "b"
-      }
-    ]
-  },
-  {
-    "startFen": "2b4N/1p6/1P1p1k2/2p5/6p1/r4pP1/rRNQ4/7K b - - 1 76",
-    "cell": "c5",
-    "moves": [
-      {
-        "from": "c5",
-        "to": "c4",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "n",
-        "color": "b"
-      }
-    ]
-  },
-  {
-    "startFen": "r1br2k1/pp1p2p1/5p2/qPp4P/2P3p1/N3Q3/PR4PK/8 w - - 4 37",
-    "cell": "b5",
-    "moves": [
-      {
-        "from": "b5",
-        "to": "b6",
+        "from": "h4",
+        "to": "h5",
         "piece": "p",
         "capturedColor": "b",
         "type": "n",
         "color": "w"
-      }
-    ]
-  },
-  {
-    "startFen": "r1b1k2r/pp1pn1pp/q4pN1/1Pp1b2P/2P5/N3pP1R/P1B1Q1P1/1R3K2 b k - 1 21",
-    "cell": "d7",
-    "moves": [
-      {
-        "from": "d7",
-        "to": "d6",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "n",
-        "color": "b"
       },
       {
-        "from": "d7",
-        "to": "d5",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "b",
-        "color": "b"
-      }
-    ]
-  },
-  {
-    "startFen": "r1b1k2r/pp1pn1pp/q4pN1/1Pp1b2P/2Pp4/N3BP2/P1B1Q1P1/1R3K1R b k - 11 20",
-    "cell": "d7",
-    "moves": [
-      {
-        "from": "d7",
-        "to": "d6",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "n",
-        "color": "b"
-      },
-      {
-        "from": "d7",
-        "to": "d5",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "b",
-        "color": "b"
-      }
-    ]
-  },
-  {
-    "startFen": "2b5/rp3N2/1P1p4/2p5/2k2pp1/1R6/r1N3PQ/6K1 w - - 0 70",
-    "cell": "b6",
-    "moves": [
-      {
-        "from": "b6",
-        "to": "a7",
-        "piece": "p",
-        "captured": "r",
-        "capturedColor": "b",
-        "type": "c",
-        "color": "w"
-      }
-    ]
-  },
-  {
-    "startFen": "r1b1k1nr/pp1p2pp/q2b1pN1/1Pp4P/2PpB3/N3BP2/P5P1/1R1Q1K1R b k - 7 18",
-    "cell": "h7",
-    "moves": [
-      {
-        "from": "h7",
-        "to": "h6",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "n",
-        "color": "b"
-      },
-      {
-        "from": "h7",
-        "to": "g6",
+        "from": "h4",
+        "to": "g5",
         "piece": "p",
         "captured": "n",
+        "capturedColor": "b",
+        "type": "c",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kbnr/p1pp1ppp/b7/1p6/1P2p2P/N1P3P1/P2PPP2/R1BQKBNR b KQkq - 0 6",
+    "cell": "d7",
+    "moves": [
+      {
+        "from": "d7",
+        "to": "d6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "d7",
+        "to": "d5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "rnbqkbnr/p1pppppp/8/1p6/1P6/N7/P1PPPPPP/R1BQKBNR b KQkq - 1 2",
+    "cell": "f7",
+    "moves": [
+      {
+        "from": "f7",
+        "to": "f6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "f7",
+        "to": "f5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "1r1k3r/1qnp2pQ/p4p2/2b3Np/PBP1P2P/5PP1/8/4RK1R w - - 3 27",
+    "cell": "e4",
+    "moves": [
+      {
+        "from": "e4",
+        "to": "e5",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "1rqk3r/3p2pQ/p3np2/2b3Np/PBP1P2P/5PP1/8/1R3K1R b - - 0 25",
+    "cell": "g7",
+    "moves": [
+      {
+        "from": "g7",
+        "to": "g6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kb1r/p1pp1pp1/b7/1N2n2p/1P5P/2P1P1PN/P3PP2/1RBQKB1R w Kkq - 1 11",
+    "cell": "f2",
+    "moves": [
+      {
+        "from": "f2",
+        "to": "f3",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      },
+      {
+        "from": "f2",
+        "to": "f4",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "b",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "rnbqkbnr/p1pppppp/8/1p6/1P6/8/P1PPPPPP/RNBQKBNR w KQkq - 0 2",
+    "cell": "d2",
+    "moves": [
+      {
+        "from": "d2",
+        "to": "d3",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      },
+      {
+        "from": "d2",
+        "to": "d4",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "b",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "rn1qkbnr/p1pp1ppp/b7/1p6/1P2p3/N5PP/P1PPPP2/R1BQKBNR w KQkq - 1 5",
+    "cell": "d2",
+    "moves": [
+      {
+        "from": "d2",
+        "to": "d3",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      },
+      {
+        "from": "d2",
+        "to": "d4",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "b",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kb1r/p1pp1pp1/b7/1N5p/1P4nP/2P1P1PN/P3PP2/1RBQKB1R b Kkq - 0 10",
+    "cell": "c7",
+    "moves": [
+      {
+        "from": "c7",
+        "to": "c6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "c7",
+        "to": "c5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "2rk4/3p4/p3np1r/2b1P2p/P1P4P/4RPPN/2R5/5K2 b - - 4 36",
+    "cell": "f6",
+    "moves": [
+      {
+        "from": "f6",
+        "to": "f5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "f6",
+        "to": "e5",
+        "piece": "p",
+        "captured": "p",
         "capturedColor": "w",
         "type": "c",
         "color": "b"
@@ -146,12 +206,12 @@
     ]
   },
   {
-    "startFen": "r1br4/pp1p1kp1/1q3p2/1Pp4P/2P3p1/N7/PR4PK/5Q2 w - - 0 35",
-    "cell": "g2",
+    "startFen": "3k4/2rp4/p3np1r/P3P2p/2P4P/4bPPN/2R5/5K2 w - - 1 38",
+    "cell": "c4",
     "moves": [
       {
-        "from": "g2",
-        "to": "g3",
+        "from": "c4",
+        "to": "c5",
         "piece": "p",
         "capturedColor": "b",
         "type": "n",
@@ -160,49 +220,7 @@
     ]
   },
   {
-    "startFen": "8/5k2/1P6/7R/N2p4/6p1/r7/3K4 w - - 8 135",
-    "cell": "b6",
-    "moves": [
-      {
-        "from": "b6",
-        "to": "b7",
-        "piece": "p",
-        "capturedColor": "b",
-        "type": "n",
-        "color": "w"
-      }
-    ]
-  },
-  {
-    "startFen": "5k2/8/8/8/2NK4/6p1/8/5r2 b - - 2 160",
-    "cell": "g3",
-    "moves": [
-      {
-        "from": "g3",
-        "to": "g2",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "n",
-        "color": "b"
-      }
-    ]
-  },
-  {
-    "startFen": "4k3/8/8/8/8/2K3p1/8/4N3 b - - 20 184",
-    "cell": "g3",
-    "moves": [
-      {
-        "from": "g3",
-        "to": "g2",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "n",
-        "color": "b"
-      }
-    ]
-  },
-  {
-    "startFen": "1rb5/1p2rk2/3p1p2/pPp3pP/6p1/8/P4KP1/1N1R3Q w - a6 0 49",
+    "startFen": "rnq1kb1r/p2p2p1/b4p2/1Np4p/1P1Q3P/2P1PPPN/P7/1RB1KB1R w Kkq - 0 14",
     "cell": "a2",
     "moves": [
       {
@@ -224,7 +242,334 @@
     ]
   },
   {
-    "startFen": "r1br4/pp1p1kp1/1q3p2/1Pp3pP/2P5/N7/PR4PK/5Q2 b - - 0 34",
+    "startFen": "1rqk3r/3pb1pQ/p3np2/2P3Np/PBP1P2P/5PP1/5K2/1R3b1R b - - 1 24",
+    "cell": "a6",
+    "moves": [
+      {
+        "from": "a6",
+        "to": "a5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "3k4/2rp4/p3nP1r/P7/2P3pP/4bP1N/2R5/5K2 b - - 0 39",
+    "cell": "d7",
+    "moves": [
+      {
+        "from": "d7",
+        "to": "d6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "d7",
+        "to": "d5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kbnr/p1pp1pp1/b7/1p5p/1P5P/N1P1p1PN/P2PPP2/1RBQKB1R b Kkq - 1 8",
+    "cell": "c7",
+    "moves": [
+      {
+        "from": "c7",
+        "to": "c6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "c7",
+        "to": "c5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kb1r/p2p2p1/5p2/1bpQ3p/PP5P/2P1PPPN/8/1RB1KB1R b Kkq - 1 15",
+    "cell": "f6",
+    "moves": [
+      {
+        "from": "f6",
+        "to": "f5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "r1q1k2r/p2pb1p1/5pQ1/2P3Np/P2nP2P/B1Pb1PP1/8/1R2KB1R b Kkq - 0 19",
+    "cell": "f6",
+    "moves": [
+     
+    ]
+  },
+  {
+    "startFen": "2rk4/3p2n1/p4p1r/4P2p/PbP4P/4RPPN/4R3/5K2 b - - 0 34",
+    "cell": "d7",
+    "moves": [
+      {
+        "from": "d7",
+        "to": "d6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "d7",
+        "to": "d5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "2rk4/3p2n1/p4p1r/2b1P2p/P1P4P/4RPPN/1R6/5K2 b - - 2 35",
+    "cell": "d7",
+    "moves": [
+      {
+        "from": "d7",
+        "to": "d6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "d7",
+        "to": "d5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "1r1k3r/1q1p2pQ/p3np2/2b3Np/PBP1P2P/5PP1/8/4RK1R b - - 2 26",
+    "cell": "d7",
+    "moves": [
+      {
+        "from": "d7",
+        "to": "d6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "d7",
+        "to": "d5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kb1r/p2p1pp1/b7/1Np4p/1P1Q3P/2P1PPPN/P7/1RB1KB1R b Kkq - 0 13",
+    "cell": "f7",
+    "moves": [
+      {
+        "from": "f7",
+        "to": "f6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "f7",
+        "to": "f5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "r1q1kb1r/p2p2p1/2n2p2/1bpQ3p/PP5P/2P1PPPN/8/1RB1KB1R w Kkq - 2 16",
+    "cell": "b4",
+    "moves": [
+      {
+        "from": "b4",
+        "to": "c5",
+        "piece": "p",
+        "captured": "p",
+        "capturedColor": "b",
+        "type": "c",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "2rk4/3p4/p3np1r/P3P2p/2P4P/4bPPN/2R5/5K2 b - - 0 37",
+    "cell": "d7",
+    "moves": [
+      {
+        "from": "d7",
+        "to": "d6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "d7",
+        "to": "d5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "1rqk3r/3pb1pQ/p3np2/2P3Np/PBP1P2P/5PP1/8/1R2Kb1R w K - 0 24",
+    "cell": "g3",
+    "moves": [
+      {
+        "from": "g3",
+        "to": "g4",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "rn1qkbnr/p1pp1ppp/b7/1p6/1P2p2P/N5P1/P1PPPP2/R1BQKBNR b KQkq - 0 5",
+    "cell": "g7",
+    "moves": [
+      {
+        "from": "g7",
+        "to": "g6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "g7",
+        "to": "g5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kbnr/p1pp1ppp/b7/1p6/1P5P/N1P1p1P1/P2PPP2/R1BQKBNR w KQkq - 0 7",
+    "cell": "g3",
+    "moves": [
+      {
+        "from": "g3",
+        "to": "g4",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "1r1k3r/1q1p2pQ/p3np2/2b3Np/PBP1P2P/5PP1/8/1R3K1R w - - 1 26",
+    "cell": "f3",
+    "moves": [
+      {
+        "from": "f3",
+        "to": "f4",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "3k3r/2rp4/p4P2/P5n1/2P3pP/4bP1N/2R1K3/8 w - - 3 41",
+    "cell": "h4",
+    "moves": [
+      {
+        "from": "h4",
+        "to": "h5",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      },
+      {
+        "from": "h4",
+        "to": "g5",
+        "piece": "p",
+        "captured": "n",
+        "capturedColor": "b",
+        "type": "c",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "r1qk3r/3pb1p1/p4p2/2P2QNp/P2nP2P/B1Pb1PP1/8/1R2KB1R w K - 2 21",
+    "cell": "c5",
+    "moves": [
+      {
+        "from": "c5",
+        "to": "c6",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "3k3r/2rp4/p4P2/P5P1/2P3p1/4bP1N/2R1K3/8 b - - 0 41",
+    "cell": "d7",
+    "moves": [
+      {
+        "from": "d7",
+        "to": "d6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "d7",
+        "to": "d5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "1rqk3r/3pb1pQ/p3np2/2P3Np/PBP1P2P/3b1PP1/8/1R2KB1R b K - 4 23",
     "cell": "g7",
     "moves": [
       {
@@ -238,40 +583,184 @@
     ]
   },
   {
-    "startFen": "2N2k2/8/8/8/2Kp4/3r2p1/8/8 b - - 33 155",
-    "cell": "g3",
+    "startFen": "rnbqkbnr/p1pp1ppp/8/1p2p3/1P6/N7/P1PPPPPP/R1BQKBNR w KQkq - 0 3",
+    "cell": "c2",
     "moves": [
       {
-        "from": "g3",
-        "to": "g2",
+        "from": "c2",
+        "to": "c3",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      },
+      {
+        "from": "c2",
+        "to": "c4",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "b",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kb1r/p1pp1pp1/b6n/1N5p/1P5P/2P1p1PN/P2PPP2/1RBQKB1R b Kkq - 0 9",
+    "cell": "c7",
+    "moves": [
+      {
+        "from": "c7",
+        "to": "c6",
         "piece": "p",
         "capturedColor": "w",
         "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "c7",
+        "to": "c5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
         "color": "b"
       }
     ]
   },
   {
-    "startFen": "8/8/5k2/8/8/2N3p1/1K6/8 b - - 36 192",
-    "cell": "g3",
+    "startFen": "1r1kn3/1q1p2Q1/p4p1r/2b3Np/PBP1P2P/5PP1/4R3/4RK2 b - - 4 29",
+    "cell": "d7",
     "moves": [
       {
-        "from": "g3",
-        "to": "g2",
+        "from": "d7",
+        "to": "d6",
         "piece": "p",
         "capturedColor": "w",
         "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "d7",
+        "to": "d5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
         "color": "b"
       }
     ]
   },
   {
-    "startFen": "r1b2k1N/1p6/1P1p4/2p2pp1/4r1p1/p6Q/P5P1/1N1R2K1 w - - 3 57",
-    "cell": "g2",
+    "startFen": "rnbqkbnr/p1pp1ppp/8/1p6/1P2p3/N6P/P1PPPPP1/R1BQKBNR w KQkq - 0 4",
+    "cell": "d2",
     "moves": [
       {
-        "from": "g2",
-        "to": "g3",
+        "from": "d2",
+        "to": "d3",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      },
+      {
+        "from": "d2",
+        "to": "d4",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "b",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kbnr/p1pp1pp1/b7/1p5p/1P5P/N1P1p1P1/P2PPP2/1RBQKBNR w Kkq - 0 8",
+    "cell": "f2",
+    "moves": [
+      {
+        "from": "f2",
+        "to": "f3",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      },
+      {
+        "from": "f2",
+        "to": "f4",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "b",
+        "color": "w"
+      },
+      {
+        "from": "f2",
+        "to": "e3",
+        "piece": "p",
+        "captured": "p",
+        "capturedColor": "b",
+        "type": "c",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kb1r/p1pp1pp1/b7/1N5p/1P4nP/2P1p1PN/P2PPP2/1RBQKB1R w Kkq - 1 10",
+    "cell": "f2",
+    "moves": [
+      {
+        "from": "f2",
+        "to": "f3",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "n",
+        "color": "w"
+      },
+      {
+        "from": "f2",
+        "to": "f4",
+        "piece": "p",
+        "capturedColor": "b",
+        "type": "b",
+        "color": "w"
+      },
+      {
+        "from": "f2",
+        "to": "e3",
+        "piece": "p",
+        "captured": "p",
+        "capturedColor": "b",
+        "type": "c",
+        "color": "w"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kb1r/p2p1pp1/b7/1Np1n2p/1P1Q3P/2P1PPPN/P3P3/1RB1KB1R b Kkq - 0 12",
+    "cell": "d7",
+    "moves": [
+      {
+        "from": "d7",
+        "to": "d6",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "n",
+        "color": "b"
+      },
+      {
+        "from": "d7",
+        "to": "d5",
+        "piece": "p",
+        "capturedColor": "w",
+        "type": "b",
+        "color": "b"
+      }
+    ]
+  },
+  {
+    "startFen": "rnq1kbnr/p1pp1ppp/b7/1p6/1P2p2P/N5P1/P1PPPP2/R1BQKBNR w KQkq - 1 6",
+    "cell": "g3",
+    "moves": [
+      {
+        "from": "g3",
+        "to": "g4",
         "piece": "p",
         "capturedColor": "b",
         "type": "n",
@@ -280,44 +769,16 @@
     ]
   },
   {
-    "startFen": "1rb5/1p2rk2/1P1p1p2/2p3pP/p5p1/6K1/P5P1/1N1R3Q b - - 0 50",
+    "startFen": "1rqk3r/3pb1p1/p3np2/2P2QNp/PBP1P2P/3b1PP1/8/1R2KB1R w K - 3 23",
     "cell": "c5",
     "moves": [
       {
         "from": "c5",
-        "to": "c4",
+        "to": "c6",
         "piece": "p",
-        "capturedColor": "w",
+        "capturedColor": "b",
         "type": "n",
-        "color": "b"
-      }
-    ]
-  },
-  {
-    "startFen": "3N4/8/6k1/8/8/2K3p1/8/8 b - - 12 180",
-    "cell": "g3",
-    "moves": [
-      {
-        "from": "g3",
-        "to": "g2",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "n",
-        "color": "b"
-      }
-    ]
-  },
-  {
-    "startFen": "4k3/8/8/1K6/8/6p1/3N4/7r b - - 10 164",
-    "cell": "g3",
-    "moves": [
-      {
-        "from": "g3",
-        "to": "g2",
-        "piece": "p",
-        "capturedColor": "w",
-        "type": "n",
-        "color": "b"
+        "color": "w"
       }
     ]
   }
