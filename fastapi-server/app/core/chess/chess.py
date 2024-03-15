@@ -24,7 +24,11 @@ class Chess:
                 if piece.pieceType == PieceType.KING and piece.pieceColor == color:
                     return self._is_attacked(x, y, color)
         return False
-
+    def simulate_move(self, move: InternalMove) -> 'Chess':
+        cloned = Chess(self.fen())
+        cloned._move(move)
+        return cloned
+    
     def _is_attacked(self, x: int, y: int, color: PieceColor) -> bool:
         for dx in range(-1, 2):
             for dy in range(-1, 2):
