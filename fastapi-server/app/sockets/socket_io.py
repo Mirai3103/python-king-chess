@@ -12,6 +12,8 @@ sio = AsyncServer(async_mode='asgi', cors_allowed_origins=[])
 sio_app = ASGIApp(sio,
                   socketio_path='socket.io',
                   )
+
+
 # todo: refactor this and implement your own logic
 
 class Room:
@@ -151,5 +153,3 @@ async def move(sid, data):
     board.push_uci(f"{from_square}{to_square}")
     game.load(board.fen())
     await sio.emit("moved", room=room.id, data={"board": board.fen()})
-
-
