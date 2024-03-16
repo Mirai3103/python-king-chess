@@ -13,12 +13,13 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as IndexImport } from './routes/index'
 import { Route as GameIndexImport } from './routes/game/index'
+import { Route as GameRoomIdImport } from './routes/game/$roomId'
 
 // Create Virtual Routes
 
 const AboutLazyImport = createFileRoute('/about')()
-const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
 
@@ -27,13 +28,18 @@ const AboutLazyRoute = AboutLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
 
-const IndexLazyRoute = IndexLazyImport.update({
+const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+} as any)
 
 const GameIndexRoute = GameIndexImport.update({
   path: '/game/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const GameRoomIdRoute = GameRoomIdImport.update({
+  path: '/game/$roomId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -42,11 +48,15 @@ const GameIndexRoute = GameIndexImport.update({
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': {
-      preLoaderRoute: typeof IndexLazyImport
+      preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
     '/about': {
       preLoaderRoute: typeof AboutLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/game/$roomId': {
+      preLoaderRoute: typeof GameRoomIdImport
       parentRoute: typeof rootRoute
     }
     '/game/': {
@@ -59,8 +69,9 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren([
-  IndexLazyRoute,
+  IndexRoute,
   AboutLazyRoute,
+  GameRoomIdRoute,
   GameIndexRoute,
 ])
 
