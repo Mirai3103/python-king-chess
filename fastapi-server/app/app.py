@@ -3,8 +3,10 @@ from fastapi import FastAPI
 from app.dtos.response import Response
 from app.sockets import socket_io
 from app.database.database import init_db
-from app.routers.user import UserRouter
+from app.routers import MainRouter
 from fastapi.middleware.cors import CORSMiddleware
+
+from fastapi.staticfiles import StaticFiles
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -13,9 +15,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
-app.include_router(UserRouter)
+app.include_router(MainRouter)
 
 
 @app.get("/api/room/{room_id}")

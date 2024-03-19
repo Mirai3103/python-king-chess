@@ -6,6 +6,7 @@ import axios from "axios";
 import { Button, Flex, Grid } from "@chakra-ui/react";
 import { socket } from "../../shared/socket";
 import { useToast } from "@chakra-ui/react";
+import { DEFAULT_POSITION } from "chess.js";
 export const Route = createFileRoute("/game/$roomId")({
   component: Game,
   loader: async ({ params }) => {
@@ -25,7 +26,9 @@ export const Route = createFileRoute("/game/$roomId")({
 function Game() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data } = Route.useLoaderData() as any;
-  const [fen, setFen] = React.useState("");
+  const [fen, setFen] = React.useState(DEFAULT_POSITION);
+  const amIWhite = data?.room?.white_id == socket.id;
+  const isMyTurn = amIWhite ? fen.split(" ")[1] == "w" : fen.split(" ")[1] == "b";
   const toast = useToast();
   const navigate = useNavigate();
   React.useEffect(() => {
@@ -103,9 +106,12 @@ function Game() {
   return (
     <Flex direction={"column"} gap={5}>
       <div>
-        Host: {data.room.player_1 == socket.id ? "You" : data.room.player_1}
+        <span>
+        Lượt của {isMyTurn ? "bạn" : "đối thủ"}
+        </span>
       </div>
       <Chessboard
+        boardOrientation={amIWhite ? "white" : "black"}
         boardWidth={500}
         id="BasicBoard"
         onPieceDrop={(from, to, piece) => {
