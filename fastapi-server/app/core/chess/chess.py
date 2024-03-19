@@ -2,7 +2,7 @@
 
 from .type import DEFAULT_FEN_POSITION, Board, CellName, InternalMove, MoveType, Piece, PieceColor, PieceType
 from typing import Dict
-from app.core.chess.piece import default_piece_strategy_factory
+from app.core.chess.piece import PIECES_STRATEGY
 
 
 class Chess:
@@ -227,12 +227,12 @@ class Chess:
     # // trả về danh sách các nước đi hợp lệ từ ô cờ đang xét
     def moves(self, from_cell: CellName) -> list[str]:
         x, y = CellName.to_2d(from_cell)
-        strategy = default_piece_strategy_factory.get_strategy(self._board[x][y].pieceType)
+        strategy = PIECES_STRATEGY[(self._board[x][y].pieceType)]
         return strategy.get_moves(self._board, CellName.to_2d(from_cell))
 
     def move(self, from_cell: CellName, to_cell: CellName):
         x, y = CellName.to_2d(from_cell)
-        strategy = default_piece_strategy_factory.get_strategy(self._board[x][y].pieceType)
+        strategy = PIECES_STRATEGY[(self._board[x][y].pieceType)]
         move = strategy.check_move(self._board, CellName.to_2d(from_cell), CellName.to_2d(to_cell))
         self._move(move)
         return move
