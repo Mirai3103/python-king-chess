@@ -1,12 +1,11 @@
 
 
 from typing import Optional
-from app.core.chess.chess import Chess
-from ..type import CellName, InternalMove, MoveType, PieceType
+from ..type import CellName, IChess, InternalMove, MoveType, PieceType
 from .picece_strategy import PieceStrategy
 
 class KnightStrategy(PieceStrategy):
-    def get_moves(self, game: Chess, from_2d: tuple[int, int]) -> list[InternalMove]:
+    def get_moves(self, game: IChess, from_2d: tuple[int, int]) -> list[InternalMove]:
         board = game._board
         fromX, fromY = from_2d
         piece = board[fromX][fromY]
@@ -32,7 +31,7 @@ class KnightStrategy(PieceStrategy):
 
         return moves
 
-    def check_move(self, game: Chess, from_2d: tuple[int, int], to_2d: tuple[int, int]) -> Optional[InternalMove]:
+    def check_move(self, game: IChess, from_2d: tuple[int, int], to_2d: tuple[int, int]) -> Optional[InternalMove]:
         valid_moves = self.get_moves(game, from_2d)
         for move in valid_moves:
             if move._to == CellName.from_2d(*to_2d):

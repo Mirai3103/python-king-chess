@@ -1,30 +1,12 @@
 
 
 from typing import Optional
-from app.core.chess.chess import Chess
-from ..type import  CellName, MoveType, Piece,InternalMove,PieceColor, PieceType
+from ..type import  CellName, IChess, MoveType, Piece,InternalMove,PieceColor, PieceType
 from .picece_strategy import PieceStrategy
-# class InternalMove(
-#     _from: CellName,
-#     _to: CellName,
-#     _promotion: PieceType,
-#     _captured: Piece,
-#     _piece: Piece,
-#     _moveType: MoveType
-# )
-# class MoveType(str,Enum):
-#     NORMAL = 'n' # di chuyển bình thường
-#     CAPTURE = 'c' # ăn quân
-#     BIG_PAWN = 'b' # tốt di chuyển 2 ô
-#     EP_CAPTURE = 'e' # bắt quân qua đường
-#     PROMOTION = 'p' # phong cấp eg: tốt phong cấp thành hậu
-#     KSIDE_CASTLE = 'k' # nhập thành vua
-#     QSIDE_CASTLE = 'q' # nhập thành tướng
-#     CP = 'cp' # bắt quân qua đường
 
 
 class PawnStrategy(PieceStrategy):
-    def get_moves(self, game: Chess, from_2d:tuple[int,int]) -> list[InternalMove]:
+    def get_moves(self, game: IChess, from_2d:tuple[int,int]) -> list[InternalMove]:
         board = game._board
         fromX, fromY = from_2d
         piece = board[fromX][fromY]
@@ -59,7 +41,7 @@ class PawnStrategy(PieceStrategy):
         
 
 
-    def check_move(self, game: Chess, from_2d: tuple[int, int], to_2d: tuple[int, int]) -> Optional[InternalMove]:
+    def check_move(self, game: IChess, from_2d: tuple[int, int], to_2d: tuple[int, int]) -> Optional[InternalMove]:
         valid_moves = self.get_moves(game, from_2d)
         for move in valid_moves:
             if move._to == CellName.from_2d(*to_2d):

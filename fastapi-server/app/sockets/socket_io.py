@@ -1,5 +1,5 @@
 from typing import Optional
-from uuid import UUID
+
 import uuid
 from chess import Board, IllegalMoveError, Move
 from socketio import AsyncServer, ASGIApp

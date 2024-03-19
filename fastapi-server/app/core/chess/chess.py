@@ -1,11 +1,11 @@
 # white is upper case, black is lower case
 
-from .type import DEFAULT_FEN_POSITION, Board, CellName, InternalMove, MoveType, Piece, PieceColor, PieceType
+from .type import DEFAULT_FEN_POSITION, Board, CellName, IChess, InternalMove, MoveType, Piece, PieceColor, PieceType
 from typing import Dict
 from app.core.chess.piece import PIECES_STRATEGY
 
 
-class Chess:
+class Chess(IChess):
     _board: Board = [[Piece() for _ in range(8)] for _ in range(8)]
     _turn: PieceColor = PieceColor.WHITE
     _history: list[InternalMove] = []
@@ -224,13 +224,12 @@ class Chess:
         res += str(self._move_number)
         return res
 
-    # // trả về danh sách các nước đi hợp lệ từ ô cờ đang xét
-    def moves(self, from_cell: CellName) -> list[str]:
+    def moves(self, from_cell: CellName) -> list[InternalMove]:
         x, y = CellName.to_2d(from_cell)
         strategy = PIECES_STRATEGY[(self._board[x][y].pieceType)]
         return strategy.get_moves(self._board, CellName.to_2d(from_cell))
 
-    def move(self, from_cell: CellName, to_cell: CellName):
+    def move(self, from_cell: CellName, to_cell: CellName) -> InternalMove:
         x, y = CellName.to_2d(from_cell)
         strategy = PIECES_STRATEGY[(self._board[x][y].pieceType)]
         move = strategy.check_move(self._board, CellName.to_2d(from_cell), CellName.to_2d(to_cell))

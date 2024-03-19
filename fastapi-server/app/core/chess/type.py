@@ -1,4 +1,6 @@
+from abc import abstractmethod
 from enum import Enum
+from typing import Optional
 
 from fastapi.background import P
 
@@ -136,10 +138,6 @@ class MoveType(str,Enum):
     CAPTURE_AND_PROMOTION = 'cp' # bắt quân qua đường và phong cấp 
 
 
-
-
-
-
 class InternalMove:
     _from:CellName
     _to:CellName
@@ -160,3 +158,35 @@ class InternalMove:
 
 Board = list[list[Piece]]
 
+class IllegalMoveError(Exception):
+    def __init__(self, message:str):
+        self.message = message
+        super().__init__(self.message)
+
+
+class IChess:
+    _board:Board
+    _turn:PieceColor
+    _castling:dict[PieceColor,dict[str,bool]]
+    
+    @abstractmethod
+    def load(self, fen: str):
+        pass
+    @abstractmethod
+    def moves(self, from_cell: CellName) -> list[InternalMove]:
+        pass
+    @abstractmethod
+    def move(self, from_cell: CellName, to_cell: CellName) -> InternalMove:
+        pass
+    @abstractmethod
+    def simulate_move(self, move: InternalMove) -> 'IChess':
+        pass
+    @abstractmethod
+    def is_check(self, color: PieceColor) -> bool:
+        pass
+    @abstractmethod
+    def is_checkmate(self, color: PieceColor) -> bool:
+        pass
+    @abstractmethod
+    def fen(self) -> str:
+        pass
