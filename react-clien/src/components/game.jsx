@@ -4,7 +4,7 @@ import { socket } from "../shared/socket";
 import {Grid,Flex,Button,useToast} from "@chakra-ui/react";
 import { Chessboard } from "react-chessboard";
 import { DEFAULT_POSITION } from "chess.js";
-let event_recive_count = 0;
+
 
 export default function Game({data}) {
     const [fen, setFen] = React.useState(DEFAULT_POSITION);
@@ -21,6 +21,16 @@ export default function Game({data}) {
       }
       function onMove(data) {
         console.log("moved", data);
+       let checked = data.checked;
+        if(checked){
+            toast({
+                colorScheme: "red",
+                title: "Check",
+                description: `${checked} is checked`,
+                duration: 2000,
+                isClosable: true,
+            });
+            }
         setFen(data.board);
         toast({
           colorScheme: "teal",
@@ -115,7 +125,19 @@ export default function Game({data}) {
             console.log(from, to, piece);
             const room_id = data.room.id;
             const payload = { move: { from, to, piece }, room_id };
-            socket.emit("move", payload);
+            socket.emit("move", payload, (data) => {
+                if(data.is_error)
+                {
+                    toast({
+                        title: "Lỗi",
+                        description: data.message,
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                        colorScheme: "red",
+                      });
+                }
+            });
             return true;
           }}
           position={fen}

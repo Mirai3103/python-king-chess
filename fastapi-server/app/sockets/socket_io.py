@@ -1,7 +1,7 @@
 from typing import Optional
 from uuid import UUID
 import uuid
-from chess import Board, Move
+from chess import Board, IllegalMoveError, Move
 from socketio import AsyncServer, ASGIApp
 from app.core.chess import chess
 from app.core.chess.type import PieceColor
@@ -110,7 +110,7 @@ async def start_game(sid, data):
         return Response(True, message="You are not the host").to_dict()
     if room.is_full():
         room.game = chess.Chess()
-        await sio.emit("game_started", room=room.id, data={"white_id": room.white_id, "fen": room.game.fen()})
+        sio.emit("game_started", room=room.id, data={"white_id": room.white_id, "fen": room.game.fen()})
         return Response(False, message="Game started").to_dict()
     return Response(True, message="Room is not full").to_dict()
 
@@ -150,6 +150,14 @@ async def move(sid, data):
     to_square = move["to"]
 
     board = Board(game.fen())
-    board.push_uci(f"{from_square}{to_square}")
+    try:
+        board.push_uci(f"{from_square}{to_square}")
+    except IllegalMoveError:
+        return Response(True, message="Nước đi không hợp lệ").to_dict()
+    
     game.load(board.fen())
-    await sio.emit("moved", room=room.id, data={"board": board.fen()})
+    checked = None
+    if board.is_check():
+        current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK
+        checked = "white" if current_color == PieceColor.WHITE else "black"
+    await sio.emit("moved", room=room.id, data={"board": board.fen(), "is_game_over": board.is_game_over(),"checked": checked})
