@@ -18,11 +18,7 @@ class Chess(IChess):
     _half_moves: int = 0
 
     def is_check(self, color: PieceColor) -> bool:
-        for x in range(8):
-            for y in range(8):
-                piece = self._board[x][y]
-                if piece.pieceType == PieceType.KING and piece.pieceColor == color:
-                    return self._is_attacked(x, y, color)
+        # // kiểm tra vua có bị chiếu không
         return False
     def simulate_move(self, move: InternalMove) -> 'Chess':
         cloned = Chess(self.fen())
@@ -30,48 +26,7 @@ class Chess(IChess):
         return cloned
     
     def _is_attacked(self, x: int, y: int, color: PieceColor) -> bool:
-        for dx in range(-1, 2):
-            for dy in range(-1, 2):
-                if dx == 0 and dy == 0:
-                    continue
-                for i in range(1, 8):
-                    tx = x + i * dx
-                    ty = y + i * dy
-                    if tx < 0 or tx >= 8 or ty < 0 or ty >= 8:
-                        break
-                    piece = self._board[tx][ty]
-                    if piece.pieceType != PieceType.EMPTY:
-                        if piece.pieceColor == color:
-                            break
-                        if (dx == 0 or dy == 0) and piece.pieceType in [PieceType.ROOK, PieceType.QUEEN]:
-                            return True
-                        if (dx != 0 and dy != 0) and piece.pieceType in [PieceType.BISHOP, PieceType.QUEEN]:
-                            return True
-                        if i == 1 and piece.pieceType == PieceType.KING:
-                            return True
-                        if i == 1 and piece.pieceType == PieceType.PAWN:
-                            if color == PieceColor.WHITE:
-                                if dx == -1 and dy == -1:
-                                    return True
-                                if dx == 1 and dy == -1:
-                                    return True
-                            else:
-                                if dx == 1 and dy == 1:
-                                    return True
-                                if dx == -1 and dy == 1:
-                                    return True
-                        break
-        #  hướng di chuyển của quân mã
-        for dx, dy in [(1, 2), (2, 1), (-1, 2), (2, -1), (-2, 1), (1, -2), (-2, -1), (-1, -2)]:
-            tx = x + dx
-            ty = y + dy
-            if tx < 0 or tx >= 8 or ty < 0 or ty >= 8:
-                continue
-            piece = self._board[tx][ty]
-            if piece.pieceType == PieceType.EMPTY:
-                continue
-            if piece.pieceType == PieceType.KNIGHT and piece.pieceColor != color:
-                return True
+        # xem quân cờ ở vị trí x, y có bị tấn công không
         return False
 
     def __init__(self, fen: str = DEFAULT_FEN_POSITION):
