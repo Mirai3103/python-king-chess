@@ -158,6 +158,7 @@ async def time_out(sid, data):
 
 @sio.on("move")
 async def move(sid, data):
+    print(data)
     room = data["room_id"]
     own_remaining_time = data["remaining_time"]
     
@@ -190,6 +191,6 @@ async def move(sid, data):
     if board.is_check():
         current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK
         checked = "white" if current_color == PieceColor.WHITE else "black"
-    sio.emit("moved", room=room.id, data={ "is_game_over": board.is_game_over(),"checked": checked,"room": room.to_dict()})
+    await sio.emit("moved", room=room.id, data={ "is_game_over": board.is_game_over(),"checked": checked,"room": room.to_dict()})
     return Response(False, message="Moved").to_dict()
     
