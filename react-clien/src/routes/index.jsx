@@ -13,11 +13,14 @@ import {
   ModalOverlay,
   Stack,
   useDisclosure,
+  chakra
 } from "@chakra-ui/react";
 import { socket } from "../shared/socket";
 import { useRoomStore } from "../stores/roomStore";
 import React from "react";
 import { Radio, RadioGroup } from "@chakra-ui/react";
+import { useUserStore } from "../stores/userStore";
+import { Input } from '@chakra-ui/react'
 export const Route = createFileRoute("/")({
   component: () => <Index />,
 });
@@ -26,7 +29,10 @@ function Index() {
   const { setPlayer1, setRoomId } = useRoomStore();
   const [color, setColor] = React.useState("white");
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { setDisplayName, display_name } = useUserStore()
+  const { isOpen:isOpenUserModal, onOpen: onOpenUserModal, onClose: onCloseUserModal } = useDisclosure();
   const navigate = useNavigate();
+  const inputRef = React.useRef(null);
   function createRoom() {
     socket.emit(
       "create_invite",
@@ -51,7 +57,10 @@ function Index() {
       minW={"100vw"}
       minH={"100vh"}
     >
-      <Flex direction={"column"} gap={5} w={"300px"}>
+      <Flex direction={"column"} gap={5} maxW={"400px"} minW={'300px'}>
+        <chakra.h1 fontSize="3xl" textAlign={'center'}>
+          Chào {display_name||" Bạn"}
+        </chakra.h1>
         <Button colorScheme="teal" size="lg">
           Chơi với máy
         </Button>
@@ -61,7 +70,31 @@ function Index() {
         <Button colorScheme="teal" size="lg">
           Tham gia phòng
         </Button>
+        <Button colorScheme="teal" size="lg" onClick={onOpenUserModal}>
+          Thông tin người chơi
+        </Button>
       </Flex>
+      <Modal isOpen={isOpenUserModal} onClose={onCloseUserModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            Thông tin người chơi
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Input placeholder="Nhập tên của bạn" ref={inputRef} defaultValue={display_name} />
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={() => {
+              setDisplayName(inputRef.current.value)
+              onCloseUserModal()
+            }}>
+              Lưu
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
