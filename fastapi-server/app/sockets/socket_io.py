@@ -140,7 +140,7 @@ async def join_invite(sid, data):
     room.player_2 = sid
     room.game = chess.Chess()
     room.white_id = room.white_id if room.white_id is not None else sid
-    await sio.emit("game_started", room=room.id, data={"white_id": room.white_id, "fen": room.game.fen()})
+    await sio.emit("game_started", room=room.id, data=room.to_dict())
     print(f"emit game_started {room.id}")
     return Response(False, message="Joined room").to_dict()
 
@@ -190,4 +190,6 @@ async def move(sid, data):
     if board.is_check():
         current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK
         checked = "white" if current_color == PieceColor.WHITE else "black"
-    await sio.emit("moved", room=room.id, data={ "is_game_over": board.is_game_over(),"checked": checked,"room": room.to_dict()})
+    sio.emit("moved", room=room.id, data={ "is_game_over": board.is_game_over(),"checked": checked,"room": room.to_dict()})
+    return Response(False, message="Moved").to_dict()
+    
