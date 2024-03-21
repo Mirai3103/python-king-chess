@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {  createFileRoute,  } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import React from "react";
 import axios from "axios";
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/game/$roomId")({
   },
 });
 function Index() {
-  const { data } = Route.useLoaderData() 
+  const { data } = Route.useLoaderData();
   if (data.isNotFound) {
     return <GameNotFound />;
   }
@@ -33,5 +33,3 @@ function Index() {
   }
   return <Game data={data} />;
 }
-
-
