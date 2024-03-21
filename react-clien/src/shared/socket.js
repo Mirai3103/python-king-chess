@@ -7,5 +7,8 @@ socket.on("connect", () => {
   console.log("connected to server with id ", socket.id);
 });
 socket.onAny((eventName, ...args) => {
-  console.log(eventName, args);
+  console.debug(eventName, args);
 });
+export function joinRoom(roomId) {
+  socket.emit("join_invite", roomId);
+}
