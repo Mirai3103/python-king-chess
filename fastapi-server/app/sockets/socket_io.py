@@ -22,6 +22,8 @@ class Room:
     player_2: Optional[str] = None
     game: Optional[chess.Chess] = None
     white_id: Optional[str] = None
+    player_1_remaining_time: int = 15*60
+    player_2_remaining_time: int = 15*60
 
     def leave(self, sid):
         if self.player_1 == sid:
@@ -39,6 +41,17 @@ class Room:
 
     def is_in_room(self, sid):
         return self.player_1 == sid or self.player_2 == sid
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "player_1": self.player_1,
+            "player_2": self.player_2,
+            "fen": self.game.fen() if self.game is not None else None,
+            "white_id": self.white_id,
+            "player_1_remaining_time": self.player_1_remaining_time,
+            "player_2_remaining_time": self.player_2_remaining_time
+        }
+    
 
 
 rooms_dict: dict[str, Room] = {}
@@ -110,7 +123,7 @@ async def start_game(sid, data):
         return Response(True, message="You are not the host").to_dict()
     if room.is_full():
         room.game = chess.Chess()
-        sio.emit("game_started", room=room.id, data={"white_id": room.white_id, "fen": room.game.fen()})
+        sio.emit("game_started", room=room.id, data=room.to_dict())
         return Response(False, message="Game started").to_dict()
     return Response(True, message="Room is not full").to_dict()
 
@@ -131,13 +144,30 @@ async def join_invite(sid, data):
     print(f"emit game_started {room.id}")
     return Response(False, message="Joined room").to_dict()
 
+@sio.on("time_out")
+async def time_out(sid, data):
+    room = rooms_dict.get(data)
+    if room is None:
+        return Response(True, message="Room not found").to_dict()
+    room = rooms_dict[room]
+    if room.white_id == sid:
+        room.player_1_remaining_time = 0
+    else:
+        room.player_2_remaining_time = 0
+    await sio.emit("time_out", room=room.id, data=room.to_dict())
 
 @sio.on("move")
 async def move(sid, data):
     room = data["room_id"]
+    own_remaining_time = data["remaining_time"]
+    
     if room is None:
         return Response(True, message="Room not found").to_dict()
     room = rooms_dict[room]
+    if room.player_1 == sid:
+        room.player_1_remaining_time = own_remaining_time
+    else:
+        room.player_2_remaining_time = own_remaining_time
     game = room.game
     own_color = PieceColor.WHITE if room.white_id == sid else PieceColor.BLACK
     if game is None:
@@ -160,4 +190,4 @@ async def move(sid, data):
     if board.is_check():
         current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK
         checked = "white" if current_color == PieceColor.WHITE else "black"
-    await sio.emit("moved", room=room.id, data={"board": board.fen(), "is_game_over": board.is_game_over(),"checked": checked})
+    await sio.emit("moved", room=room.id, data={ "is_game_over": board.is_game_over(),"checked": checked,"room": room.to_dict()})
