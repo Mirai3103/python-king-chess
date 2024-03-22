@@ -15,9 +15,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { joinRoom, socket } from "../shared/socket";
 
 export default function Game({ data }) {
-  const gameState = useGame({
-    myColor: data?.room?.white_id == socket.id ? "white" : "black",
-  });
+  const gameState = useGame({});
+
   const rootBoardRef = React.useRef(null);
   const [boardWidth, setBoardWidth] = React.useState(400);
   const toast = useToast();
@@ -46,7 +45,7 @@ export default function Game({ data }) {
       gameState.setFen(data.room.fen);
       gameState.setMyRemainingTime(
         socket.id == data.room.player_1
-          ? data.room.player_1_player_1_remaining_time
+          ? data.room.player_1_remaining_time
           : data.room.player_2_remaining_time
       );
       gameState.setOpponentRemainingTime(
@@ -74,23 +73,25 @@ export default function Game({ data }) {
     }
 
     function onStarted(data) {
+      gameState.setMyColor(data.white_id == socket.id ? "w" : "b");
       const {
         white_id,
         fen,
         player_1_remaining_time,
         player_2_remaining_time,
-      } = data.room;
+      } = data;
       gameState.setMyRemainingTime(
-        socket.id == data.room.player_1
+        socket.id == data.player_1
           ? player_1_remaining_time
           : player_2_remaining_time
       );
       gameState.setOpponentRemainingTime(
-        socket.id == data.room.player_1
+        socket.id == data.player_1
           ? player_2_remaining_time
           : player_1_remaining_time
       );
       gameState.setFen(fen);
+      gameState.setIsGamePending(true);
       toast({
         colorScheme: "teal",
         title: "Started",
@@ -112,8 +113,21 @@ export default function Game({ data }) {
         to: "/",
       });
     }
+    function onOver() {
+      gameState.setIsGamePending(false);
+      toast({
+        colorScheme: "red",
+        title: "Game over",
+        description: "Game over",
+        duration: 10000,
+        isClosable: true,
+      });
+      navigate({
+        to: "/",
+      });
+    }
     socket.on("a_player_left", onOpponentLeft);
-
+    socket.on("game_over", onOver);
     socket.on("a_player_joined", onJoin);
     socket.on("moved", onMove);
     socket.on("game_started", onStarted);
@@ -122,6 +136,7 @@ export default function Game({ data }) {
       socket.off("joined", onJoin);
       socket.off("game_started ", onStarted);
       socket.off("a_player_left", onOpponentLeft);
+      socket.off("game_over", onOver);
     };
   }, []);
   return (
@@ -137,20 +152,21 @@ export default function Game({ data }) {
       <Flex direction={"column"} rowGap={"4"}>
         <Flex justifyContent={"space-between"} fontSize={"2xl"}>
           <h2>
-            Người chơi: <chakra.span color={"red"}>Người chơi 1</chakra.span>
+            Người chơi: <chakra.span color={"red"}>Người chơi 2</chakra.span>
           </h2>
-          <Tag size="lg">{seccondsToTime(gameState.myRemainingTime || 0)}</Tag>
+          <Tag size="lg">
+            {seccondsToTime(gameState.opponentRemainingTime || 0)}
+          </Tag>
         </Flex>
         <chakra.div flexGrow={1} ref={rootBoardRef}>
           <Chessboard
-            boardOrientation={
-              data?.room?.white_id == socket.id ? "white" : "black"
-            }
+            boardOrientation={gameState.myColor}
             boardWidth={boardWidth}
             position={gameState.fen || DEFAULT_POSITION}
             onPieceDrop={(from, to, piece) => {
-              const mycolor = data.room.player_1 == socket.id ? "w" : "b";
-              if (!piece.startsWith(mycolor)) {
+              const mycolor = gameState.myColor;
+              console.log(mycolor, piece);
+              if (!piece.toLocaleLowerCase().startsWith(mycolor)) {
                 toast({
                   title: "Invalid move",
                   description: "It's not your piece",
@@ -197,7 +213,7 @@ export default function Game({ data }) {
         </chakra.div>
         <Flex justifyContent={"space-between"} fontSize={"2xl"}>
           <h2>
-            Người chơi: <chakra.span color={"red"}>Người chơi 2</chakra.span>
+            Người chơi: <chakra.span color={"red"}>Người chơi 1</chakra.span>
           </h2>
           <Tag size="lg">{seccondsToTime(gameState.myRemainingTime || 0)}</Tag>
         </Flex>
@@ -253,7 +269,13 @@ export default function Game({ data }) {
 }
 
 function seccondsToTime(seconds) {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
+  let minutes = Math.floor(seconds / 60);
+  let remainingSeconds = seconds % 60;
+  if (minutes < 10) {
+    minutes = "0" + minutes;
+  }
+  if (remainingSeconds < 10) {
+    remainingSeconds = "0" + remainingSeconds;
+  }
   return `${minutes}:${remainingSeconds}`;
 }
