@@ -15,7 +15,7 @@
 #     def check_move(self, game: IChess, from_2d: tuple[int, int], to_2d: tuple[int, int]) -> Optional[InternalMove]:
 #         return None
 from typing import Optional
-from .piece_strategy import PieceStrategy
+from .picece_strategy import PieceStrategy
 from ..type import CellName, IChess, InternalMove, MoveType, Piece, PieceType
 
 class RookStrategy(PieceStrategy):
