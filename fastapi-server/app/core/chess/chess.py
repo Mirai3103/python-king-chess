@@ -19,16 +19,53 @@ class Chess(IChess):
 
     def is_check(self, color: PieceColor) -> bool:
         # // kiểm tra vua có bị chiếu không
+        #Test
+        king_position = None
+        for x in range(8):
+            for y in range(8):
+                if self._board[x][y].pieceType == PieceType.KING and self._board[x][y].color == color:
+                   king_position = (x, y)
+                   break
+            if king_position:
+                   break
+
+        # Kiểm tra xem quân vua có bị tấn công không
+        if king_position:
+            for x in range(8):
+                for y in range(8):
+                   if self._board[x][y].color != color and self._is_attacked(x, y, color):
+                       return True
+        #Test
         return False
     def simulate_move(self, move: InternalMove) -> 'Chess':
         cloned = Chess(self.fen())
         cloned._move(move)
         return cloned
     
+    # def _is_attacked(self, x: int, y: int, color: PieceColor) -> bool:
+    #     # xem quân cờ ở vị trí x, y có bị tấn công không
+    #     return False
+    #
     def _is_attacked(self, x: int, y: int, color: PieceColor) -> bool:
-        # xem quân cờ ở vị trí x, y có bị tấn công không
+    # Duyệt qua tất cả các ô trên bàn cờ
+        for i in range(8):
+            for j in range(8):
+            # Lấy quân cờ tại vị trí (i, j)
+                piece = self._board[i][j]
+            # Kiểm tra xem quân cờ này có phải là của đối phương và có thể tấn công ô (x, y) không
+                if piece.color != color and self._can_piece_attack(piece, (i, j), (x, y)):
+                   return True
         return False
 
+    def _can_piece_attack(self, piece: Piece, piece_position: tuple[int, int], target_position: tuple[int, int]) -> bool:
+    # Lấy tất cả các nước đi có thể của quân cờ
+        moves = PIECES_STRATEGY[piece.pieceType].get_moves(self._board, piece_position)
+    # Kiểm tra xem có nước đi nào đến vị trí mục tiêu không
+        for move in moves:
+            if move._to == CellName.from_2d(target_position):
+               return True
+        return False
+    #
     def __init__(self, fen: str = DEFAULT_FEN_POSITION):
         self.load(fen)
 
