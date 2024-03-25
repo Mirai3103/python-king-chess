@@ -23,7 +23,7 @@ class Chess(IChess):
         king_position = None
         for x in range(8):
             for y in range(8):
-                if self._board[x][y].pieceType == PieceType.KING and self._board[x][y].color == color:
+                if self._board[x][y].pieceType == PieceType.KING and self._board[x][y].pieceColor == color:
                    king_position = (x, y)
                    break
             if king_position:
@@ -33,7 +33,7 @@ class Chess(IChess):
         if king_position:
             for x in range(8):
                 for y in range(8):
-                   if self._board[x][y].color != color and self._is_attacked(x, y, color):
+                   if self._board[x][y].pieceColor != color and self._is_attacked(x, y, color):
                        return True
         #Test
         return False
@@ -53,13 +53,21 @@ class Chess(IChess):
             # Lấy quân cờ tại vị trí (i, j)
                 piece = self._board[i][j]
             # Kiểm tra xem quân cờ này có phải là của đối phương và có thể tấn công ô (x, y) không
-                if piece.color != color and self._can_piece_attack(piece, (i, j), (x, y)):
+                if piece.pieceColor != color and self._can_piece_attack(piece, (i, j), (x, y)):
                    return True
         return False
-
+    def get_piece_color(self, cell: CellName) -> PieceColor:
+        x, y = CellName.to_2d(cell)
+        return self._board[x][y].pieceColor
+    def get_piece_type(self, cell: CellName) -> PieceType:
+        x, y = CellName.to_2d(cell)
+        return self._board[x][y].pieceType
+    
     def _can_piece_attack(self, piece: Piece, piece_position: tuple[int, int], target_position: tuple[int, int]) -> bool:
     # Lấy tất cả các nước đi có thể của quân cờ
-        moves = PIECES_STRATEGY[piece.pieceType].get_moves(self._board, piece_position)
+        if piece.pieceType == PieceType.EMPTY:
+            return False
+        moves = PIECES_STRATEGY[piece.pieceType].get_moves(self, piece_position)
     # Kiểm tra xem có nước đi nào đến vị trí mục tiêu không
         for move in moves:
             if move._to == CellName.from_2d(target_position):
@@ -219,13 +227,14 @@ class Chess(IChess):
     def moves(self, from_cell: CellName) -> list[InternalMove]:
         x, y = CellName.to_2d(from_cell)
         strategy = PIECES_STRATEGY[(self._board[x][y].pieceType)]
-        return strategy.get_moves(self._board, CellName.to_2d(from_cell))
+        return strategy.get_moves(self, CellName.to_2d(from_cell))
 
     def move(self, from_cell: CellName, to_cell: CellName) -> InternalMove:
         x, y = CellName.to_2d(from_cell)
         strategy = PIECES_STRATEGY[(self._board[x][y].pieceType)]
-        move = strategy.check_move(self._board, CellName.to_2d(from_cell), CellName.to_2d(to_cell))
-        self._move(move)
+        move = strategy.check_move(self, CellName.to_2d(from_cell), CellName.to_2d(to_cell))
+        if move is not None:
+            self._move(move)
         return move
 
     def undo(self):

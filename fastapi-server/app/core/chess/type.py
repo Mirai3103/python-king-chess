@@ -145,7 +145,9 @@ class InternalMove:
     _captured:Piece
     _piece:Piece
     _moveType:MoveType
-    def __init__(self, _from:CellName, _to:CellName, _promotion:PieceType, _captured:Piece, _piece:Piece, _moveType:MoveType):
+    
+    def __init__(self, _from:CellName, _to:CellName, _promotion:PieceType=Piece(), _captured:Piece=Piece(), _piece:Piece=Piece(), _moveType:MoveType=MoveType.NORMAL):
+        
         self._from = _from
         self._to = _to
         self._promotion = _promotion

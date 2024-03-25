@@ -4,7 +4,7 @@ import uuid
 from chess import Board, IllegalMoveError, Move
 from socketio import AsyncServer, ASGIApp
 from app.core.chess import chess
-from app.core.chess.type import PieceColor
+from app.core.chess.type import CellName, PieceColor
 from app.dtos.response import Response
 
 sio = AsyncServer(async_mode='asgi', cors_allowed_origins=[])
@@ -180,17 +180,15 @@ async def move(sid, data):
     from_square = move["from"]
     to_square = move["to"]
 
-    board = Board(game.fen())
-    try:
-        board.push_uci(f"{from_square}{to_square}")
-    except IllegalMoveError:
+
+    moveRs=  game.move(CellName(from_square),CellName(to_square))
+    if moveRs is None:
         return Response(True, message="Nước đi không hợp lệ").to_dict()
     
-    game.load(board.fen())
     checked = None
-    if board.is_check():
+    if game.is_check():
         current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK
         checked = "white" if current_color == PieceColor.WHITE else "black"
-    await sio.emit("moved", room=room.id, data={ "is_game_over": board.is_game_over(),"checked": checked,"room": room.to_dict()})
+    await sio.emit("moved", room=room.id, data={ "is_game_over": False,"checked": checked,"room": room.to_dict()})
     return Response(False, message="Moved").to_dict()
     
