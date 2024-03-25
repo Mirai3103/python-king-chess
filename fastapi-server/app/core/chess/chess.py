@@ -38,9 +38,32 @@ class Chess(IChess):
         #Test
         return False
     def simulate_move(self, move: InternalMove) -> 'Chess':
+        # cloned = Chess(self.fen())
+        # cloned._move(move)
+        # return cloned
         cloned = Chess(self.fen())
         cloned._move(move)
+
+        # Kiểm tra xem quân vua của mình có bị chiếu không
+        if cloned.is_check(cloned._turn):
+           print("King is in check after the move.")
+
+        # Lấy vị trí của quân vua địch
+        enemy_king_position = None
+        for x in range(8):
+            for y in range(8):
+                if cloned._board[x][y].pieceType == PieceType.KING and cloned._board[x][y].pieceColor != cloned._turn:
+                   enemy_king_position = (x, y)
+                   break
+            if enemy_king_position:
+                break
+
+    # Kiểm tra xem quân vua địch có bị chiếu không
+        if enemy_king_position and cloned._is_attacked(enemy_king_position[0], enemy_king_position[1], cloned._turn.swap()):
+            print("Enemy king is in check after the move.")
+
         return cloned
+        
     
     # def _is_attacked(self, x: int, y: int, color: PieceColor) -> bool:
     #     # xem quân cờ ở vị trí x, y có bị tấn công không
