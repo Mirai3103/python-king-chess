@@ -186,8 +186,9 @@ async def move(sid, data):
         return Response(True, message="Nước đi không hợp lệ").to_dict()
     
     checked = None
-    if game.is_check():
-        current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK
+    current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK
+
+    if game.is_check(current_color):
         checked = "white" if current_color == PieceColor.WHITE else "black"
     await sio.emit("moved", room=room.id, data={ "is_game_over": False,"checked": checked,"room": room.to_dict()})
     return Response(False, message="Moved").to_dict()

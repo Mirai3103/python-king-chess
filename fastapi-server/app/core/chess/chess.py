@@ -71,13 +71,13 @@ class Chess(IChess):
     #
     def _is_attacked(self, x: int, y: int, color: PieceColor) -> bool:
     # Duyệt qua tất cả các ô trên bàn cờ
-        for i in range(8):
-            for j in range(8):
-            # Lấy quân cờ tại vị trí (i, j)
-                piece = self._board[i][j]
-            # Kiểm tra xem quân cờ này có phải là của đối phương và có thể tấn công ô (x, y) không
-                if piece.pieceColor != color and self._can_piece_attack(piece, (i, j), (x, y)):
-                   return True
+        # for i in range(8):
+        #     for j in range(8):
+        #     # Lấy quân cờ tại vị trí (i, j)
+        #         piece = self._board[i][j]
+        #     # Kiểm tra xem quân cờ này có phải là của đối phương và có thể tấn công ô (x, y) không
+        #         if piece.pieceColor != color and self._can_piece_attack(piece, (i, j), (x, y)):
+        #            return True
         return False
     def get_piece_color(self, cell: CellName) -> PieceColor:
         x, y = CellName.to_2d(cell)
@@ -90,10 +90,14 @@ class Chess(IChess):
     # Lấy tất cả các nước đi có thể của quân cờ
         if piece.pieceType == PieceType.EMPTY:
             return False
+        if piece_position[0] < 0 or piece_position[0] > 7 or piece_position[1] < 0 or piece_position[1] > 7:
+            return False
+        if target_position[0] < 0 or target_position[0] > 7 or target_position[1] < 0 or target_position[1] > 7:
+            return False
         moves = PIECES_STRATEGY[piece.pieceType].get_moves(self, piece_position)
     # Kiểm tra xem có nước đi nào đến vị trí mục tiêu không
         for move in moves:
-            if move._to == CellName.from_2d(target_position):
+            if move._to == CellName.from_2d(target_position[0], target_position[1]):
                return True
         return False
     #
