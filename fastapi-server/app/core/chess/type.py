@@ -134,7 +134,7 @@ class MoveType(str,Enum):
     EP_CAPTURE = 'e' # bắt quân qua đường
     PROMOTION = 'p' # phong cấp eg: tốt phong cấp thành hậu
     KSIDE_CASTLE = 'k' # nhập thành vua
-    QSIDE_CASTLE = 'q' # nhập thành tướng
+    QSIDE_CASTLE = 'q' # nhập thành hậu
     CAPTURE_AND_PROMOTION = 'cp' # bắt quân qua đường và phong cấp 
 
 
