@@ -11,7 +11,7 @@ class Chess(IChess):
     _history: list[InternalMove] = []
     _castling: Dict[PieceColor, Dict[str, bool]] = {
         PieceColor.WHITE: {'K': True, 'Q': True},
-        PieceColor.BLACK: {'k': True, 'q': True}
+        PieceColor.BLACK: {'K': True, 'Q': True}
     }
     _move_number: int = 0
     _ep_square: tuple[int, int] = None
@@ -43,24 +43,23 @@ class Chess(IChess):
         # return cloned
         cloned = Chess(self.fen())
         cloned._move(move)
-
         # Kiểm tra xem quân vua của mình có bị chiếu không
-        if cloned.is_check(cloned._turn):
-           print("King is in check after the move.")
+    #     if cloned.is_check(cloned._turn):
+    #        print("King is in check after the move.")
 
-        # Lấy vị trí của quân vua địch
-        enemy_king_position = None
-        for x in range(8):
-            for y in range(8):
-                if cloned._board[x][y].pieceType == PieceType.KING and cloned._board[x][y].pieceColor != cloned._turn:
-                   enemy_king_position = (x, y)
-                   break
-            if enemy_king_position:
-                break
+    #     # Lấy vị trí của quân vua địch
+    #     enemy_king_position = None
+    #     for x in range(8):
+    #         for y in range(8):
+    #             if cloned._board[x][y].pieceType == PieceType.KING and cloned._board[x][y].pieceColor != cloned._turn:
+    #                enemy_king_position = (x, y)
+    #                break
+    #         if enemy_king_position:
+    #             break
 
-    # Kiểm tra xem quân vua địch có bị chiếu không
-        if enemy_king_position and cloned._is_attacked(enemy_king_position[0], enemy_king_position[1], cloned._turn.swap()):
-            print("Enemy king is in check after the move.")
+    # # Kiểm tra xem quân vua địch có bị chiếu không
+    #     if enemy_king_position and cloned._is_attacked(enemy_king_position[0], enemy_king_position[1], cloned._turn.swap()):
+    #         print("Enemy king is in check after the move.")
 
         return cloned
         
@@ -110,7 +109,7 @@ class Chess(IChess):
         self._turn = PieceColor.WHITE if arr[1] == 'w' else PieceColor.BLACK
         self._castling = {
             PieceColor.WHITE: {'K': 'K' in arr[2], 'Q': 'Q' in arr[2]},
-            PieceColor.BLACK: {'k': 'k' in arr[2], 'q': 'q' in arr[2]}
+            PieceColor.BLACK: {'K': 'k' in arr[2], 'Q': 'q' in arr[2]}
         }
         self._move_number = int(arr[-1])
         self._history = []
@@ -151,44 +150,46 @@ class Chess(IChess):
         self._board[toX][toY] = self._board[fromX][fromY]
 
         # // nếu phong cấp, thay đổi quân cờ
+
         if move._moveType == MoveType.PROMOTION:
             self._board[toX][toY] = Piece(move._promotion, us)
         if move._moveType == MoveType.CAPTURE_AND_PROMOTION:
             self._board[toX][toY] = Piece(move._promotion, us)
             capture()
+        elif move._moveType == MoveType.QSIDE_CASTLE:
+            print("Chuyển xe từ", toX - 2, toY, "đến", toX + 1, toY)
+            self._board[toX + 1][toY] = Piece(PieceType.ROOK, us)
+            self._board[0][toY] = Piece()
+        elif move._moveType == MoveType.KSIDE_CASTLE:
+            print("Chuyển xe từ", toX + 1, toY, "đến", toX - 1, toY)
+            self._board[toX - 1][toY] = Piece(PieceType.ROOK, us)
+            self._board[7][toY] = Piece()
+        
         # // nếu ta di chuyển quân vua, tắt quyền nhập thành
-        key_castling_us_k = 'K' if us == PieceColor.WHITE else 'k'
-        key_castling_us_q = 'Q' if us == PieceColor.WHITE else 'q'
-        key_castling_them_k = 'k' if them == PieceColor.WHITE else 'K'
-        key_castling_them_q = 'q' if them == PieceColor.WHITE else 'Q'
+
 
         if self._board[toX][toY].pieceType == PieceType.KING:
 
-            self._castling[us] = {key_castling_us_k: False, key_castling_us_q: False}
-            if move._moveType == MoveType.KSIDE_CASTLE:
-                self._board[toX - 1][toY] = self._board[toX + 1][toY]
-                self._board[toX + 1][toY] = Piece()
-            elif move._moveType == MoveType.QSIDE_CASTLE:
-                self._board[toX + 1][toY] = self._board[toX - 2][toY]
-                self._board[toX - 2][toY] = Piece()
+            self._castling[us] = {'K': False, 'Q': False}
+
         # // tắt quyền nhập thành nếu ta di chuyển quân xe
 
         if self._board[fromX][fromY].pieceType == PieceType.ROOK:
             if fromX == 0 and fromY == 0:
-                self._castling[us][key_castling_us_q] = False
+                self._castling[us]["Q"] = False
             elif fromX == 7 and fromY == 0:
-                self._castling[us][key_castling_us_k] = False
+                self._castling[us]["K"] = False
             elif fromX == 0 and fromY == 7:
-                self._castling[us][key_castling_us_q] = False
+                self._castling[us]["Q"] = False
             elif fromX == 7 and fromY == 7:
-                self._castling[us][key_castling_us_k] = False
+                self._castling[us]["K"] = False
 
         # // tắt quyền nhập thành nếu ta ăn quân xe
         if self._board[toX][toY].pieceType == PieceType.ROOK:
             if toX == 0 and toY == 0:
-                self._castling[them][key_castling_them_q] = False
+                self._castling[them]["Q"] = False
             elif toX == 7 and toY == 0:
-                self._castling[them][key_castling_them_k] = False
+                self._castling[them]["K"] = False
         #  // cập nhật vị trí quân tốt nếu tốt di chuyển 2 ô
         if move._moveType == MoveType.BIG_PAWN:
             if us == PieceColor.WHITE:
@@ -238,9 +239,9 @@ class Chess(IChess):
             castling += 'K'
         if self._castling[PieceColor.WHITE]['Q']:
             castling += 'Q'
-        if self._castling[PieceColor.BLACK]['k']:
+        if self._castling[PieceColor.BLACK]['K']:
             castling += 'k'
-        if self._castling[PieceColor.BLACK]['q']:
+        if self._castling[PieceColor.BLACK]['Q']:
             castling += 'q'
         res += castling if castling else '-'
         res += ' '
