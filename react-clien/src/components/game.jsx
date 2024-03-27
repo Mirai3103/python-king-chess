@@ -73,7 +73,7 @@ export default function Game({ data }) {
     }
 
     function onStarted(data) {
-      gameState.setMyColor(data.white_id == socket.id ? "w" : "b");
+      gameState.setMyColor(data.white_id == socket.id ? "white" : "black");
       const {
         white_id,
         fen,
@@ -166,7 +166,7 @@ export default function Game({ data }) {
             onPieceDrop={(from, to, piece) => {
               const mycolor = gameState.myColor;
               console.log(mycolor, piece);
-              if (!piece.toLocaleLowerCase().startsWith(mycolor)) {
+              if (!piece.toLocaleLowerCase().startsWith(mycolor.charAt(0))) {
                 toast({
                   title: "Invalid move",
                   description: "It's not your piece",
@@ -177,7 +177,7 @@ export default function Game({ data }) {
                 });
                 return false;
               }
-              if (gameState.fen.split(" ")[1] != mycolor) {
+              if (gameState.fen.split(" ")[1] != mycolor.charAt(0)) {
                 toast({
                   title: "Invalid move",
                   description: "It's not your turn",
