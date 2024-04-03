@@ -152,7 +152,9 @@ export default function Game({ data }) {
       <Flex direction={"column"} rowGap={"4"}>
         <Flex justifyContent={"space-between"} fontSize={"2xl"}>
           <h2>
-            Người chơi: <chakra.span color={"red"}>Người chơi 2</chakra.span>
+            <chakra.span color={"red"}>
+              Đối thủ
+            </chakra.span>
           </h2>
           <Tag size="lg">
             {seccondsToTime(gameState.opponentRemainingTime || 0)}
@@ -213,7 +215,9 @@ export default function Game({ data }) {
         </chakra.div>
         <Flex justifyContent={"space-between"} fontSize={"2xl"}>
           <h2>
-            Người chơi: <chakra.span color={"red"}>Người chơi 1</chakra.span>
+            <chakra.span color={"red"}>
+              Bạn
+            </chakra.span>
           </h2>
           <Tag size="lg">{seccondsToTime(gameState.myRemainingTime || 0)}</Tag>
         </Flex>
