@@ -15,6 +15,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRoute } from './routes/__root'
 import { Route as TestImport } from './routes/test'
 import { Route as IndexImport } from './routes/index'
+import { Route as PlaywithbotIndexImport } from './routes/play_with_bot/index'
 import { Route as GameIndexImport } from './routes/game/index'
 import { Route as GameRoomIdImport } from './routes/game/$roomId'
 
@@ -36,6 +37,11 @@ const TestRoute = TestImport.update({
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PlaywithbotIndexRoute = PlaywithbotIndexImport.update({
+  path: '/play_with_bot/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -73,6 +79,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GameIndexImport
       parentRoute: typeof rootRoute
     }
+    '/play_with_bot/': {
+      preLoaderRoute: typeof PlaywithbotIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -84,6 +94,7 @@ export const routeTree = rootRoute.addChildren([
   AboutLazyRoute,
   GameRoomIdRoute,
   GameIndexRoute,
+  PlaywithbotIndexRoute,
 ])
 
 /* prettier-ignore-end */
