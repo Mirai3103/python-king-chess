@@ -7,11 +7,13 @@ import {
   Divider,
   Input,
   useToast,
+  useToken,
 } from "@chakra-ui/react";
 import { Chessboard } from "react-chessboard";
 import { DEFAULT_POSITION } from "chess.js";
 import { useNavigate } from "@tanstack/react-router";
 import {  socket } from "../shared/socket";
+
 
 export default function GameWithBot({data}) {
   const [fen, setFen] = React.useState(DEFAULT_POSITION);
@@ -19,6 +21,11 @@ export default function GameWithBot({data}) {
   const [boardWidth, setBoardWidth] = React.useState(400);
   const toast = useToast();
   const navigate = useNavigate();
+  const [green200,red200] = useToken(
+    'colors',
+    ['green.200','red.200']
+  )
+  
   React.useEffect(() => {
     if (rootBoardRef.current) {
       setBoardWidth(rootBoardRef.current.offsetHeight);
@@ -26,7 +33,9 @@ export default function GameWithBot({data}) {
   }, [rootBoardRef]);
   React.useEffect(() => {
     socket.on("update_fen", (data) => {
-     console.log(data);
+      
+      console.log(data);
+      const {fromSquare, toSquare} = data;
       setFen(data.fen);
     });
     return () => {
@@ -54,6 +63,7 @@ export default function GameWithBot({data}) {
         </Flex>
         <chakra.div flexGrow={1} ref={rootBoardRef}>
           <Chessboard
+            
             boardOrientation={data.myColor}
             boardWidth={boardWidth}
             position={fen || DEFAULT_POSITION}
