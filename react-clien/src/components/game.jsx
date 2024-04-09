@@ -193,7 +193,9 @@ export default function Game({ data }) {
               console.log(from, to, piece);
               const room_id = data.room.id;
               const payload = {
-                move: { from, to, piece },
+                move: { from, to, piece,
+                  promotion: piece[1].toLowerCase() ?? "q"
+                },
                 room_id,
                 remaining_time: gameState.myRemainingTime,
               };

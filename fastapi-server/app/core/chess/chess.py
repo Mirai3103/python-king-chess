@@ -257,10 +257,13 @@ class Chess(IChess):
         strategy = PIECES_STRATEGY[(self._board[x][y].pieceType)]
         return strategy.get_moves(self, CellName.to_2d(from_cell))
 
-    def move(self, from_cell: CellName, to_cell: CellName) -> InternalMove:
+    def move(self, from_cell: CellName, to_cell: CellName, promotion: str = 'q') -> InternalMove:
+        promotion= PieceType(promotion.lower())
         x, y = CellName.to_2d(from_cell)
         strategy = PIECES_STRATEGY[(self._board[x][y].pieceType)]
         move = strategy.check_move(self, CellName.to_2d(from_cell), CellName.to_2d(to_cell))
+        if move is not None and (move._moveType == MoveType.PROMOTION or move._moveType == MoveType.CAPTURE_AND_PROMOTION):
+            move._promotion = promotion
         if move is not None:
             self._move(move)
         return move

@@ -58,6 +58,7 @@ export default function GameWithBot({data}) {
             boardWidth={boardWidth}
             position={fen || DEFAULT_POSITION}
             onPieceDrop={(from, to, piece) => {
+              const promotion= piece[1].toLowerCase() ?? "q";
               const mycolor = data.myColor;
               if (!piece.toLocaleLowerCase().startsWith(mycolor.charAt(0))) {
                 toast({
@@ -82,9 +83,13 @@ export default function GameWithBot({data}) {
                 return false;
               }
               const payload = {
-                move: { from, to, piece },
+                move: { from, to, piece,
+                  promotion: promotion
+                 },
                 fen: fen,
+                promotion: promotion,
               };
+              console.log(payload);
               socket.emit("make_move_to_bot", payload, (data) => {
                 if (data&&data.is_error) {
                   toast({
