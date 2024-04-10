@@ -1,4 +1,7 @@
+import asyncio
+from time import sleep
 from typing import Optional
+from stockfish import Stockfish
 
 import uuid
 from chess import Board, IllegalMoveError, Move
@@ -12,6 +15,47 @@ sio = AsyncServer(async_mode='asgi', cors_allowed_origins=[])
 sio_app = ASGIApp(sio,
                   socketio_path='socket.io',
                   )
+
+
+
+@sio.event
+async def make_move_to_bot(sid, data):
+    fen = data["fen"]
+    move = data["move"]
+    game = chess.Chess()
+    game.load(fen)
+    moveRs=  game.move(CellName(move["from"]),CellName(move["to"]), move.get("promotion") if move.get("promotion") is not None else 'q')
+    if moveRs is None:
+        return Response(True, message="Nước đi không hợp lệ").to_dict()
+    current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK
+
+    
+    newFen = game.fen()
+    
+    async def get_move_from_bot_async( fen):
+        st= Stockfish(path="stockfish/windows/stockfish.exe",
+                        depth=1,
+                        parameters={
+                            "Threads": 1, "Minimum Thinking Time": 30
+                        }
+                        )
+        st.set_skill_level(1)
+        st.set_fen_position(fen)
+        bot_move = st.get_best_move()
+        st.make_moves_from_current_position([ bot_move])
+        newFen = st.get_fen_position()
+        return newFen, bot_move
+    promise= get_move_from_bot_async( newFen)
+    await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
+    print("waiting for bot move")
+    newFen, bot_move = await promise
+    game.load(newFen)
+    if game.is_check(current_color):
+        checked = "white" if current_color == PieceColor.WHITE else "black"
+    await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": bot_move})
+    print("bot move done")
+
+
 
 
 # todo: refactor this and implement your own logic
@@ -181,7 +225,7 @@ async def move(sid, data):
     to_square = move["to"]
 
 
-    moveRs=  game.move(CellName(from_square),CellName(to_square))
+    moveRs=  game.move(CellName(from_square),CellName(to_square), move.get("promotion") if move.get("promotion") is not None else 'q')
     if moveRs is None:
         return Response(True, message="Nước đi không hợp lệ").to_dict()
     

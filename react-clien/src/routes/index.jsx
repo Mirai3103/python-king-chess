@@ -61,7 +61,9 @@ function Index() {
         <chakra.h1 fontSize="3xl" textAlign={'center'}>
           Chào {display_name||" Bạn"}
         </chakra.h1>
-        <Button colorScheme="teal" size="lg">
+        <Button colorScheme="teal" size="lg" onClick={() => {
+          navigate({to: '/play_with_bot',search: {color: 'white'}});
+        }}>
           Chơi với máy
         </Button>
         <Button colorScheme="teal" size="lg" onClick={onOpen}>
@@ -116,6 +118,7 @@ function Index() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      
     </Grid>
   );
 }

@@ -37,9 +37,9 @@ class PawnStrategy(PieceStrategy):
         return moves
     def is_promotion(self, to_2d:tuple[int,int],color:PieceColor) -> bool:
         if color == PieceColor.WHITE:
-            return to_2d[1] == 7
-        else:
             return to_2d[1] == 0
+        else:
+            return to_2d[1] == 7
         
 
 
