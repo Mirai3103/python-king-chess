@@ -1,3 +1,5 @@
+
+
 from typing import Optional
 
 
@@ -31,15 +33,13 @@ class KingStrategy(PieceStrategy):
 
                 if not game.simulate_move(move).is_check(piece.pieceColor):
                     moves.append(move)
-
-        # Kiểm tra nhập thành (castling)
         if game._castling[piece.pieceColor]['K'] and board[fromX][fromY + 3].pieceType == PieceType.EMPTY and board[fromX][fromY + 2].pieceType == PieceType.EMPTY and board[fromX][fromY + 1].pieceType == PieceType.EMPTY:
-            move = InternalMove(CellName.from_2d(fromX, fromY), CellName.from_2d(fromX, fromY + 2), PieceType.KING, Piece(), piece, MoveType.CASTLING)
+            move = InternalMove(CellName.from_2d(fromX, fromY), CellName.from_2d(fromX+ 2, fromY ), PieceType.KING, Piece(), piece, MoveType.KSIDE_CASTLE)
             if not game.simulate_move(move).is_check(piece.pieceColor):
                 moves.append(move)
 
         if game._castling[piece.pieceColor]['Q'] and board[fromX][fromY - 3].pieceType == PieceType.EMPTY and board[fromX][fromY - 2].pieceType == PieceType.EMPTY and board[fromX][fromY - 1].pieceType == PieceType.EMPTY:
-            move = InternalMove(CellName.from_2d(fromX, fromY), CellName.from_2d(fromX, fromY - 2), PieceType.KING, Piece(), piece, MoveType.CASTLING)
+            move = InternalMove(CellName.from_2d(fromX, fromY), CellName.from_2d(fromX - 2, fromY), PieceType.KING, Piece(), piece, MoveType.QSIDE_CASTLE)
             if not game.simulate_move(move).is_check(piece.pieceColor):
                 moves.append(move)
 
@@ -51,4 +51,3 @@ class KingStrategy(PieceStrategy):
             if move._to == CellName.from_2d(*to_2d):
                 return move
         return None
-    
