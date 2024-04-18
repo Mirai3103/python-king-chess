@@ -259,6 +259,7 @@ class Chess(IChess):
         move = strategy.check_move(self, CellName.to_2d(from_cell), CellName.to_2d(to_cell))
         if move is not None and (move._moveType == MoveType.PROMOTION or move._moveType == MoveType.CAPTURE_AND_PROMOTION):
             move._promotion = promotion
+        
         if move is not None:
             self._move(move)
         return move

@@ -81,9 +81,13 @@ class RookStrategy(PieceStrategy):
                     if game._board[to_x][to_y].pieceColor == color:
                         break  # Gặp quân cờ cùng màu
                     move_type = MoveType.CAPTURE
-                    moves.append(InternalMove(CellName.from_2d(from_x, from_y), CellName.from_2d(to_x, to_y), PieceType.ROOK, Piece(), piece, move_type))
+                    move =InternalMove(CellName.from_2d(from_x, from_y), CellName.from_2d(to_x, to_y), PieceType.ROOK, Piece(), piece, move_type)
+                    if not game.simulate_move(move).is_check(color):
+                        moves.append(move)
                     break  # Gặp quân cờ đối phương, không thể đi tiếp
-                moves.append(InternalMove(CellName.from_2d(from_x, from_y), CellName.from_2d(to_x, to_y), PieceType.ROOK, Piece(), piece, MoveType.NORMAL))
+                move =InternalMove(CellName.from_2d(from_x, from_y), CellName.from_2d(to_x, to_y), PieceType.ROOK, Piece(), piece, MoveType.NORMAL)
+                if not game.simulate_move(move).is_check(color):
+                    moves.append(move)
         return moves
 
     def check_move(self, game: IChess, from_2d: tuple[int, int], to_2d: tuple[int, int]) -> Optional[InternalMove]:

@@ -4,7 +4,7 @@ from typing import Optional
 from stockfish import Stockfish
 
 import uuid
-from chess import Board, IllegalMoveError, Move
+from chess import Board, Color, IllegalMoveError, Move
 from socketio import AsyncServer, ASGIApp
 from app.core.chess import chess
 from app.core.chess.type import CellName, PieceColor
@@ -229,11 +229,11 @@ async def move(sid, data):
     if moveRs is None:
         return Response(True, message="Nước đi không hợp lệ").to_dict()
     
-    checked = None
-    current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK
 
-    if game.is_check(current_color):
-        checked = "white" if current_color == PieceColor.WHITE else "black"
-    await sio.emit("moved", room=room.id, data={ "is_game_over": False,"checked": checked,"room": room.to_dict()})
+    if game.is_check(PieceColor.WHITE):
+        await sio.emit("checked", room=room.id, data={"color": "white"})
+    if game.is_check(PieceColor.BLACK):
+        await sio.emit("checked", room=room.id, data={"color": "black"})
+    await sio.emit("moved", room=room.id, data={ "is_game_over": False,"checked": False,"room": room.to_dict()})
     return Response(False, message="Moved").to_dict()
     
