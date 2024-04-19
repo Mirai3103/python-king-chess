@@ -100,7 +100,8 @@ class QueenStrategy(PieceStrategy):
                     move_type = MoveType.CAPTURE
                     break  # Gặp quân cờ đối phương, không thể đi tiếp
                 move = InternalMove(CellName.from_2d(fromX, fromY), CellName.from_2d(toX, toY), PieceType.QUEEN, Piece(), piece, move_type)
-                moves.append(move)
+                if not game.simulate_move(move).is_check(piece.pieceColor):
+                    moves.append(move)
         return moves
 
     def check_move(self, game: IChess, from_2d: tuple[int, int], to_2d: tuple[int, int]) -> Optional[InternalMove]:

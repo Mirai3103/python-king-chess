@@ -113,7 +113,10 @@ class BishopStrategy(PieceStrategy):
                 if game.get_piece_type(CellName.from_2d(to_x, to_y)) != PieceType.EMPTY:
                     move_type = MoveType.CAPTURE
                     break  # Gặp quân cờ đối phương, không thể đi tiếp
-                moves.append(InternalMove(CellName.from_2d(from_x, from_y), CellName.from_2d(to_x, to_y), PieceType.BISHOP, Piece(), piece, move_type))
+                
+                move =InternalMove(CellName.from_2d(from_x, from_y), CellName.from_2d(to_x, to_y), PieceType.BISHOP, Piece(), piece, move_type)
+                if not game.simulate_move(move).is_check(piece.pieceColor):
+                    moves.append(move)
         return moves
 
     def check_move(self, game: IChess, from_2d: tuple[int, int], to_2d: tuple[int, int]) -> Optional[InternalMove]:

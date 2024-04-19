@@ -126,6 +126,33 @@ export default function Game({ data }) {
         to: "/",
       });
     }
+    
+    // if game.is_check(PieceColor.WHITE):
+    //     await sio.emit("checked", room=room.id, data={"color": "white"})
+    // if game.is_check(PieceColor.BLACK):
+    //     await sio.emit("checked", room=room.id, data={"color": "black"})
+    function onCheck(data) {
+      const mycolor = gameState.myColor;
+      if (data.color == mycolor) {
+        toast({
+          colorScheme: "red",
+          title: "Chiếu",
+          description: "Bạn bị chiếu tướng",
+          duration: 5000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          colorScheme: "red",
+          title: "Chiếu",
+          description: "Đối thủ bị chiếu tướng",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    }
+
+    socket.on("checked", onCheck);
     socket.on("a_player_left", onOpponentLeft);
     socket.on("game_over", onOver);
     socket.on("a_player_joined", onJoin);
@@ -137,6 +164,7 @@ export default function Game({ data }) {
       socket.off("game_started ", onStarted);
       socket.off("a_player_left", onOpponentLeft);
       socket.off("game_over", onOver);
+      socket.off("checked", onCheck);
     };
   }, []);
   return (
