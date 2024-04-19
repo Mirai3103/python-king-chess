@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
-
-export const socket = io("ws://127.0.0.1:1234", {
+const SOCKET_URL = window["SOCKET_URL"] || "ws://localhost:1234";
+export const socket = io(SOCKET_URL, {
   transports: ["websocket"],
 });
 socket.on("connect", () => {

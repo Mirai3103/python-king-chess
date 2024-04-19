@@ -69,10 +69,10 @@ function Index() {
         <Button colorScheme="teal" size="lg" onClick={onOpen}>
           Tạo phòng
         </Button>
-        <Button colorScheme="teal" size="lg">
+        <Button colorScheme="teal" size="lg" hidden>
           Tham gia phòng
         </Button>
-        <Button colorScheme="teal" size="lg" onClick={onOpenUserModal}>
+        <Button colorScheme="teal" size="lg" onClick={onOpenUserModal} hidden>
           Thông tin người chơi
         </Button>
       </Flex>
