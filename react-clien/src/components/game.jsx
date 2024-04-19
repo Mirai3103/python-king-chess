@@ -27,7 +27,11 @@ export default function Game({ data }) {
   };
   const renderMessages = () => {
     if (gameState.messages && gameState.messages.length > 0) {
-      return gameState.messages.map((msg, index) => (
+      console.log(gameState.messages);
+      let temp =[...gameState.messages]
+      temp = temp.reverse();
+      return temp
+      .map((msg, index) => (
         <Flex key={index} justifyContent={msg.sender === socket.id ? "flex-end" : "flex-start"}>
           <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
             {msg.message}
@@ -38,6 +42,7 @@ export default function Game({ data }) {
       return <p>No messages</p>;
     }
   };
+  const messageEl = renderMessages();
   //
   const rootBoardRef = React.useRef(null);
   const [boardWidth, setBoardWidth] = React.useState(400);
@@ -173,6 +178,10 @@ export default function Game({ data }) {
         });
       }
     }
+    socket.on("receive_message", (data) => {
+      console.log("receive_message", data);
+      gameState.addMessage(data);
+    });
 
     socket.on("checked", onCheck);
     socket.on("a_player_left", onOpponentLeft);
@@ -183,6 +192,7 @@ export default function Game({ data }) {
     //
     //
     return () => {
+      socket.off("receive_message");
       socket.off("moved", onMove);
       socket.off("joined", onJoin);
       socket.off("game_started ", onStarted);
@@ -281,19 +291,23 @@ export default function Game({ data }) {
       </Flex>
       <Flex direction={"column"} basis={"300px"} bg={"gray.900"} p={"2"}>
         <Flex gap={"2"} wrap={"wrap"} w={"100%"}>
-          <Button colorScheme="teal" size="sm">
+          <Button colorScheme="teal" size="sm"
+          onClick={() => {
+            navigator.clipboard.writeText(window.location.href);
+          }}
+          >
             Copy link
           </Button>
-          <Button colorScheme="teal" size="sm">
+          <Button colorScheme="teal" size="sm" hidden>
             Rời phòng
           </Button>
-          <Button colorScheme="teal" size="sm">
+          <Button colorScheme="teal" size="sm" hidden>
             Xin hòa
           </Button>
-          <Button colorScheme="teal" size="sm">
+          <Button colorScheme="teal" size="sm" hidden>
             Đầu hàng
           </Button>
-          <Button colorScheme="teal" size="sm">
+          <Button colorScheme="teal" size="sm" hidden>
             Xin hoàn nước
           </Button>
         </Flex>
@@ -309,13 +323,18 @@ export default function Game({ data }) {
               p={"2"}
               w={"100%"}
               flexGrow={1}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  sendMessage();
+                }
+              }}
             />
             <Button colorScheme="teal" h={"100%"} px={"5"} size="sm" onClick={sendMessage}>
               Gửi
             </Button>
           </Flex>
           <Flex direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
-          {renderMessages()}
+          {messageEl}
           </Flex>
           {/* <Flex justifyContent={"flex-end"} w={"100%"}>
             <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>

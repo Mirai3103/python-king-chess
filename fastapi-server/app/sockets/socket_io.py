@@ -147,6 +147,9 @@ async def create_invite(sid, data):
                 del rooms_dict[room.id]
     room_id = str(uuid.uuid4())
     await sio.enter_room(sid, room_id)
+    session = await sio.get_session(sid)
+    session['room_id'] = room_id
+
     new_room = Room()
     new_room.id = room_id
     new_room.player_1 = sid
@@ -180,6 +183,8 @@ async def join_invite(sid, data):
     if room.is_full():
         return Response(True, message="Room is full").to_dict()
     await sio.enter_room(sid, data)
+    session = await sio.get_session(sid)
+    session['room_id'] = data
     await sio.emit("a_player_joined", room=data)
     room.player_2 = sid
     room.game = chess.Chess()
@@ -238,9 +243,14 @@ async def move(sid, data):
     return Response(False, message="Moved").to_dict()
 #chat
 @sio.event
-async def chat(sid, message):
+async def send_message(sid, data):
     room = await sio.get_session(sid)
-    room_id = list(room['rooms'])[0]
-    print(room_id)
-    await sio.emit('chat', {'sid': sid, 'message': message}, room=room_id)
+    room_id = room.get("room_id")
+    message = data["message"]
+    if room_id is None:
+        return
+    await sio.emit("receive_message", room=room_id, data={
+        "sender": sid,
+        "message": message
+    })
 #chat    

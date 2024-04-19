@@ -5,11 +5,15 @@ export default function useGame({ remainingTime = 20 * 60 }) {
   const [fen, setFen] = React.useState(DEFAULT_POSITION);
   const [isGamePending, setIsGamePending] = React.useState(false);
   const [myRemainingTime, setMyRemainingTime] = React.useState(remainingTime);
+  const [messages, setMessages] = React.useState([]);
   const [opponentRemainingTime, setOpponentRemainingTime] =
     React.useState(remainingTime);
   const [myColor, setMyColor] = React.useState("white");
   const isMyTurn = myColor.toLowerCase().startsWith(fen.split(" ")[1]);
   const intervalRef = React.useRef(null);
+  function addMessage(message) {
+    setMessages((prev) => [...prev, message]);
+  }
   React.useEffect(() => {
     if (isGamePending) {
       if (isMyTurn) {
@@ -40,5 +44,7 @@ export default function useGame({ remainingTime = 20 * 60 }) {
     setIsGamePending,
     setMyColor,
     myColor,
+    addMessage,
+    messages,
   };
 }
