@@ -16,7 +16,29 @@ import { joinRoom, socket } from "../shared/socket";
 
 export default function Game({ data }) {
   const gameState = useGame({});
-
+  //
+  const sendMessage = () => {
+    const messageInput = document.getElementById("message-input");
+    const message = messageInput.value.trim();
+    if (message) {
+      socket.emit("send_message", { message });
+      messageInput.value = "";
+    }
+  };
+  const renderMessages = () => {
+    if (gameState.messages && gameState.messages.length > 0) {
+      return gameState.messages.map((msg, index) => (
+        <Flex key={index} justifyContent={msg.sender === socket.id ? "flex-end" : "flex-start"}>
+          <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
+            {msg.message}
+          </chakra.span>
+        </Flex>
+      ));
+    } else {
+      return <p>No messages</p>;
+    }
+  };
+  //
   const rootBoardRef = React.useRef(null);
   const [boardWidth, setBoardWidth] = React.useState(400);
   const toast = useToast();
@@ -158,6 +180,8 @@ export default function Game({ data }) {
     socket.on("a_player_joined", onJoin);
     socket.on("moved", onMove);
     socket.on("game_started", onStarted);
+    //
+    //
     return () => {
       socket.off("moved", onMove);
       socket.off("joined", onJoin);
@@ -167,6 +191,9 @@ export default function Game({ data }) {
       socket.off("checked", onCheck);
     };
   }, []);
+  //
+  
+  //
   return (
     <Flex
       direction={"row"}
@@ -275,6 +302,7 @@ export default function Game({ data }) {
         <Flex direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
           <Flex gap={1}>
             <Input
+              id="message-input"
               placeholder="Nhập tin nhắn"
               bg={"gray.800"}
               color={"white"}
@@ -282,11 +310,14 @@ export default function Game({ data }) {
               w={"100%"}
               flexGrow={1}
             />
-            <Button colorScheme="teal" h={"100%"} px={"5"} size="sm">
+            <Button colorScheme="teal" h={"100%"} px={"5"} size="sm" onClick={sendMessage}>
               Gửi
             </Button>
           </Flex>
-          <Flex justifyContent={"flex-end"} w={"100%"}>
+          <Flex direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
+          {renderMessages()}
+          </Flex>
+          {/* <Flex justifyContent={"flex-end"} w={"100%"}>
             <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
               Hello2
             </chakra.span>
@@ -295,7 +326,7 @@ export default function Game({ data }) {
             <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
               Hello
             </chakra.span>
-          </Flex>
+          </Flex> */}
         </Flex>
       </Flex>
     </Flex>

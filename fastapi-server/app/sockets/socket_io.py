@@ -2,14 +2,14 @@ import asyncio
 from time import sleep
 from typing import Optional
 from stockfish import Stockfish
-
+from app.dtos.response import Response
 import uuid
 from chess import Board, Color, IllegalMoveError, Move
 from socketio import AsyncServer, ASGIApp
 from app.core.chess import chess
 from app.core.chess.type import CellName, PieceColor
 from app.dtos.response import Response
-
+from typing import Tuple
 sio = AsyncServer(async_mode='asgi', cors_allowed_origins=[])
 
 sio_app = ASGIApp(sio,
@@ -237,15 +237,10 @@ async def move(sid, data):
     await sio.emit("moved", room=room.id, data={ "is_game_over": False,"checked": False,"room": room.to_dict()})
     return Response(False, message="Moved").to_dict()
 #chat
-@sio.on("chat_message")
-async def chat_message(sid, data):
-    room_id = data["room_id"]
-    message = data["message"]
-    await sio.emit("chat_message", message, room=room_id)
-
-@sio.on("send_message")
-async def send_message(sid, data):
-    room_id = data["room_id"]
-    message = data["message"]
-    await sio.emit("chat_message", message, room=room_id)
+@sio.event
+async def chat(sid, message):
+    room = await sio.get_session(sid)
+    room_id = list(room['rooms'])[0]
+    print(room_id)
+    await sio.emit('chat', {'sid': sid, 'message': message}, room=room_id)
 #chat    
