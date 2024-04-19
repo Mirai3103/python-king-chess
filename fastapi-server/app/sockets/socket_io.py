@@ -236,4 +236,16 @@ async def move(sid, data):
         checked = "white" if current_color == PieceColor.WHITE else "black"
     await sio.emit("moved", room=room.id, data={ "is_game_over": False,"checked": checked,"room": room.to_dict()})
     return Response(False, message="Moved").to_dict()
-    
+#chat
+@sio.on("chat_message")
+async def chat_message(sid, data):
+    room_id = data["room_id"]
+    message = data["message"]
+    await sio.emit("chat_message", message, room=room_id)
+
+@sio.on("send_message")
+async def send_message(sid, data):
+    room_id = data["room_id"]
+    message = data["message"]
+    await sio.emit("chat_message", message, room=room_id)
+#chat    
