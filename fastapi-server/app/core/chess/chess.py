@@ -16,7 +16,8 @@ class Chess(IChess):
     _move_number: int = 0
     _ep_square: tuple[int, int] = None
     _half_moves: int = 0
-
+    def is_game_over(self) -> bool:
+        pass
     def is_check(self, color: PieceColor) -> bool:
         for x in range(8):
             for y in range(8):
@@ -277,7 +278,7 @@ class Chess(IChess):
         for x in range(8):
             for y in range(8):
                 piece = self._board[x][y]
-                if piece.pieceColor == color:
+                if piece.pieceColor == color and piece.pieceType != PieceType.EMPTY:
                     moves = self.moves(CellName.from_2d(x, y))
                     for move in moves:
                         new_board = self.simulate_move(move)

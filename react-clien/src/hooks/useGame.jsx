@@ -1,5 +1,6 @@
 import { DEFAULT_POSITION } from "chess.js";
 import React from "react";
+import { socket } from "../shared/socket";
 
 export default function useGame({ remainingTime = 20 * 60 }) {
   const [fen, setFen] = React.useState(DEFAULT_POSITION);
@@ -18,7 +19,13 @@ export default function useGame({ remainingTime = 20 * 60 }) {
     if (isGamePending) {
       if (isMyTurn) {
         intervalRef.current = setInterval(() => {
-          setMyRemainingTime((prev) => prev - 1);
+          setMyRemainingTime((prev) => {
+            const newTime= prev - 1;
+            if(newTime <= 0){
+              socket.emit("my_time_out");
+            }
+            return newTime;
+          });
         }, 1000);
       } else {
         intervalRef.current = setInterval(() => {

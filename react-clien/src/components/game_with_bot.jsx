@@ -33,6 +33,16 @@ export default function GameWithBot({data}) {
   }, [rootBoardRef]);
   React.useEffect(() => {
     socket.on("update_fen", (data) => {
+      if(data.checked){
+        toast({
+          title: "Check",
+          description: "Bạn bị chiếu",
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+          colorScheme: "red",
+        });
+      }
       
       console.log(data);
       const {fromSquare, toSquare} = data;
