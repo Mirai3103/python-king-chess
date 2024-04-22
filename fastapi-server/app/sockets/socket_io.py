@@ -27,9 +27,7 @@ async def make_move_to_bot(sid, data):
     moveRs=  game.move(CellName(move["from"]),CellName(move["to"]), move.get("promotion") if move.get("promotion") is not None else 'q')
     if moveRs is None:
         return Response(True, message="Nước đi không hợp lệ").to_dict()
-    current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK
-
-    
+    current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK    
     newFen = game.fen()
     
     async def get_move_from_bot_async( fen):
@@ -204,7 +202,24 @@ async def time_out(sid, data):
     else:
         room.player_2_remaining_time = 0
     await sio.emit("time_out", room=room.id, data=room.to_dict())
+#is_over
+def check_game_over(room: Room) -> Tuple[bool, str]:
+    game = room.game
+    if game.is_checkmate(PieceColor.WHITE):
+        return True, "white"
+    if game.is_checkmate(PieceColor.BLACK):
+        return True, "black"
+    if game.is_stalemate(PieceColor.WHITE) or game.is_stalemate(PieceColor.BLACK):
+        return True, "draw"
+    if room.player_1_remaining_time <= 0 and room.player_2_remaining_time <= 0:
+        return True, "draw"
+    if room.player_1_remaining_time <= 0:
+        return True, "black"
+    if room.player_2_remaining_time <= 0:
+        return True, "white"
+    return False, ""
 
+#is_over
 @sio.on("move")
 async def move(sid, data):
     print(data)
@@ -239,9 +254,35 @@ async def move(sid, data):
         await sio.emit("checked", room=room.id, data={"color": "white"})
     if game.is_check(PieceColor.BLACK):
         await sio.emit("checked", room=room.id, data={"color": "black"})
-    await sio.emit("moved", room=room.id, data={ "is_game_over": False,"checked": False,"room": room.to_dict()})
-    return Response(False, message="Moved").to_dict()
+    is_over, winner = check_game_over(room)
+    if is_over:
+        await sio.emit("game_over", room=room.id, data={"winner": winner})
+        await sio.emit("stop_game", room=room.id)
+    else:
+        await sio.emit("moved", room=room.id, data={"is_game_over": False, "checked": False, "room": room.to_dict()})
+    return Response(False, message="Moved").to_dict()    
+    #await sio.emit("moved", room=room.id, data={ "is_game_over": False,"checked": False,"room": room.to_dict()})
+    #return Response(False, message="Moved").to_dict()
 #chat
+#over
+@sio.on("stop_game")
+async def stop_game(sid, data):
+    room_id = data["room_id"]
+    await sio.emit("stop_game", room=room_id)
+@sio.event
+async def checked(sid, data):
+    room_id = data["room_id"]
+    room = rooms_dict.get(room_id)
+    if room is not None:
+        await sio.emit("checked", room=room_id, data={"color": data["color"]})
+
+@sio.event
+async def game_over(sid, data):
+    room_id = data["room_id"]
+    room = rooms_dict.get(room_id)
+    if room is not None:
+        await sio.emit("game_over", room=room_id, data={"winner": data["winner"]})
+#over
 @sio.event
 async def send_message(sid, data):
     room = await sio.get_session(sid)

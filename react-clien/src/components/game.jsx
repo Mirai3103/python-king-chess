@@ -44,6 +44,17 @@ export default function Game({ data }) {
   };
   const messageEl = renderMessages();
   //
+  //over
+  const [gameStopped, setGameStopped] = React.useState(false);
+  React.useEffect(() => {
+    socket.on("stop_game", () => {
+      setGameStopped(true);
+    });
+    return () => {
+      socket.off("stop_game");
+    };
+  }, []);
+  //over
   const rootBoardRef = React.useRef(null);
   const [boardWidth, setBoardWidth] = React.useState(400);
   const toast = useToast();
@@ -140,18 +151,37 @@ export default function Game({ data }) {
         to: "/",
       });
     }
-    function onOver() {
+    // function onOver() {
+    //   gameState.setIsGamePending(false);
+    //   toast({
+    //     colorScheme: "red",
+    //     title: "Game over",
+    //     description: "Game over",
+    //     duration: 10000,
+    //     isClosable: true,
+    //   });
+    //   navigate({
+    //     to: "/",
+    //   });
+    // }
+    function onOver(data) {
       gameState.setIsGamePending(false);
+      let winner;
+      if (data.winner === "white") {
+        winner = "Đen";
+      } else if (data.winner === "black") {
+        winner = "Trắng";
+      } else {
+        winner = "Hòa";
+      }
       toast({
         colorScheme: "red",
-        title: "Game over",
-        description: "Game over",
+        title: "Kết thúc trò chơi",
+        description: `Trò chơi kết thúc! ${winner} thắng.`,
         duration: 10000,
         isClosable: true,
       });
-      navigate({
-        to: "/",
-      });
+      navigate("/");
     }
     
     // if game.is_check(PieceColor.WHITE):
@@ -231,6 +261,11 @@ export default function Game({ data }) {
             boardWidth={boardWidth}
             position={gameState.fen || DEFAULT_POSITION}
             onPieceDrop={(from, to, piece) => {
+              //
+              if (gameStopped) {
+                return false;
+              }
+              //
               const mycolor = gameState.myColor;
               console.log(mycolor, piece);
               if (!piece.toLocaleLowerCase().startsWith(mycolor.charAt(0))) {
@@ -344,11 +379,14 @@ export default function Game({ data }) {
           <Flex justifyContent={"flex-start"} w={"100%"}>
             <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
               Hello
-            </chakra.span>
+            </chakra.span> 
           </Flex> */}
         </Flex>
       </Flex>
     </Flex>
+    //#endregion
+    
+    //#region
   );
 }
 

@@ -192,3 +192,6 @@ class IChess:
     @abstractmethod
     def fen(self) -> str:
         pass
+    @abstractmethod
+    def is_stalemate(self, color: PieceColor) -> bool:
+        pass
