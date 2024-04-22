@@ -322,9 +322,10 @@ async def set_display_name(sid, data):
 
 
 @sio.on("my_time_out")
-async def my_time_out(sid, data):
+async def my_time_out(sid):
     session = await sio.get_session(sid)
     room_id = session.get("room_id")
+    print(room_id, "my_time_out")
     if room_id is None:
         return
     room=get_room(room_id)

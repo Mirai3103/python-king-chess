@@ -21,7 +21,7 @@ export default function useGame({ remainingTime = 20 * 60 }) {
         intervalRef.current = setInterval(() => {
           setMyRemainingTime((prev) => {
             const newTime= prev - 1;
-            if(newTime === 0){
+            if(newTime <= 0){
               socket.emit("my_time_out");
             }
             return newTime;
