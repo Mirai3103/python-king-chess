@@ -214,7 +214,7 @@ async def time_out(sid, data):
         room.player_2_remaining_time = 0
     await sio.emit("time_out", room=room.id, data=room.to_dict())
 #is_over
-def check_game_over(room: Room) -> Tuple[bool, str]:
+def check_game_over(room: Room) :
     game = room.game
     if game.is_checkmate(PieceColor.WHITE):
         return True, "white"
