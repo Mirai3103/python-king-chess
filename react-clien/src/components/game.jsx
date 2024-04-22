@@ -180,7 +180,8 @@ export default function Game({ data }) {
     //     await sio.emit("checked", room=room.id, data={"color": "black"})
     function onCheck(data) {
       const mycolor = gameState.myColor;
-      if (data.color == mycolor) {
+      console.log("checked", data.color, mycolor);
+      if (mycolor.toLowerCase().includes(data.color.toLowerCase()) ) {
         toast({
           colorScheme: "red",
           title: "Chiếu",
@@ -190,7 +191,7 @@ export default function Game({ data }) {
         });
       } else {
         toast({
-          colorScheme: "red",
+          colorScheme: "green",
           title: "Chiếu",
           description: "Đối thủ bị chiếu tướng",
           duration: 5000,
