@@ -278,7 +278,7 @@ class Chess(IChess):
         for x in range(8):
             for y in range(8):
                 piece = self._board[x][y]
-                if piece.pieceColor == color:
+                if piece.pieceColor == color and piece.pieceType != PieceType.EMPTY:
                     moves = self.moves(CellName.from_2d(x, y))
                     for move in moves:
                         new_board = self.simulate_move(move)
