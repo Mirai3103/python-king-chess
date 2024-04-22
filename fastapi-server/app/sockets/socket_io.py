@@ -257,6 +257,7 @@ async def move(sid, data):
     is_over, winner = check_game_over(room)
     if is_over:
         await sio.emit("game_over", room=room.id, data={"winner": winner})
+        await sio.emit("stop_game", room=room.id)
     else:
         await sio.emit("moved", room=room.id, data={"is_game_over": False, "checked": False, "room": room.to_dict()})
     return Response(False, message="Moved").to_dict()    
@@ -264,6 +265,10 @@ async def move(sid, data):
     #return Response(False, message="Moved").to_dict()
 #chat
 #over
+@sio.on("stop_game")
+async def stop_game(sid, data):
+    room_id = data["room_id"]
+    await sio.emit("stop_game", room=room_id)
 @sio.event
 async def checked(sid, data):
     room_id = data["room_id"]

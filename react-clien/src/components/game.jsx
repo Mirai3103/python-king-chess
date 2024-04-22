@@ -44,6 +44,17 @@ export default function Game({ data }) {
   };
   const messageEl = renderMessages();
   //
+  //over
+  const [gameStopped, setGameStopped] = React.useState(false);
+  React.useEffect(() => {
+    socket.on("stop_game", () => {
+      setGameStopped(true);
+    });
+    return () => {
+      socket.off("stop_game");
+    };
+  }, []);
+  //over
   const rootBoardRef = React.useRef(null);
   const [boardWidth, setBoardWidth] = React.useState(400);
   const toast = useToast();
@@ -250,6 +261,11 @@ export default function Game({ data }) {
             boardWidth={boardWidth}
             position={gameState.fen || DEFAULT_POSITION}
             onPieceDrop={(from, to, piece) => {
+              //
+              if (gameStopped) {
+                return false;
+              }
+              //
               const mycolor = gameState.myColor;
               console.log(mycolor, piece);
               if (!piece.toLocaleLowerCase().startsWith(mycolor.charAt(0))) {
