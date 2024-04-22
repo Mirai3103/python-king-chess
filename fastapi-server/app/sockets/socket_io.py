@@ -64,8 +64,8 @@ class Room:
     player_2: Optional[str] = None
     game: Optional[chess.Chess] = None
     white_id: Optional[str] = None
-    player_1_remaining_time: int = 15*60
-    player_2_remaining_time: int = 15*60
+    player_1_remaining_time: int = 1*60
+    player_2_remaining_time: int = 1*60
 
     def leave(self, sid):
         if self.player_1 == sid:
@@ -193,15 +193,32 @@ async def join_invite(sid, data):
 
 @sio.on("time_out")
 async def time_out(sid, data):
-    room = rooms_dict.get(data)
+    # room = rooms_dict.get(data)
+    # if room is None:
+    #     return Response(True, message="Room not found").to_dict()
+    # room = rooms_dict[room]
+    # if room.white_id == sid:
+    #     room.player_1_remaining_time = 0
+    # else:
+    #     room.player_2_remaining_time = 0
+    # await sio.emit("time_out", room=room.id, data=room.to_dict())
+    room_id = data["room_id"]
+    room = get_room(room_id)
     if room is None:
         return Response(True, message="Room not found").to_dict()
-    room = rooms_dict[room]
     if room.white_id == sid:
         room.player_1_remaining_time = 0
     else:
         room.player_2_remaining_time = 0
-    await sio.emit("time_out", room=room.id, data=room.to_dict())
+    is_over, winner = check_game_over(room)
+    print(is_over, winner)
+    if is_over:
+        await sio.emit("game_over", room=room_id, data={"winner": winner})
+        await sio.emit("stop_game", room=room_id)
+    else:
+        # Nếu trò chơi chưa kết thúc, cập nhật thông tin và gửi sự kiện 'time_out'
+        await sio.emit("time_out", room=room_id, data=room.to_dict())    
+    #await sio.emit("time_out", room=room_id, data=room.to_dict())
 #is_over
 def check_game_over(room: Room) -> Tuple[bool, str]:
     game = room.game
@@ -244,23 +261,22 @@ async def move(sid, data):
     from_square = move["from"]
     to_square = move["to"]
 
-
-    moveRs=  game.move(CellName(from_square),CellName(to_square), move.get("promotion") if move.get("promotion") is not None else 'q')
+    moveRs = game.move(CellName(from_square), CellName(to_square), move.get("promotion") if move.get("promotion") is not None else 'q')
     if moveRs is None:
         return Response(True, message="Nước đi không hợp lệ").to_dict()
     
-
     if game.is_check(PieceColor.WHITE):
         await sio.emit("checked", room=room.id, data={"color": "white"})
     if game.is_check(PieceColor.BLACK):
         await sio.emit("checked", room=room.id, data={"color": "black"})
+    
     is_over, winner = check_game_over(room)
     if is_over:
         await sio.emit("game_over", room=room.id, data={"winner": winner})
         await sio.emit("stop_game", room=room.id)
     else:
         await sio.emit("moved", room=room.id, data={"is_game_over": False, "checked": False, "room": room.to_dict()})
-    return Response(False, message="Moved").to_dict()    
+    return Response(False, message="Moved").to_dict()
     #await sio.emit("moved", room=room.id, data={ "is_game_over": False,"checked": False,"room": room.to_dict()})
     #return Response(False, message="Moved").to_dict()
 #chat
