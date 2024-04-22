@@ -140,12 +140,17 @@ export default function Game({ data }) {
         to: "/",
       });
     }
-    function onOver() {
+  //   sio.emit("game_over", room=room_id, data={
+  //     "winner": room.player_1 if room.player_2 == sid else room.player_2,
+  //     "color": "white" if room.player_1 == sid else "black"
+  // })
+
+    function onOver(data) {
       gameState.setIsGamePending(false);
       toast({
         colorScheme: "red",
-        title: "Game over",
-        description: "Game over",
+        title: `Game over`,
+        description: `${data.winner==socket.id?"Bạn":"Đối thủ"} thắng`,
         duration: 10000,
         isClosable: true,
       });
@@ -153,6 +158,7 @@ export default function Game({ data }) {
         to: "/",
       });
     }
+ 
     
     // if game.is_check(PieceColor.WHITE):
     //     await sio.emit("checked", room=room.id, data={"color": "white"})
@@ -218,7 +224,11 @@ export default function Game({ data }) {
         <Flex justifyContent={"space-between"} fontSize={"2xl"}>
           <h2>
             <chakra.span color={"red"}>
-              Đối thủ
+              {
+                (socket.id == data.player_2?
+                data.room.player_2_name:
+                data.room.player_1_name)||"Đối thủ"
+              }
             </chakra.span>
           </h2>
           <Tag size="lg">
@@ -283,7 +293,11 @@ export default function Game({ data }) {
         <Flex justifyContent={"space-between"} fontSize={"2xl"}>
           <h2>
             <chakra.span color={"red"}>
-              Bạn
+              {
+                (socket.id == data.player_1?
+                data.room.player_1_name:
+                data.room.player_2_name)||"Bạn"
+              }
             </chakra.span>
           </h2>
           <Tag size="lg">{seccondsToTime(gameState.myRemainingTime || 0)}</Tag>
@@ -336,16 +350,7 @@ export default function Game({ data }) {
           <Flex direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
           {messageEl}
           </Flex>
-          {/* <Flex justifyContent={"flex-end"} w={"100%"}>
-            <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
-              Hello2
-            </chakra.span>
-          </Flex>
-          <Flex justifyContent={"flex-start"} w={"100%"}>
-            <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
-              Hello
-            </chakra.span>
-          </Flex> */}
+      
         </Flex>
       </Flex>
     </Flex>

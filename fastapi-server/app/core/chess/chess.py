@@ -16,7 +16,8 @@ class Chess(IChess):
     _move_number: int = 0
     _ep_square: tuple[int, int] = None
     _half_moves: int = 0
-
+    def is_game_over(self) -> bool:
+        pass
     def is_check(self, color: PieceColor) -> bool:
         for x in range(8):
             for y in range(8):

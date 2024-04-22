@@ -72,7 +72,7 @@ function Index() {
         <Button colorScheme="teal" size="lg" hidden>
           Tham gia phòng
         </Button>
-        <Button colorScheme="teal" size="lg" onClick={onOpenUserModal} hidden>
+        <Button colorScheme="teal" size="lg" onClick={onOpenUserModal} >
           Thông tin người chơi
         </Button>
       </Flex>
@@ -90,6 +90,9 @@ function Index() {
           <ModalFooter>
             <Button colorScheme='blue' mr={3} onClick={() => {
               setDisplayName(inputRef.current.value)
+              socket.emit('set_display_name', {
+                name: inputRef.current.value
+              })
               onCloseUserModal()
             }}>
               Lưu

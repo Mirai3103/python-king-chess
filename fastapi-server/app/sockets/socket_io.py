@@ -1,15 +1,15 @@
-import asyncio
+import socket
 from time import sleep
 from typing import Optional
+from sqlalchemy import true
 from stockfish import Stockfish
 from app.dtos.response import Response
 import uuid
-from chess import Board, Color, IllegalMoveError, Move
+
 from socketio import AsyncServer, ASGIApp
 from app.core.chess import chess
 from app.core.chess.type import CellName, PieceColor
 from app.dtos.response import Response
-from typing import Tuple
 sio = AsyncServer(async_mode='asgi', cors_allowed_origins=[])
 
 sio_app = ASGIApp(sio,
@@ -42,17 +42,20 @@ async def make_move_to_bot(sid, data):
         st.set_skill_level(1)
         st.set_fen_position(fen)
         bot_move = st.get_best_move()
+        
         st.make_moves_from_current_position([ bot_move])
         newFen = st.get_fen_position()
         return newFen, bot_move
-    promise= get_move_from_bot_async( newFen)
+    promise= get_move_from_bot_async(newFen)
     await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
     print("waiting for bot move")
     newFen, bot_move = await promise
     game.load(newFen)
+    checked = False
     if game.is_check(current_color):
-        checked = "white" if current_color == PieceColor.WHITE else "black"
-    await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": bot_move})
+        checked =True
+    
+    await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": bot_move, "checked": checked})
     print("bot move done")
 
 
@@ -61,14 +64,17 @@ async def make_move_to_bot(sid, data):
 # todo: refactor this and implement your own logic
 
 class Room:
-    id: str
-    player_1: Optional[str] = None
-    player_2: Optional[str] = None
-    game: Optional[chess.Chess] = None
-    white_id: Optional[str] = None
-    player_1_remaining_time: int = 15*60
-    player_2_remaining_time: int = 15*60
-
+  
+    def __init__(self) -> None:
+        self.id: str
+        self.player_1: Optional[str] = None
+        self.player_2: Optional[str] = None
+        self.game: Optional[chess.Chess] = None
+        self.white_id: Optional[str] = None
+        self.player_1_remaining_time: int = 15*60
+        self.player_2_remaining_time: int = 15*60
+        self.player_1_name: str = ""
+        self.player_2_name: str = ""
     def leave(self, sid):
         if self.player_1 == sid:
             self.player_1 = None
@@ -93,7 +99,9 @@ class Room:
             "fen": self.game.fen() if self.game is not None else None,
             "white_id": self.white_id,
             "player_1_remaining_time": self.player_1_remaining_time,
-            "player_2_remaining_time": self.player_2_remaining_time
+            "player_2_remaining_time": self.player_2_remaining_time,
+            "player_1_name": self.player_1_name,
+            "player_2_name": self.player_2_name
         }
     
 
@@ -154,6 +162,7 @@ async def create_invite(sid, data):
     new_room.id = room_id
     new_room.player_1 = sid
     new_room.white_id = sid if am_i_white else None
+    new_room.player_1_name = session.get("display_name", "")
 
     rooms_dict[room_id] = new_room
     return Response(False, data={"room_id": room_id}, message="Room created").to_dict()
@@ -189,6 +198,7 @@ async def join_invite(sid, data):
     room.player_2 = sid
     room.game = chess.Chess()
     room.white_id = room.white_id if room.white_id is not None else sid
+    room.player_2_name = session.get("display_name", "")
     await sio.emit("game_started", room=room.id, data=room.to_dict())
     print(f"emit game_started {room.id}")
     return Response(False, message="Joined room").to_dict()
@@ -237,8 +247,10 @@ async def move(sid, data):
 
     if game.is_check(PieceColor.WHITE):
         await sio.emit("checked", room=room.id, data={"color": "white"})
+        # // kiểm tra có phải chiếu hết không
     if game.is_check(PieceColor.BLACK):
         await sio.emit("checked", room=room.id, data={"color": "black"})
+        # // kiểm tra có phải chiếu hết không
     await sio.emit("moved", room=room.id, data={ "is_game_over": False,"checked": False,"room": room.to_dict()})
     return Response(False, message="Moved").to_dict()
 #chat
@@ -253,4 +265,25 @@ async def send_message(sid, data):
         "sender": sid,
         "message": message
     })
-#chat    
+
+
+@sio.on("set_display_name")
+async def set_display_name(sid, data):
+    session = await sio.get_session(sid)
+    session['display_name'] = data["name"]
+
+
+
+@sio.on("my_time_out")
+async def my_time_out(sid, data):
+    session = await sio.get_session(sid)
+    room_id = session.get("room_id")
+    if room_id is None:
+        return
+    room=get_room(room_id)
+    sio.emit("game_over", room=room_id, data={
+        "winner": room.player_1 if room.player_2 == sid else room.player_2,
+        "color": "white" if room.player_1 == sid else "black"
+    })
+
+    
