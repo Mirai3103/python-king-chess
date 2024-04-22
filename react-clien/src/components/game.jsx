@@ -44,6 +44,17 @@ export default function Game({ data }) {
   };
   const messageEl = renderMessages();
   //
+  //over
+  const [gameStopped, setGameStopped] = React.useState(false);
+  React.useEffect(() => {
+    socket.on("stop_game", () => {
+      setGameStopped(true);
+    });
+    return () => {
+      socket.off("stop_game");
+    };
+  }, []);
+  //over
   const rootBoardRef = React.useRef(null);
   const [boardWidth, setBoardWidth] = React.useState(400);
   const toast = useToast();
@@ -140,23 +151,26 @@ export default function Game({ data }) {
         to: "/",
       });
     }
-  //   sio.emit("game_over", room=room_id, data={
-  //     "winner": room.player_1 if room.player_2 == sid else room.player_2,
-  //     "color": "white" if room.player_1 == sid else "black"
-  // })
-
     function onOver(data) {
       gameState.setIsGamePending(false);
+      let winner;
+      if (data.winner === "white") {
+        winner = "Đen";
+      } else if (data.winner === "black") {
+        winner = "Trắng";
+      } else {
+        winner = "Hòa";
+      }
+      // title: `Game over`,
+      // description: `${data.winner==socket.id?"Bạn":"Đối thủ"} thắng`,
       toast({
         colorScheme: "red",
-        title: `Game over`,
-        description: `${data.winner==socket.id?"Bạn":"Đối thủ"} thắng`,
+        title: "Kết thúc trò chơi",
+        description: `Trò chơi kết thúc! ${winner} thắng.`,
         duration: 10000,
         isClosable: true,
       });
-      navigate({
-        to: "/",
-      });
+      navigate("/");
     }
  
     
@@ -241,6 +255,11 @@ export default function Game({ data }) {
             boardWidth={boardWidth}
             position={gameState.fen || DEFAULT_POSITION}
             onPieceDrop={(from, to, piece) => {
+              //
+              if (gameStopped) {
+                return false;
+              }
+              //
               const mycolor = gameState.myColor;
               console.log(mycolor, piece);
               if (!piece.toLocaleLowerCase().startsWith(mycolor.charAt(0))) {
@@ -350,10 +369,12 @@ export default function Game({ data }) {
           <Flex direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
           {messageEl}
           </Flex>
-      
         </Flex>
       </Flex>
     </Flex>
+    //#endregion
+    
+    //#region
   );
 }
 

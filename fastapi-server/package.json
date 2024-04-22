@@ -15,7 +15,9 @@
     "vite": "^5.1.4"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
     "alpinejs": "^3.13.5",
-    "preline": "^2.0.3"
+    "preline": "^2.0.3",
+    "react-chessboard": "^4.5.0"
   }
 }

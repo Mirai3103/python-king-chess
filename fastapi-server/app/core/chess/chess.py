@@ -273,3 +273,15 @@ class Chess(IChess):
         self.load(DEFAULT_FEN_POSITION)
         for move in self._history:
             self._move(move)
+    #        
+    def is_stalemate(self, color: PieceColor) -> bool:
+        for x in range(8):
+            for y in range(8):
+                piece = self._board[x][y]
+                if piece.pieceColor == color:
+                    moves = self.moves(CellName.from_2d(x, y))
+                    for move in moves:
+                        new_board = self.simulate_move(move)
+                        if not new_board.is_check(color):
+                            return False
+        return True        
