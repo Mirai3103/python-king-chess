@@ -68,8 +68,8 @@ class Room:
     player_2: Optional[str] = None
     game: Optional[chess.Chess] = None
     white_id: Optional[str] = None
-    player_1_remaining_time: int = 0.5*60
-    player_2_remaining_time: int = 0.5*60
+    player_1_remaining_time: int = 15*60
+    player_2_remaining_time: int = 15*60
 
     def leave(self, sid):
         if self.player_1 == sid:
