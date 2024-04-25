@@ -284,12 +284,23 @@ class Chess(IChess):
                         new_board = self.simulate_move(move)
                         if not new_board.is_check(color):
                             return False
-        return True  
+        return True 
+    def is_checkmate(self, color: PieceColor) -> bool:
+        for x in range(8):
+            for y in range(8):
+                piece = self._board[x][y]
+                if piece.pieceColor == color and piece.pieceType != PieceType.EMPTY:
+                    moves = self.moves(CellName.from_2d(x, y))
+                    for move in moves:
+                        new_board = self.simulate_move(move)
+                        if not new_board.is_check(color):
+                            return False
+        return True 
     def is_game_over(self):
-         return (
+        return (
         self.is_checkmate(PieceColor.WHITE)
         or self.is_checkmate(PieceColor.BLACK)
         or self.is_stalemate(PieceColor.WHITE)
         or self.is_stalemate(PieceColor.BLACK)
-        )
+    )
       

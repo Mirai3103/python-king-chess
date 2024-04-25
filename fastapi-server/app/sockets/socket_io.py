@@ -242,10 +242,12 @@ async def emit_time_out(room_id, room):
 def check_game_over(room: Room) :
     game = room.game
     if game.is_checkmate(PieceColor.WHITE):
-        return True, "white"
-    if game.is_checkmate(PieceColor.BLACK):
         return True, "black"
-    if game.is_stalemate(PieceColor.WHITE) or game.is_stalemate(PieceColor.BLACK):
+    if game.is_checkmate(PieceColor.BLACK):
+        return True, "white"
+    if game.is_stalemate(PieceColor.WHITE):
+        return True, "draw"
+    if game.is_stalemate(PieceColor.BLACK):
         return True, "draw"
     if room.player_1_remaining_time <= 0 and room.player_2_remaining_time <= 0:
         return True, "draw"
