@@ -45,6 +45,26 @@ export default function Game({ data }) {
   };
   const messageEl = renderMessages();
   //
+  const surrenderGame = () => {
+    const confirmSurrender = window.confirm("Bạn có chắc chắn muốn đầu hàng?");
+    if (confirmSurrender) {
+      const room_id = data.room.id;
+      socket.emit("surrender", { room_id }, (data) => {
+        if (data.is_error) {
+          toast({
+            title: "Lỗi",
+            description: data.message,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            colorScheme: "red",
+          });
+        } else {
+          navigate("/");
+        }
+      });
+    }
+  };
   //over
   const [gameStopped, setGameStopped] = React.useState(false);
   React.useEffect(() => {
@@ -347,7 +367,7 @@ export default function Game({ data }) {
           <Button colorScheme="teal" size="sm" hidden>
             Xin hòa
           </Button>
-          <Button colorScheme="teal" size="sm" hidden>
+          <Button colorScheme="teal" size="sm" onClick={surrenderGame}>
             Đầu hàng
           </Button>
           <Button colorScheme="teal" size="sm" hidden>

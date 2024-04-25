@@ -210,6 +210,7 @@ async def time_out(sid, data):
     # else:
     #     room.player_2_remaining_time = 0
     # await sio.emit("time_out", room=room.id, data=room.to_dict())
+    #
     room_id = data["room_id"]
     room = get_room(room_id)
     if room is None:
@@ -245,7 +246,18 @@ def check_game_over(room: Room) :
         return True, "black"
     if room.player_2_remaining_time <= 0:
         return True, "white"
-    return False, ""
+    if game.is_check(PieceColor.WHITE) or game.is_check(PieceColor.BLACK):
+        return False, ""
+    # Kiểm tra nếu có người chơi đầu hàng
+    if game.is_game_over():
+        if game.is_check(PieceColor.WHITE):
+            return True, "black"
+        elif game.is_check(PieceColor.BLACK):
+            return True, "white"
+        else:
+            return True, "draw"
+    else:
+        return False, ""
 
 #is_over
 @sio.on("move")
