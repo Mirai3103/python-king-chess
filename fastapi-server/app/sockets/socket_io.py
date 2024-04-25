@@ -45,17 +45,24 @@ async def make_move_to_bot(sid, data):
         st.make_moves_from_current_position([ bot_move])
         newFen = st.get_fen_position()
         return newFen, bot_move
-    promise= get_move_from_bot_async(newFen)
-    await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
-    print("waiting for bot move")
-    newFen, bot_move = await promise
+    #promise= get_move_from_bot_async(newFen)
+    #await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
+    #print("waiting for bot move")
+    #newFen, bot_move = await promise
+    newFen, bot_move=await get_move_from_bot_async(newFen)
     game.load(newFen)
     checked = False
     if game.is_check(current_color):
         checked =True
     
+    # await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": bot_move, "checked": checked})
+    # print("bot move done")
+    #
+    await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
+    print("waiting for bot move")
     await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": bot_move, "checked": checked})
     print("bot move done")
+    #
 
 
 
@@ -63,17 +70,14 @@ async def make_move_to_bot(sid, data):
 # todo: refactor this and implement your own logic
 
 class Room:
-  
-    def __init__(self) -> None:
-        self.id: str
-        self.player_1: Optional[str] = None
-        self.player_2: Optional[str] = None
-        self.game: Optional[chess.Chess] = None
-        self.white_id: Optional[str] = None
-        self.player_1_remaining_time: int = 15*60
-        self.player_2_remaining_time: int = 15*60
-        self.player_1_name: str = ""
-        self.player_2_name: str = ""
+    id: str
+    player_1: Optional[str] = None
+    player_2: Optional[str] = None
+    game: Optional[chess.Chess] = None
+    white_id: Optional[str] = None
+    player_1_remaining_time: int = 15*60
+    player_2_remaining_time: int = 15*60
+
     def leave(self, sid):
         if self.player_1 == sid:
             self.player_1 = None
@@ -204,23 +208,46 @@ async def join_invite(sid, data):
 
 @sio.on("time_out")
 async def time_out(sid, data):
-    room = rooms_dict.get(data)
+    # room = rooms_dict.get(data)
+    # if room is None:
+    #     return Response(True, message="Room not found").to_dict()
+    # room = rooms_dict[room]
+    # if room.white_id == sid:
+    #     room.player_1_remaining_time = 0
+    # else:
+    #     room.player_2_remaining_time = 0
+    # await sio.emit("time_out", room=room.id, data=room.to_dict())
+    #
+    room_id = data["room_id"]
+    room = get_room(room_id)
     if room is None:
         return Response(True, message="Room not found").to_dict()
-    room = rooms_dict[room]
     if room.white_id == sid:
         room.player_1_remaining_time = 0
     else:
         room.player_2_remaining_time = 0
-    await sio.emit("time_out", room=room.id, data=room.to_dict())
+    is_over, winner = check_game_over(room)
+    print(is_over, winner,'1',sid)
+    if is_over:
+        await sio.emit("game_over", room=room_id, data={"winner": winner})
+        await sio.emit("stop_game", room=room_id)
+    else:
+        #await sio.emit("time_out", room=room_id, data=room.to_dict())    
+        await emit_time_out(room_id, room)
+    #await sio.emit("time_out", room=room_id, data=room.to_dict())
 #is_over
+async def emit_time_out(room_id, room):
+    print(room_id,room.to_dict())
+    await sio.emit("time_out", room=room_id, data=room.to_dict())
 def check_game_over(room: Room) :
     game = room.game
     if game.is_checkmate(PieceColor.WHITE):
-        return True, "white"
-    if game.is_checkmate(PieceColor.BLACK):
         return True, "black"
-    if game.is_stalemate(PieceColor.WHITE) or game.is_stalemate(PieceColor.BLACK):
+    if game.is_checkmate(PieceColor.BLACK):
+        return True, "white"
+    if game.is_stalemate(PieceColor.WHITE):
+        return True, "draw"
+    if game.is_stalemate(PieceColor.BLACK):
         return True, "draw"
     if room.player_1_remaining_time <= 0 and room.player_2_remaining_time <= 0:
         return True, "draw"
@@ -228,7 +255,18 @@ def check_game_over(room: Room) :
         return True, "black"
     if room.player_2_remaining_time <= 0:
         return True, "white"
-    return False, ""
+    if game.is_check(PieceColor.WHITE) or game.is_check(PieceColor.BLACK):
+        return False, ""
+    # Kiểm tra nếu có người chơi đầu hàng
+    if game.is_game_over():
+        if game.is_check(PieceColor.WHITE):
+            return True, "black"
+        elif game.is_check(PieceColor.BLACK):
+            return True, "white"
+        else:
+            return True, "draw"
+    else:
+        return False, ""
 
 #is_over
 @sio.on("move")
@@ -255,12 +293,10 @@ async def move(sid, data):
     from_square = move["from"]
     to_square = move["to"]
 
-
-    moveRs=  game.move(CellName(from_square),CellName(to_square), move.get("promotion") if move.get("promotion") is not None else 'q')
+    moveRs = game.move(CellName(from_square), CellName(to_square), move.get("promotion") if move.get("promotion") is not None else 'q')
     if moveRs is None:
         return Response(True, message="Nước đi không hợp lệ").to_dict()
     
-
     if game.is_check(PieceColor.WHITE):
         await sio.emit("checked", room=room.id, data={"color": "white"})
         # // kiểm tra có phải chiếu hết không
@@ -276,11 +312,8 @@ async def move(sid, data):
             await sio.emit("game_over", room=room.id, data={"winner": winner})
             await sio.emit("stop_game", room=room.id)
     
-    
-    
     await sio.emit("moved", room=room.id, data={"is_game_over": False, "checked": False, "room": room.to_dict()})
-    return Response(False, message="Moved").to_dict()    
-    
+    return Response(False, message="Moved").to_dict()      
 #chat
 #over
 @sio.on("stop_game")
@@ -323,15 +356,47 @@ async def set_display_name(sid, data):
 
 @sio.on("my_time_out")
 async def my_time_out(sid):
+    # session = await sio.get_session(sid)
+    # room_id = session.get("room_id")
+    # print(room_id, "my_time_out")
+    # if room_id is None:
+    #     return
+    # room=get_room(room_id)
+    # #error:RuntimeWarning: coroutine 'AsyncServer.emit' was never awaited
+    # sio.emit("game_over", room=room_id, data={
+    #     "winner": room.player_1 if room.player_2 == sid else room.player_2,
+    #     "color": "white" if room.player_1 == sid else "black"
+    # })
     session = await sio.get_session(sid)
     room_id = session.get("room_id")
     print(room_id, "my_time_out")
     if room_id is None:
         return
-    room=get_room(room_id)
-    sio.emit("game_over", room=room_id, data={
-        "winner": room.player_1 if room.player_2 == sid else room.player_2,
-        "color": "white" if room.player_1 == sid else "black"
-    })
+    room = get_room(room_id)
+    if room is None:
+        return Response(True, message="Room not found").to_dict()
+    winner = room.player_1 if room.player_2 == sid else room.player_2
+    color = "white" if room.player_1 == sid else "black"
+    await sio.emit("game_over", room=room_id, data={"winner": winner, "color": color})
+@sio.event
+async def update_room_list(sid, data):
+    rooms_data = [room.to_dict() for room in rooms_dict.values()]
+    await sio.emit("update_room_list", room=sid, data=rooms_data)
 
-  
+@sio.on("surrender")
+async def surrender(sid, data):
+    room_id = data["room_id"]
+    room = get_room(room_id)
+    if room is None:
+        return Response(True, message="Room not found").to_dict()
+    if room.player_1 == sid:
+        room.player_1_remaining_time = 0
+    else:
+        room.player_2_remaining_time = 0
+    is_over, winner = check_game_over(room)
+    if is_over:
+        await sio.emit("game_over", room=room_id, data={"winner": winner})
+        await sio.emit("stop_game", room=room_id)
+    else:
+        await emit_time_out(room_id, room)
+    await sio.emit("update_fen", room=room_id, data=room.to_dict())  

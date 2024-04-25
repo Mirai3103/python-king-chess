@@ -13,6 +13,7 @@ import { DEFAULT_POSITION } from "chess.js";
 import useGame from "../hooks/useGame";
 import { useNavigate } from "@tanstack/react-router";
 import { joinRoom, socket } from "../shared/socket";
+//import { useHistory } from "react-router-dom";
 
 export default function Game({ data }) {
   const gameState = useGame({});
@@ -44,6 +45,26 @@ export default function Game({ data }) {
   };
   const messageEl = renderMessages();
   //
+  const surrenderGame = () => {
+    const confirmSurrender = window.confirm("Bạn có chắc chắn muốn đầu hàng?");
+    if (confirmSurrender) {
+      const room_id = data.room.id;
+      socket.emit("surrender", { room_id }, (data) => {
+        if (data.is_error) {
+          toast({
+            title: "Lỗi",
+            description: data.message,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            colorScheme: "red",
+          });
+        } else {
+          navigate("/");
+        }
+      });
+    }
+  };
   //over
   const [gameStopped, setGameStopped] = React.useState(false);
   React.useEffect(() => {
@@ -59,6 +80,7 @@ export default function Game({ data }) {
   const [boardWidth, setBoardWidth] = React.useState(400);
   const toast = useToast();
   const navigate = useNavigate();
+  //const history = useHistory();
   React.useEffect(() => {
     if (rootBoardRef.current) {
       setBoardWidth(rootBoardRef.current.offsetHeight);
@@ -152,6 +174,7 @@ export default function Game({ data }) {
       });
     }
     function onOver(data) {
+      console.log(data.winner+"--over")
       gameState.setIsGamePending(false);
       let winner;
       if (data.winner === "white") {
@@ -161,23 +184,29 @@ export default function Game({ data }) {
       } else {
         winner = "Hòa";
       }
-      // title: `Game over`,
-      // description: `${data.winner==socket.id?"Bạn":"Đối thủ"} thắng`,
+      let description;
+      if (data.winner === "draw") {
+        description = "Trận đấu hòa.";
+      } else {
+        description = `Trò chơi kết thúc! ${winner} thắng.`;
+      }
       toast({
         colorScheme: "red",
         title: "Kết thúc trò chơi",
-        description: `Trò chơi kết thúc! ${winner} thắng.`,
+        description: description,
         duration: 10000,
         isClosable: true,
+        // onCloseComplete: () => {
+        //   history.push("/");
+        // },
       });
-      navigate("/");
+      setTimeout(() => {
+        const confirmQuit = window.confirm("Bạn có muốn quay lại trang chủ?");
+        if (confirmQuit) {
+          navigate("/");
+        }
+      }, 10000);
     }
- 
-    
-    // if game.is_check(PieceColor.WHITE):
-    //     await sio.emit("checked", room=room.id, data={"color": "white"})
-    // if game.is_check(PieceColor.BLACK):
-    //     await sio.emit("checked", room=room.id, data={"color": "black"})
     function onCheck(data) {
       const mycolor = gameState.myColor;
       console.log("checked", data.color, mycolor);
@@ -210,8 +239,6 @@ export default function Game({ data }) {
     socket.on("a_player_joined", onJoin);
     socket.on("moved", onMove);
     socket.on("game_started", onStarted);
-    //
-    //
     return () => {
       socket.off("receive_message");
       socket.off("moved", onMove);
@@ -222,9 +249,6 @@ export default function Game({ data }) {
       socket.off("checked", onCheck);
     };
   }, []);
-  //
-  
-  //
   return (
     <Flex
       direction={"row"}
@@ -338,7 +362,7 @@ export default function Game({ data }) {
           <Button colorScheme="teal" size="sm" hidden>
             Xin hòa
           </Button>
-          <Button colorScheme="teal" size="sm" hidden>
+          <Button colorScheme="teal" size="sm" onClick={surrenderGame}>
             Đầu hàng
           </Button>
           <Button colorScheme="teal" size="sm" hidden>
