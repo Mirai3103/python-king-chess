@@ -45,17 +45,24 @@ async def make_move_to_bot(sid, data):
         st.make_moves_from_current_position([ bot_move])
         newFen = st.get_fen_position()
         return newFen, bot_move
-    promise= get_move_from_bot_async(newFen)
-    await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
-    print("waiting for bot move")
-    newFen, bot_move = await promise
+    #promise= get_move_from_bot_async(newFen)
+    #await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
+    #print("waiting for bot move")
+    #newFen, bot_move = await promise
+    newFen, bot_move=await get_move_from_bot_async(newFen)
     game.load(newFen)
     checked = False
     if game.is_check(current_color):
         checked =True
     
+    # await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": bot_move, "checked": checked})
+    # print("bot move done")
+    #
+    await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
+    print("waiting for bot move")
     await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": bot_move, "checked": checked})
     print("bot move done")
+    #
 
 
 
@@ -305,8 +312,6 @@ async def move(sid, data):
     
     await sio.emit("moved", room=room.id, data={"is_game_over": False, "checked": False, "room": room.to_dict()})
     return Response(False, message="Moved").to_dict()      
-    #await sio.emit("moved", room=room.id, data={ "is_game_over": False,"checked": False,"room": room.to_dict()})
-    #return Response(False, message="Moved").to_dict()
 #chat
 #over
 @sio.on("stop_game")
@@ -371,5 +376,8 @@ async def my_time_out(sid):
     winner = room.player_1 if room.player_2 == sid else room.player_2
     color = "white" if room.player_1 == sid else "black"
     await sio.emit("game_over", room=room_id, data={"winner": winner, "color": color})
-
+@sio.event
+async def update_room_list(sid, data):
+    rooms_data = [room.to_dict() for room in rooms_dict.values()]
+    await sio.emit("update_room_list", room=sid, data=rooms_data)
   

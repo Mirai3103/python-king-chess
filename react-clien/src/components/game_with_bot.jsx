@@ -1,39 +1,26 @@
-import React from "react";
-import {
-  Flex,
-  Button,
-  chakra,
-  Tag,
-  Divider,
-  Input,
-  useToast,
-  useToken,
-} from "@chakra-ui/react";
+import React, { useState, useEffect, useRef } from "react";
+import { Flex, Button, chakra, Divider, useToast } from "@chakra-ui/react";
 import { Chessboard } from "react-chessboard";
 import { DEFAULT_POSITION } from "chess.js";
 import { useNavigate } from "@tanstack/react-router";
-import {  socket } from "../shared/socket";
+import { socket } from "../shared/socket";
 
-
-export default function GameWithBot({data}) {
-  const [fen, setFen] = React.useState(DEFAULT_POSITION);
-  const rootBoardRef = React.useRef(null);
-  const [boardWidth, setBoardWidth] = React.useState(400);
+export default function GameWithBot({ data }) {
+  const [fen, setFen] = useState(DEFAULT_POSITION);
+  const rootBoardRef = useRef(null);
+  const [boardWidth, setBoardWidth] = useState(400);
   const toast = useToast();
   const navigate = useNavigate();
-  const [green200,red200] = useToken(
-    'colors',
-    ['green.200','red.200']
-  )
-  
-  React.useEffect(() => {
+
+  useEffect(() => {
     if (rootBoardRef.current) {
       setBoardWidth(rootBoardRef.current.offsetHeight);
     }
   }, [rootBoardRef]);
-  React.useEffect(() => {
-    socket.on("update_fen", (data) => {
-      if(data.checked){
+
+  useEffect(() => {
+    const handleUpdateFen = (data) => {
+      if (data.checked) {
         toast({
           title: "Check",
           description: "Bạn bị chiếu",
@@ -43,16 +30,42 @@ export default function GameWithBot({data}) {
           colorScheme: "red",
         });
       }
-      
-      console.log(data);
-      const {fromSquare, toSquare} = data;
-      setFen(data.fen);
-    });
-    return () => {
-      socket.off("update_fen");
+
+      // const { fromSquare, toSquare } = data;
+      // setFen(data.fen);
+      if(data && data.fen){
+        setFen(data.fen);
+      }
     };
 
-    }, []);
+    const handleGameOver = (data) => {
+      let message;
+      if (data.winner === 'white') message = "Bạn đã thắng";
+      else if (data.winner === 'black') message = "Bạn đã thua";
+      else message = "Hòa";
+
+      toast({
+        title: "Kết quả",
+        description: message,
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+        colorScheme: "blue",
+      });
+
+      // Đặt trạng thái fen thành null để ngăn trận đấu tiếp tục
+      setFen(null);
+    };
+
+    socket.on("update_fen", handleUpdateFen);
+    socket.on("game_over", handleGameOver);
+
+    return () => {
+      socket.off("update_fen", handleUpdateFen);
+      socket.off("game_over", handleGameOver);
+    };
+  }, []);
+
   return (
     <Flex
       direction={"row"}
@@ -66,21 +79,24 @@ export default function GameWithBot({data}) {
       <Flex direction={"column"} rowGap={"4"}>
         <Flex justifyContent={"space-between"} fontSize={"2xl"}>
           <h2>
-            <chakra.span color={"red"}>
-              Stockfish
-            </chakra.span>
+            <chakra.span color={"red"}>Stockfish</chakra.span>
           </h2>
         </Flex>
         <chakra.div flexGrow={1} ref={rootBoardRef}>
           <Chessboard
-            
             boardOrientation={data.myColor}
             boardWidth={boardWidth}
             position={fen || DEFAULT_POSITION}
             onPieceDrop={(from, to, piece) => {
-              const promotion= piece[1].toLowerCase() ?? "q";
+              // Thêm điều kiện kiểm tra fen khác null
+              if (!fen) {
+                return false;
+              }
+
+              const promotion = piece[1]?.toLowerCase() ?? "q";
               const mycolor = data.myColor;
-              if (!piece.toLocaleLowerCase().startsWith(mycolor.charAt(0))) {
+
+              if (!piece.toLowerCase().startsWith(mycolor.charAt(0))) {
                 toast({
                   title: "Invalid move",
                   description: "It's not your piece",
@@ -91,7 +107,8 @@ export default function GameWithBot({data}) {
                 });
                 return false;
               }
-              if (fen.split(" ")[1] != mycolor.charAt(0)) {
+
+              if (fen.split(" ")[1] !== mycolor.charAt(0)) {
                 toast({
                   title: "Invalid move",
                   description: "It's not your turn",
@@ -102,16 +119,15 @@ export default function GameWithBot({data}) {
                 });
                 return false;
               }
+
               const payload = {
-                move: { from, to, piece,
-                  promotion: promotion
-                 },
+                move: { from, to, piece, promotion: promotion },
                 fen: fen,
                 promotion: promotion,
               };
-              console.log(payload);
+
               socket.emit("make_move_to_bot", payload, (data) => {
-                if (data&&data.is_error) {
+                if (data && data.is_error) {
                   toast({
                     title: "Lỗi",
                     description: data.message,
@@ -127,47 +143,22 @@ export default function GameWithBot({data}) {
         </chakra.div>
         <Flex justifyContent={"space-between"} fontSize={"2xl"}>
           <h2>
-            <chakra.span color={"red"}>
-              Bạn
-            </chakra.span>
+            <chakra.span color={"red"}>Bạn</chakra.span>
           </h2>
         </Flex>
       </Flex>
       <Flex direction={"column"} basis={"300px"} bg={"gray.900"} p={"2"}>
         <Flex gap={"2"} wrap={"wrap"} w={"100%"}>
-          <Button colorScheme="teal" size="sm" onClick={() => navigate("/")}>
+          <Button
+            colorScheme="teal"
+            size="sm"
+            onClick={() => navigate("/")}
+          >
             Quay lại trang chủ
           </Button>
         </Flex>
         <Divider my={"4"} orientation="horizontal" />
-        {/* <chakra.h3 fontSize={"xl"}>Chat</chakra.h3>
-        <Flex direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
-          <Flex gap={1}>
-            <Input
-              placeholder="Nhập tin nhắn"
-              bg={"gray.800"}
-              color={"white"}
-              p={"2"}
-              w={"100%"}
-              flexGrow={1}
-            />
-            <Button colorScheme="teal" h={"100%"} px={"5"} size="sm">
-              Gửi
-            </Button>
-          </Flex>
-          <Flex justifyContent={"flex-end"} w={"100%"}>
-            <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
-              Hello2
-            </chakra.span>
-          </Flex>
-          <Flex justifyContent={"flex-start"} w={"100%"}>
-            <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
-              Hello
-            </chakra.span>
-          </Flex>
-        </Flex> */}
       </Flex>
     </Flex>
   );
 }
-

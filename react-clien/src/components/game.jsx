@@ -239,8 +239,6 @@ export default function Game({ data }) {
     socket.on("a_player_joined", onJoin);
     socket.on("moved", onMove);
     socket.on("game_started", onStarted);
-    //
-    //
     return () => {
       socket.off("receive_message");
       socket.off("moved", onMove);
@@ -251,9 +249,6 @@ export default function Game({ data }) {
       socket.off("checked", onCheck);
     };
   }, []);
-  //
-  
-  //
   return (
     <Flex
       direction={"row"}
