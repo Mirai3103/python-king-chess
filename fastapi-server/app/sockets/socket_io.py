@@ -380,4 +380,21 @@ async def my_time_out(sid):
 async def update_room_list(sid, data):
     rooms_data = [room.to_dict() for room in rooms_dict.values()]
     await sio.emit("update_room_list", room=sid, data=rooms_data)
-  
+
+@sio.on("surrender")
+async def surrender(sid, data):
+    room_id = data["room_id"]
+    room = get_room(room_id)
+    if room is None:
+        return Response(True, message="Room not found").to_dict()
+    if room.player_1 == sid:
+        room.player_1_remaining_time = 0
+    else:
+        room.player_2_remaining_time = 0
+    is_over, winner = check_game_over(room)
+    if is_over:
+        await sio.emit("game_over", room=room_id, data={"winner": winner})
+        await sio.emit("stop_game", room=room_id)
+    else:
+        await emit_time_out(room_id, room)
+    await sio.emit("update_fen", room=room_id, data=room.to_dict())  
