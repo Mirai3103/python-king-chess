@@ -43,7 +43,10 @@ export default function GameWithBot({ data }) {
       if (data.winner === 'white') message = "Bạn đã thắng";
       else if (data.winner === 'black') message = "Bạn đã thua";
       else message = "Hòa";
-
+      setTimeout(() => {
+        window.alert('Kết thúc trận đấu. Bạn sẽ được chuyển về trang chủ ');
+        window.location.href = "/";
+      }, 5000);
       toast({
         title: "Kết quả",
         description: message,
