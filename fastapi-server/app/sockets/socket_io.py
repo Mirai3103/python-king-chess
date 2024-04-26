@@ -234,7 +234,7 @@ async def time_out(sid, data):
     else:
         #await sio.emit("time_out", room=room_id, data=room.to_dict())    
         await emit_time_out(room_id, room)
-    #await sio.emit("time_out", room=room_id, data=room.to_dict())
+    await sio.emit("time_out", room=room_id, data=room.to_dict())
 #is_over
 async def emit_time_out(room_id, room):
     print(room_id,room.to_dict())
