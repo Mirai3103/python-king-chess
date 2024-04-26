@@ -198,7 +198,7 @@ export default function Game({ data }) {
       setTimeout(() => {
         const confirmQuit = window.confirm("Bạn có muốn quay lại trang chủ?");
         if (confirmQuit) {
-          navigate("/");
+        window.location.href = "/";
         }
       }, 10000);
     }
@@ -235,6 +235,7 @@ export default function Game({ data }) {
     socket.on("moved", onMove);
     socket.on("game_started", onStarted);
     return () => {
+      // gỡ bỏ các sự kiện socket
       socket.off("receive_message");
       socket.off("moved", onMove);
       socket.off("joined", onJoin);
@@ -242,6 +243,9 @@ export default function Game({ data }) {
       socket.off("a_player_left", onOpponentLeft);
       socket.off("game_over", onOver);
       socket.off("checked", onCheck);
+      socket.off("stop_game");
+      socket.off("checked");
+      socket.off("a_player_left");
     };
   }, [data, gameState, navigate]);
 
