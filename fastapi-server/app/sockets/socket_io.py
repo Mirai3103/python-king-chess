@@ -27,7 +27,7 @@ async def make_move_to_bot(sid, data):
         return Response(True, message="Nước đi không hợp lệ").to_dict()
     current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK    
     newFen = game.fen()
-    
+    await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
     async def get_move_from_bot_async( fen):
         st= Stockfish(path="stockfish/windows/stockfish.exe",
                         depth=1,
@@ -49,17 +49,20 @@ async def make_move_to_bot(sid, data):
     newFen, bot_move=await get_move_from_bot_async(newFen)
     game.load(newFen)
     checked = False
+    winner = None
+    is_over = False
     if game.is_check(current_color):
         checked =True
-    
-    # await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": bot_move, "checked": checked})
-    # print("bot move done")
-    #
-    await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
+        if game.is_game_over():
+            winner = "white" if current_color == PieceColor.BLACK else "black"
+            is_over = True
+            
+    if is_over:
+        await sio.emit("game_over", room=sid, data={"winner": winner})
     print("waiting for bot move")
     await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": bot_move, "checked": checked})
+    
     print("bot move done")
-    #
 
 
 
