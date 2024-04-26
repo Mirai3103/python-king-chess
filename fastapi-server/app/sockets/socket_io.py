@@ -1,8 +1,5 @@
-from ast import Tuple
-import socket
-from time import sleep
+
 from typing import Optional
-from sqlalchemy import true
 from stockfish import Stockfish
 from app.dtos.response import Response
 import uuid
@@ -94,7 +91,9 @@ class Room:
 
     def is_in_room(self, sid):
         return self.player_1 == sid or self.player_2 == sid
-    def to_dict(self):
+    async def to_dict(self):
+        sio1Session =await sio.get_session(self.player_1)
+        sio2Session =await sio.get_session(self.player_2)
         return {
             "id": self.id,
             "player_1": self.player_1,
@@ -103,8 +102,8 @@ class Room:
             "white_id": self.white_id,
             "player_1_remaining_time": self.player_1_remaining_time,
             "player_2_remaining_time": self.player_2_remaining_time,
-            "player_1_name": self.player_1_name,
-            "player_2_name": self.player_2_name
+            "player_1_name": sio1Session.get("display_name", ""),
+            "player_2_name": sio2Session.get("display_name", "")
         }
     
 
@@ -115,6 +114,18 @@ rooms_dict: dict[str, Room] = {}
 def get_room(room_id: str) -> Optional[Room]:
     return rooms_dict.get(room_id)
 
+
+@sio.event
+async def get_current_room(sid):
+    print("get_current_room")
+    session = await sio.get_session(sid)
+    room_id = session.get("room_id")
+    if room_id is None:
+        return Response(True, message="You are not in a room").to_dict()
+    room = rooms_dict.get(room_id)
+    if room is None:
+        return Response(True, message="Room not found").to_dict()
+    return Response(False, data=await room.to_dict()).to_dict()
 
 @sio.event
 async def connect(sid, environ):
@@ -182,7 +193,7 @@ async def start_game(sid, data):
         return Response(True, message="You are not the host").to_dict()
     if room.is_full():
         room.game = chess.Chess()
-        sio.emit("game_started", room=room.id, data=room.to_dict())
+        sio.emit("game_started", room=room.id, data=await room.to_dict())
         return Response(False, message="Game started").to_dict()
     return Response(True, message="Room is not full").to_dict()
 
@@ -202,7 +213,7 @@ async def join_invite(sid, data):
     room.game = chess.Chess()
     room.white_id = room.white_id if room.white_id is not None else sid
     room.player_2_name = session.get("display_name", "")
-    await sio.emit("game_started", room=room.id, data=room.to_dict())
+    await sio.emit("game_started", room=room.id, data=await room.to_dict())
     print(f"emit game_started {room.id}")
     return Response(False, message="Joined room").to_dict()
 
@@ -237,8 +248,8 @@ async def time_out(sid, data):
     #await sio.emit("time_out", room=room_id, data=room.to_dict())
 #is_over
 async def emit_time_out(room_id, room):
-    print(room_id,room.to_dict())
-    await sio.emit("time_out", room=room_id, data=room.to_dict())
+
+    await sio.emit("time_out", room=room_id, data=await room.to_dict())
 def check_game_over(room: Room) :
     game = room.game
     if game.is_checkmate(PieceColor.WHITE):
@@ -312,7 +323,7 @@ async def move(sid, data):
             await sio.emit("game_over", room=room.id, data={"winner": winner})
             await sio.emit("stop_game", room=room.id)
     
-    await sio.emit("moved", room=room.id, data={"is_game_over": False, "checked": False, "room": room.to_dict()})
+    await sio.emit("moved", room=room.id, data={"is_game_over": False, "checked": False, "room":await room.to_dict()})
     return Response(False, message="Moved").to_dict()      
 #chat
 #over
@@ -347,8 +358,9 @@ async def send_message(sid, data):
     })
 
 
-@sio.on("set_display_name")
+@sio.event
 async def set_display_name(sid, data):
+    print('set_display_name', data)
     session = await sio.get_session(sid)
     session['display_name'] = data["name"]
 
@@ -380,7 +392,7 @@ async def my_time_out(sid):
     await sio.emit("game_over", room=room_id, data={"winner": winner, "color": color})
 @sio.event
 async def update_room_list(sid, data):
-    rooms_data = [room.to_dict() for room in rooms_dict.values()]
+    rooms_data = [await room.to_dict() for room in rooms_dict.values()]
     await sio.emit("update_room_list", room=sid, data=rooms_data)
 
 @sio.on("surrender")
@@ -399,4 +411,4 @@ async def surrender(sid, data):
         await sio.emit("stop_game", room=room_id)
     else:
         await emit_time_out(room_id, room)
-    await sio.emit("update_fen", room=room_id, data=room.to_dict())  
+    await sio.emit("update_fen", room=room_id, data= await room.to_dict())  

@@ -17,7 +17,7 @@ import { joinRoom, socket } from "../shared/socket";
 
 export default function Game({ data }) {
   const gameState = useGame({});
-  //
+  const [roomData, setRoomData] = React.useState(data.room);
   const sendMessage = () => {
     const messageInput = document.getElementById("message-input");
     const message = messageInput.value.trim();
@@ -123,6 +123,10 @@ export default function Game({ data }) {
     }
     function onJoin(data) {
       console.log("joined", data);
+      socket.emit("get_current_room", (data) => {
+        console.log("get_current_room", data);
+        setRoomData(data.data);
+      });
       toast({
         colorScheme: "teal",
         title: "Joined",
@@ -131,9 +135,9 @@ export default function Game({ data }) {
         isClosable: true,
       });
     }
-
     function onStarted(data) {
       gameState.setMyColor(data.white_id == socket.id ? "white" : "black");
+     
       const {
         white_id,
         fen,
@@ -155,7 +159,7 @@ export default function Game({ data }) {
       toast({
         colorScheme: "teal",
         title: "Started",
-        description: white_id == socket.id ? "You are white" : "You are black",
+        description: white_id == socket.id ? "Bạn chơi trắng" : "Bạn chơi đen",
         duration: 10000,
         isClosable: true,
       });
@@ -164,8 +168,8 @@ export default function Game({ data }) {
       console.log("opponent left", data);
       toast({
         colorScheme: "red",
-        title: "Opponent left",
-        description: "Opponent left the game",
+        title: "Đối thủ rời khỏi trò chơi",
+        description: "Đối thủ đã rời khỏi trò chơi",
         duration: 10000,
         isClosable: true,
       });
@@ -240,6 +244,17 @@ export default function Game({ data }) {
       socket.off("checked", onCheck);
     };
   }, [data, gameState, navigate]);
+
+  function getOpponentName() {
+    return socket.id == roomData?.player_1
+      ? roomData?.player_2_name
+      : roomData?.player_1_name;
+  }
+  function getMyName() {
+    return socket.id == roomData?.player_1
+      ? roomData?.player_1_name
+      : roomData?.player_2_name;
+  }
   return (
     <Flex
       direction={"row"}
@@ -255,9 +270,7 @@ export default function Game({ data }) {
           <h2>
             <chakra.span color={"red"}>
               {
-                (socket.id == data.player_2?
-                data.room.player_2_name:
-                data.room.player_1_name)||"Đối thủ"
+               getOpponentName()||"Đối thủ"
               }
             </chakra.span>
           </h2>
@@ -329,9 +342,7 @@ export default function Game({ data }) {
           <h2>
             <chakra.span color={"red"}>
               {
-                (socket.id == data.player_1?
-                data.room.player_1_name:
-                data.room.player_2_name)||"Bạn"
+                getMyName()||"Bạn"
               }
             </chakra.span>
           </h2>
