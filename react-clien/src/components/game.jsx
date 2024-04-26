@@ -176,14 +176,7 @@ export default function Game({ data }) {
     function onOver(data) {
       console.log(data.winner+"--over")
       gameState.setIsGamePending(false);
-      let winner;
-      if (data.winner === "white") {
-        winner = "Đen";
-      } else if (data.winner === "black") {
-        winner = "Trắng";
-      } else {
-        winner = "Hòa";
-      }
+      let winner= data.winner === "white" ? 'Trắng' : 'Đen';
       let description;
       if (data.winner === "draw") {
         description = "Trận đấu hòa.";
@@ -196,9 +189,7 @@ export default function Game({ data }) {
         description: description,
         duration: 10000,
         isClosable: true,
-        // onCloseComplete: () => {
-        //   history.push("/");
-        // },
+     
       });
       setTimeout(() => {
         const confirmQuit = window.confirm("Bạn có muốn quay lại trang chủ?");
@@ -210,7 +201,7 @@ export default function Game({ data }) {
     function onCheck(data) {
       const mycolor = gameState.myColor;
       console.log("checked", data.color, mycolor);
-      if (mycolor.toLowerCase().includes(data.color.toLowerCase()) ) {
+      if (mycolor.trim()===data.color.trim()) {
         toast({
           colorScheme: "red",
           title: "Chiếu",
@@ -248,7 +239,7 @@ export default function Game({ data }) {
       socket.off("game_over", onOver);
       socket.off("checked", onCheck);
     };
-  }, []);
+  }, [data, gameState, navigate]);
   return (
     <Flex
       direction={"row"}
