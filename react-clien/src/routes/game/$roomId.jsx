@@ -11,7 +11,7 @@ export const Route = createFileRoute("/game/$roomId")({
   component: Index,
   loader: async ({ params }) => {
     const roomId = params.roomId;
-    const res = await axios.get(`${window['API_URL']||'http://localhost:1234'}/api/room/${roomId}`);
+    const res = await axios.get(`${process.env.API_URL||'http://localhost:1234'}/api/room/${roomId}`);
     const isError = res.data.is_error;
     console.log(res.data);
     return {
