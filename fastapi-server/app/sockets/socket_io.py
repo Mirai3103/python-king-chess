@@ -415,3 +415,4 @@ async def surrender(sid, data):
     else:
         await emit_time_out(room_id, room)
     await sio.emit("update_fen", room=room_id, data= await room.to_dict())  
+    
