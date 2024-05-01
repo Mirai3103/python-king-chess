@@ -3,6 +3,7 @@ from typing import Optional
 from stockfish import Stockfish
 from app.dtos.response import Response
 import uuid
+import os
 
 from socketio import AsyncServer, ASGIApp
 from app.core.chess import chess
@@ -29,7 +30,12 @@ async def make_move_to_bot(sid, data):
     newFen = game.fen()
     await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
     async def get_move_from_bot_async( fen):
-        st= Stockfish(path="stockfish/windows/stockfish.exe",
+        isWindows = os.name == 'nt'
+        if isWindows:
+            path = "stockfish/windows/stockfish.exe"
+        else:
+            path = "stockfish/linux/stockfish"
+        st= Stockfish(path=path,
                         depth=1,
                         parameters={
                             "Threads": 1, "Minimum Thinking Time": 30
