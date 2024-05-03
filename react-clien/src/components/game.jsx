@@ -259,6 +259,13 @@ export default function Game({ data }) {
       ? roomData?.player_1_name
       : roomData?.player_2_name;
   }
+  const chatBoxRef = React.useRef(null);
+  React.useEffect(() => {
+    if(chatBoxRef.current){
+      const height = chatBoxRef.current.clientHeight-20;
+      chatBoxRef.current.style.maxHeight = height + "px";
+    }
+  },[])
   return (
     <Flex
       direction={"row"}
@@ -397,7 +404,10 @@ export default function Game({ data }) {
               Gửi
             </Button>
           </Flex>
-          <Flex direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
+          <Flex overflowY={'auto'}
+          ref={chatBoxRef}
+              paddingRight={2}
+          direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
           {messageEl}
           </Flex>
         </Flex>
