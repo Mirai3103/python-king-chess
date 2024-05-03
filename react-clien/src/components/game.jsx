@@ -18,6 +18,7 @@ import { joinRoom, socket } from "../shared/socket";
 export default function Game({ data }) {
   const gameState = useGame({});
   const [roomData, setRoomData] = React.useState(data.room);
+  const [isDrawOffered, setIsDrawOffered] = React.useState(false);
   const sendMessage = () => {
     const messageInput = document.getElementById("message-input");
     const message = messageInput.value.trim();
@@ -54,15 +55,56 @@ export default function Game({ data }) {
     }
   };
   const messageEl = renderMessages();
+function leaveRoom() {
+  const room_id = data.room.id;
+  socket.emit("leave_room", { room_id }, (data) => {
+      if (!data.is_error) {
+          navigate("/");
+      } else {
+          toast({
+              title: "Error",
+              description: data.message,
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+              colorScheme: "red",
+          });
+      }
+  });
+}
+
+const offerDraw = () => {
+  const room_id = data.room.id;
+  socket.emit("draw_request", { room_id }, (response) => {
+    if (response.error) {
+      toast({
+        title: "Error",
+        description: response.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Draw Request",
+        description: "Draw request sent.",
+        status: "info",
+        duration: 2000,
+        isClosable: true,
+      });
+      setIsDrawOffered(true);
+    }
+  });
+};
 
   const surrenderGame = () => {
-    const confirmSurrender = window.confirm("Bạn có chắc chắn muốn đầu hàng?");
+    const confirmSurrender = window.confirm("Are you sure you want to surrender?");
     if (confirmSurrender) {
       const room_id = data.room.id;
       socket.emit("surrender", { room_id }, (data) => {
         if (data.is_error) {
           toast({
-            title: "Lỗi",
+            title: "Error",
             description: data.message,
             status: "error",
             duration: 5000,
@@ -169,7 +211,7 @@ export default function Game({ data }) {
       toast({
         colorScheme: "teal",
         title: "Started",
-        description: white_id == socket.id ? "Bạn chơi trắng" : "Bạn chơi đen",
+        description: white_id == socket.id ? "You play white" : "You play black",
         duration: 10000,
         isClosable: true,
       });
@@ -178,8 +220,8 @@ export default function Game({ data }) {
       console.log("opponent left", data);
       toast({
         colorScheme: "red",
-        title: "Đối thủ rời khỏi trò chơi",
-        description: "Đối thủ đã rời khỏi trò chơi",
+        title: "The opponent leaves the game",
+        description: "The opponent has left the game",
         duration: 10000,
         isClosable: true,
       });
@@ -193,20 +235,20 @@ export default function Game({ data }) {
       let winner= data.winner === "white" ? 'Trắng' : 'Đen';
       let description;
       if (data.winner === "draw") {
-        description = "Trận đấu hòa.";
+        description = "Match Draw.";
       } else {
-        description = `Trò chơi kết thúc! ${winner} thắng.`;
+        description = `The game ends! ${winner} win.`;
       }
       toast({
         colorScheme: "red",
-        title: "Kết thúc trò chơi",
+        title: "Game over",
         description: description,
         duration: 10000,
         isClosable: true,
      
       });
       setTimeout(() => {
-        const confirmQuit = window.confirm("Bạn có muốn quay lại trang chủ?");
+        const confirmQuit = window.confirm("Do you want to return to the home page?");
         if (confirmQuit) {
         window.location.href = "/";
         }
@@ -219,7 +261,7 @@ export default function Game({ data }) {
         toast({
           colorScheme: "red",
           title: "Chiếu",
-          description: "Bạn bị chiếu tướng",
+          description: "You are checkmate",
           duration: 5000,
           isClosable: true,
         });
@@ -227,7 +269,7 @@ export default function Game({ data }) {
         toast({
           colorScheme: "green",
           title: "Chiếu",
-          description: "Đối thủ bị chiếu tướng",
+          description: "The opponent is checkmated",
           duration: 5000,
           isClosable: true,
         });
@@ -339,7 +381,7 @@ export default function Game({ data }) {
               socket.emit("move", payload, (data) => {
                 if (data.is_error) {
                   toast({
-                    title: "Lỗi",
+                    title: "Error",
                     description: data.message,
                     status: "error",
                     duration: 5000,
@@ -372,12 +414,14 @@ export default function Game({ data }) {
           >
             Copy link
           </Button>
-          <Button colorScheme="teal" size="sm" hidden>
+          <Button colorScheme="teal" size="sm" onClick={leaveRoom}>
             Rời phòng
           </Button>
-          <Button colorScheme="teal" size="sm" hidden>
-            Xin hòa
-          </Button>
+          {gameState.isGamePending && !isDrawOffered && (
+            <Button colorScheme="teal" size="sm" onClick={offerDraw}>
+              Xin hòa
+            </Button>
+          )}
           <Button colorScheme="teal" size="sm" onClick={surrenderGame}>
             Đầu hàng
           </Button>
@@ -391,7 +435,7 @@ export default function Game({ data }) {
           <Flex gap={1}>
             <Input
               id="message-input"
-              placeholder="Nhập tin nhắn"
+              placeholder="Enter a message"
               bg={"gray.800"}
               color={"white"}
               p={"2"}
