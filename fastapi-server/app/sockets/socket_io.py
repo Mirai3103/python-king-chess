@@ -31,8 +31,9 @@ async def make_move_to_bot(sid, data):
     newFen = game.fen()
     await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
     session = await sio.get_session(sid)
-    dificulty = session.get("dificulty") if session.get("dificulty") is not None else Dificulty.MEDIUM 
-    bot=get_bot(dificulty)
+    difficulty = session.get("difficulty") if Dificulty(session.get("difficulty")) is not None else Dificulty.MEDIUM 
+    print(difficulty)
+    bot=get_bot(difficulty)
 
     newFen= bot.get_best_move(current_color.swap(),game)
     game.load(newFen)
@@ -44,13 +45,12 @@ async def make_move_to_bot(sid, data):
         if game.is_game_over():
             winner = "white" if current_color == PieceColor.BLACK else "black"
             is_over = True
+        print(game.moves_of_color(current_color))
             
     if is_over:
         await sio.emit("game_over", room=sid, data={"winner": winner})
-    print("waiting for bot move")
     await sio.emit("update_fen", room=sid, data={"fen": newFen,  "checked": checked})
     
-    print("bot move done")
 
 
 
@@ -108,7 +108,6 @@ def get_room(room_id: str) -> Optional[Room]:
 
 @sio.event
 async def get_current_room(sid):
-    print("get_current_room")
     session = await sio.get_session(sid)
     room_id = session.get("room_id")
     if room_id is None:
@@ -122,7 +121,6 @@ async def get_current_room(sid):
 async def connect(sid, environ):
     session = await sio.get_session(sid)
     session['chess'] = chess.Chess()
-    print(f"connect {sid}")
 
 
 @sio.event
@@ -205,7 +203,6 @@ async def join_invite(sid, data):
     room.white_id = room.white_id if room.white_id is not None else sid
     room.player_2_name = session.get("display_name", "")
     await sio.emit("game_started", room=room.id, data=await room.to_dict())
-    print(f"emit game_started {room.id}")
     return Response(False, message="Joined room").to_dict()
 
 @sio.on("time_out")
@@ -307,12 +304,16 @@ async def move(sid, data):
         if is_over:
             await sio.emit("game_over", room=room.id, data={"winner": winner})
             await sio.emit("stop_game", room=room.id)
+        for move in game.moves_of_color(PieceColor.WHITE):
+            print(move.__dict__)
     if game.is_check(PieceColor.BLACK):
         await sio.emit("checked", room=room.id, data={"color": "black"})
         is_over, winner = check_game_over(room)
         if is_over:
             await sio.emit("game_over", room=room.id, data={"winner": winner})
             await sio.emit("stop_game", room=room.id)
+        for move in game.moves_of_color(PieceColor.BLACK):
+            print(move.__dict__)
     
     await sio.emit("moved", room=room.id, data={"is_game_over": False, "checked": False, "room":await room.to_dict()})
     return Response(False, message="Moved").to_dict()      
@@ -328,7 +329,11 @@ async def checked(sid, data):
     room = rooms_dict.get(room_id)
     if room is not None:
         await sio.emit("checked", room=room_id, data={"color": data["color"]})
-
+@sio.event
+async def set_difficulty(sid, data):
+    session = await sio.get_session(sid)
+    session['difficulty'] = data["difficulty"]
+    
 @sio.event
 async def game_over(sid, data):
     room_id = data["room_id"]

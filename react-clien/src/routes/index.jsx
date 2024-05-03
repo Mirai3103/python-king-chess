@@ -28,8 +28,10 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { setPlayer1, setRoomId } = useRoomStore();
   const [color, setColor] = React.useState("white");
+  const [difficulty, setDifficulty] = React.useState("1");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { setDisplayName, display_name } = useUserStore()
+  const { isOpen:isOpenSelectDifficultyModal, onOpen: onOpenSelectDifficultyModal, onClose: onCloseSelectDifficultyModal } = useDisclosure();
   const { isOpen:isOpenUserModal, onOpen: onOpenUserModal, onClose: onCloseUserModal } = useDisclosure();
   const navigate = useNavigate();
   const inputRef = React.useRef(null);
@@ -50,6 +52,12 @@ function Index() {
       }
     );
   }
+  function playWithBot() {
+    socket.emit('set_difficulty', {
+      difficulty
+    })
+    navigate({to: '/play_with_bot',search: {color: 'white', difficulty: Number(difficulty)}})
+  }
   return (
     <Grid
       placeContent={"center"}
@@ -61,9 +69,7 @@ function Index() {
         <chakra.h1 fontSize="3xl" textAlign={'center'}>
           Chào {display_name||" Bạn"}
         </chakra.h1>
-        <Button colorScheme="teal" size="lg" onClick={() => {
-          navigate({to: '/play_with_bot',search: {color: 'white'}});
-        }}>
+        <Button colorScheme="teal" size="lg" onClick={onOpenSelectDifficultyModal}>
           Chơi với máy
         </Button>
         <Button colorScheme="teal" size="lg" onClick={onOpen}>
@@ -103,13 +109,15 @@ function Index() {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>
+            Chọn màu
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <RadioGroup onChange={setColor} value={color}>
               <Stack direction="column">
-                <Radio value="white">Trắng</Radio>
-                <Radio value="black">Đen</Radio>
+                <Radio value="white">Trắng (đi trước)</Radio>
+                <Radio value="black">Đen (đi sau)</Radio>
               </Stack>
             </RadioGroup>
           </ModalBody>
@@ -121,7 +129,28 @@ function Index() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      
+      <Modal isOpen={isOpenSelectDifficultyModal} onClose={onCloseSelectDifficultyModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Chọn độ khó</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <RadioGroup onChange={setDifficulty} value={difficulty}>
+              <Stack direction="column">
+                <Radio value="1">Dễ</Radio>
+                <Radio value="2">Trung bình</Radio>
+                <Radio value="3">Khó</Radio>
+              </Stack>
+            </RadioGroup>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={playWithBot}>
+              Chơi
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Grid>
   );
 }
