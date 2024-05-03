@@ -57,9 +57,9 @@ async def make_move_to_bot(sid, data):
     if is_over:
         await sio.emit("game_over", room=sid, data={"winner": winner})
     await sio.emit("update_fen", room=sid, data={"fen": newFen,  "checked": checked})
-    validMoves= game.moves_of_color(current_color)
-    for move in validMoves:
-        print(move.__dict__)
+    # validMoves= game.moves_of_color(current_color)
+    # for move in validMoves:
+    #     print(move.__dict__)
     
 
 
@@ -319,16 +319,16 @@ async def move(sid, data):
         if is_over:
             await sio.emit("game_over", room=room.id, data={"winner": winner})
             await sio.emit("stop_game", room=room.id)
-        for move in game.moves_of_color(PieceColor.WHITE):
-            print(move.__dict__)
+        # for move in game.moves_of_color(PieceColor.WHITE):
+        #     print(move.__dict__)
     if game.is_check(PieceColor.BLACK):
         await sio.emit("checked", room=room.id, data={"color": "black"})
         is_over, winner = check_game_over(room)
         if is_over:
             await sio.emit("game_over", room=room.id, data={"winner": winner})
             await sio.emit("stop_game", room=room.id)
-        for move in game.moves_of_color(PieceColor.BLACK):
-            print(move.__dict__)
+        # for move in game.moves_of_color(PieceColor.BLACK):
+        #     print(move.__dict__)
     
     await sio.emit("moved", room=room.id, data={"is_game_over": False, "checked": False, "room":await room.to_dict()})
     return Response(False, message="Moved").to_dict()      
