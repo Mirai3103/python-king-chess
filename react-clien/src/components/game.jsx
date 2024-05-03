@@ -7,6 +7,19 @@ import {
   Divider,
   Input,
   useToast,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  RadioGroup,
+  Stack,
+  Radio,
+
+
 } from "@chakra-ui/react";
 import { Chessboard } from "react-chessboard";
 import { DEFAULT_POSITION } from "chess.js";
@@ -29,16 +42,16 @@ export default function Game({ data }) {
   const renderMessages = () => {
     if (gameState.messages && gameState.messages.length > 0) {
       console.log(gameState.messages);
-      let temp =[...gameState.messages]
+      let temp = [...gameState.messages]
       temp = temp.reverse();
       return temp
-      .map((msg, index) => (
-        <Flex key={index} justifyContent={msg.sender === socket.id ? "flex-end" : "flex-start"}>
-          <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
-            {msg.message}
-          </chakra.span>
-        </Flex>
-      ));
+        .map((msg, index) => (
+          <Flex key={index} justifyContent={msg.sender === socket.id ? "flex-end" : "flex-start"}>
+            <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
+              {msg.message}
+            </chakra.span>
+          </Flex>
+        ));
     } else {
       return <p>No messages</p>;
     }
@@ -137,7 +150,7 @@ export default function Game({ data }) {
     }
     function onStarted(data) {
       gameState.setMyColor(data.white_id == socket.id ? "white" : "black");
-     
+
       const {
         white_id,
         fen,
@@ -178,9 +191,9 @@ export default function Game({ data }) {
       });
     }
     function onOver(data) {
-      console.log(data.winner+"--over")
+      console.log(data.winner + "--over")
       gameState.setIsGamePending(false);
-      let winner= data.winner === "white" ? 'Trắng' : 'Đen';
+      let winner = data.winner === "white" ? 'Trắng' : 'Đen';
       let description;
       if (data.winner === "draw") {
         description = "Trận đấu hòa.";
@@ -193,19 +206,19 @@ export default function Game({ data }) {
         description: description,
         duration: 10000,
         isClosable: true,
-     
+
       });
       setTimeout(() => {
         const confirmQuit = window.confirm("Bạn có muốn quay lại trang chủ?");
         if (confirmQuit) {
-        window.location.href = "/";
+          window.location.href = "/";
         }
       }, 10000);
     }
     function onCheck(data) {
       const mycolor = gameState.myColor;
       console.log("checked", data.color, mycolor);
-      if (mycolor.trim()===data.color.trim()) {
+      if (mycolor.trim() === data.color.trim()) {
         toast({
           colorScheme: "red",
           title: "Chiếu",
@@ -237,15 +250,17 @@ export default function Game({ data }) {
     return () => {
       // gỡ bỏ các sự kiện socket
       socket.off("receive_message");
-      socket.off("moved", onMove);
-      socket.off("joined", onJoin);
-      socket.off("game_started ", onStarted);
-      socket.off("a_player_left", onOpponentLeft);
-      socket.off("game_over", onOver);
-      socket.off("checked", onCheck);
+      socket.off("moved");
+      socket.off("joined");
+      socket.off("a_player_left");
+      socket.off("game_over");
+      socket.off("checked");
       socket.off("stop_game");
       socket.off("checked");
       socket.off("a_player_left");
+      socket.off("game_started");
+      socket.off("a_player_joined");
+      
     };
   }, [data, gameState, navigate]);
 
@@ -261,11 +276,35 @@ export default function Game({ data }) {
   }
   const chatBoxRef = React.useRef(null);
   React.useEffect(() => {
-    if(chatBoxRef.current){
-      const height = chatBoxRef.current.clientHeight-20;
+    if (chatBoxRef.current) {
+      const height = chatBoxRef.current.clientHeight - 20;
       chatBoxRef.current.style.maxHeight = height + "px";
     }
-  },[])
+  }, [])
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [promoPiece, setPromoPiece] = React.useState("q");
+  const [move, setMove] = React.useState({ from: "", to: "", piece: "" });
+  function onMakeMove({ from, to, piece }) {
+    console.log( { from, to, piece, promotion: promoPiece })
+    const room_id = data.room.id;
+    const payload = {
+      move: { from, to, piece, promotion: promoPiece },
+      room_id,
+      remaining_time: gameState.myRemainingTime,
+    };
+    socket.emit("move", payload, (data) => {
+      if (data.is_error) {
+        toast({
+          title: "Lỗi",
+          description: data.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          colorScheme: "red",
+        });
+      }
+    });
+  }
   return (
     <Flex
       direction={"row"}
@@ -276,12 +315,57 @@ export default function Game({ data }) {
       justifyContent={"center"}
       columnGap={"30px"}
     >
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            Phong cấp
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <RadioGroup onChange={setPromoPiece} value={promoPiece}>
+              <Stack direction='row'>
+                <Radio value='q'>Hậu</Radio>
+                <Radio value='r'>Xe</Radio>
+                <Radio value='n'>Mã</Radio>
+                <Radio value='b'>Tượng</Radio>
+              </Stack>
+            </RadioGroup>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button variant='ghost'
+              onClick={onClose}>
+              Huỷ</Button>
+
+            <Button colorScheme='blue' mr={3} onClick={() => {
+              console.log("making move", promoPiece);
+              if (!promoPiece) {
+                toast({
+                  title: "Lỗi",
+                  description: "Vui lòng chọn quân cờ để phong cấp",
+                  status: "error",
+                  duration: 2000,
+                  isClosable: true,
+                  colorScheme: "red",
+                });
+                return;
+              }
+              onMakeMove({ ...move, piece: move.piece[0] + promoPiece });
+              onClose();
+            }}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <Flex direction={"column"} rowGap={"4"}>
         <Flex justifyContent={"space-between"} fontSize={"2xl"}>
           <h2>
             <chakra.span color={"red"}>
               {
-               getOpponentName()||"Đối thủ"
+                getOpponentName() || "Đối thủ"
               }
             </chakra.span>
           </h2>
@@ -291,11 +375,13 @@ export default function Game({ data }) {
         </Flex>
         <chakra.div flexGrow={1} ref={rootBoardRef}>
           <Chessboard
+            autoPromoteToQueen={true}
             boardOrientation={gameState.myColor}
             boardWidth={boardWidth}
             position={gameState.fen || DEFAULT_POSITION}
             onPieceDrop={(from, to, piece) => {
-              //
+              setMove({ from, to, piece });
+
               if (gameStopped) {
                 return false;
               }
@@ -313,6 +399,7 @@ export default function Game({ data }) {
                 });
                 return false;
               }
+
               if (gameState.fen.split(" ")[1] != mycolor.charAt(0)) {
                 toast({
                   title: "Invalid move",
@@ -324,27 +411,22 @@ export default function Game({ data }) {
                 });
                 return false;
               }
-              console.log(from, to, piece);
-              const room_id = data.room.id;
-              const payload = {
-                move: { from, to, piece,
-                  promotion: piece[1].toLowerCase() ?? "q"
-                },
-                room_id,
-                remaining_time: gameState.myRemainingTime,
-              };
-              socket.emit("move", payload, (data) => {
-                if (data.is_error) {
-                  toast({
-                    title: "Lỗi",
-                    description: data.message,
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                    colorScheme: "red",
-                  });
-                }
-              });
+              const isWhite = mycolor === "white";
+              const isPromotion = (isWhite && to[1] === "8") || (!isWhite && to[1] === "1");
+              if (isPromotion) {
+                toast({
+                  title: "Promotion",
+                  description: "Choose a piece to promote to",
+                  status: "info",
+                  duration: 2000,
+                  isClosable: true,
+                  colorScheme: "blue",
+                });
+                onOpen();
+                return false;
+              }
+ 
+              onMakeMove({ from, to, piece });
               return true;
             }}
           />
@@ -353,7 +435,7 @@ export default function Game({ data }) {
           <h2>
             <chakra.span color={"red"}>
               {
-                getMyName()||"Bạn"
+                getMyName() || "Bạn"
               }
             </chakra.span>
           </h2>
@@ -363,9 +445,9 @@ export default function Game({ data }) {
       <Flex direction={"column"} basis={"300px"} bg={"gray.900"} p={"2"}>
         <Flex gap={"2"} wrap={"wrap"} w={"100%"}>
           <Button colorScheme="teal" size="sm"
-          onClick={() => {
-            navigator.clipboard.writeText(window.location.href);
-          }}
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+            }}
           >
             Copy link
           </Button>
@@ -405,16 +487,16 @@ export default function Game({ data }) {
             </Button>
           </Flex>
           <Flex overflowY={'auto'}
-          ref={chatBoxRef}
-              paddingRight={2}
-          direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
-          {messageEl}
+            ref={chatBoxRef}
+            paddingRight={2}
+            direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
+            {messageEl}
           </Flex>
         </Flex>
       </Flex>
     </Flex>
     //#endregion
-    
+
     //#region
   );
 }
