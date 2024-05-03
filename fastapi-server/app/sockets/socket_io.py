@@ -25,7 +25,7 @@ async def make_move_to_bot(sid, data):
     game.load(fen)
     moveRs=  game.move(CellName(move["from"]),CellName(move["to"]), move.get("promotion") if move.get("promotion") is not None else 'q')
     if moveRs is None:
-        return Response(True, message="Nước đi không hợp lệ").to_dict()
+        return Response(True, message="Invalid move").to_dict()
     current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK    
     newFen = game.fen()
     await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
@@ -93,6 +93,13 @@ class Room:
             "player_1_name": sio1Session.get("display_name", ""),
             "player_2_name": sio2Session.get("display_name", "")
         }
+    def get_opponent_sid(self, sid):
+        if self.player_1 == sid:
+            return self.player_2
+        elif self.player_2 == sid:
+            return self.player_1
+        else:
+            return None    
     
 
 
@@ -291,7 +298,7 @@ async def move(sid, data):
 
     moveRs = game.move(CellName(from_square), CellName(to_square), move.get("promotion") if move.get("promotion") is not None else 'q')
     if moveRs is None:
-        return Response(True, message="Nước đi không hợp lệ").to_dict()
+        return Response(True, message="Invalid move").to_dict()
     
     if game.is_check(PieceColor.WHITE):
         await sio.emit("checked", room=room.id, data={"color": "white"})
@@ -406,3 +413,52 @@ async def surrender(sid, data):
         await emit_time_out(room_id, room)
     await sio.emit("update_fen", room=room_id, data= await room.to_dict())  
     
+
+@sio.on("leave_room")
+async def leave_room(sid, data):
+    room_id = data["room_id"]
+    room = get_room(room_id)
+    if room is None:
+        return Response(True, message="Room not found").to_dict()
+    if room.player_1 == sid or room.player_2 == sid:
+        room.leave(sid)
+        await sio.emit("a_player_left", room=room_id)
+        return Response(False, message="Left room").to_dict()
+    else:
+        return Response(True, message="You are not in this room").to_dict()
+
+@sio.on("draw_request")
+async def draw_request(sid, data):
+    room_id = data["room_id"]
+    room = get_room(room_id)
+    if room is None:
+        return Response(True, message="Room not found").to_dict()
+    
+    opponent_sid = room.get_opponent_sid(sid)
+    if opponent_sid:
+        await sio.emit("draw_request", room=room_id, skip_sid=opponent_sid)
+    return Response(False, message="Draw request sent").to_dict()
+
+@sio.on("draw_response")
+async def draw_response(sid, data):
+    room_id = data["room_id"]
+    accepted = data["accepted"]
+    room = get_room(room_id)
+    if room is None:
+        return Response(True, message="Room not found").to_dict()
+    if accepted:
+        await sio.emit("game_over", room=room_id, data={"result": "draw"})
+    else:
+        await sio.emit("draw_declined", room=room_id)
+    await sio.emit("draw_response", room=room_id, data={"accepted": accepted})
+    return Response(False, message="Draw response processed").to_dict()
+@sio.on("draw_declined")
+async def draw_declined(sid, data):
+    room_id = data["room_id"]
+    room = get_room(room_id)
+    if room is None:
+        return Response(True, message="Room not found").to_dict()
+    opponent_sid = room.get_opponent_sid(sid)
+    if opponent_sid:
+        await sio.emit("draw_declined", room=room_id, skip_sid=opponent_sid)
+    return Response(False, message="Draw declined processed").to_dict()
