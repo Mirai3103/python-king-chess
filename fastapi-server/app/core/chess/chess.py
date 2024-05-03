@@ -23,15 +23,28 @@ class Chess(IChess):
             for y in range(8):
                 piece = self._board[x][y]
                 if piece.pieceType == PieceType.KING and piece.pieceColor == color:
-                    return self._is_attacked(x, y, color)
+                    return self.is_attacked(x, y, color)
         return False
-
+    def squares_of_color(self, color: PieceColor) -> list[CellName]:
+        squares = []
+        for x in range(8):
+            for y in range(8):
+                if self._board[x][y].pieceColor == color and self._board[x][y].pieceType != PieceType.EMPTY:
+                    squares.append(CellName.from_2d(x, y))
+        return squares
+    def getPiece(self, cell: CellName) -> Piece:
+        x, y = CellName.to_2d(cell)
+        return self._board[x][y]
+    
     def simulate_move(self, move: InternalMove) -> 'Chess':
         cloned = Chess(self.fen())
         cloned._move(move)
         return cloned
-      
-    def _is_attacked(self, x: int, y: int, color: PieceColor) -> bool:
+    def moves(self, from_cell: CellName) -> list[InternalMove]:
+        x, y = CellName.to_2d(from_cell)
+        strategy = PIECES_STRATEGY[self._board[x][y].pieceType]
+        return strategy.get_moves(self, CellName.to_2d(from_cell))
+    def is_attacked(self, x: int, y: int, color: PieceColor) -> bool:
         for dx in range(-1, 2):
                 for dy in range(-1, 2):
                     if dx == 0 and dy == 0:
@@ -39,7 +52,7 @@ class Chess(IChess):
                     for i in range(1, 8):
                         tx = x + i * dx
                         ty = y + i * dy
-                        if tx < 0 or tx >= 8 or ty < 0 or ty >= 8:
+                        if tx < 0 or tx >= 8 or ty < 0   or ty >= 8:
                             break
                         piece = self._board[tx][ty]
                         if piece.pieceType != PieceType.EMPTY:
@@ -248,10 +261,14 @@ class Chess(IChess):
         res += str(self._move_number)
         return res
 
-    def moves(self, from_cell: CellName) -> list[InternalMove]:
-        x, y = CellName.to_2d(from_cell)
-        strategy = PIECES_STRATEGY[(self._board[x][y].pieceType)]
-        return strategy.get_moves(self, CellName.to_2d(from_cell))
+    def moves_of_color(self, color: PieceColor) -> list[InternalMove]:
+        moves = []
+        for x in range(8):
+            for y in range(8):
+                piece = self._board[x][y]
+                if piece.pieceColor == color:
+                    moves += self.moves(CellName.from_2d(x, y))
+        return moves
 
     def move(self, from_cell: CellName, to_cell: CellName, promotion: str = 'q') -> InternalMove:
         promotion= PieceType(promotion.lower())

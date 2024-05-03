@@ -155,7 +155,7 @@ export default function GameWithBot({ data }) {
           <Button
             colorScheme="teal"
             size="sm"
-            onClick={() => navigate("/")}
+            onClick={() => window.location.href = "/"}
           >
             Quay lại trang chủ
           </Button>

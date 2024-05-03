@@ -1,8 +1,6 @@
 from abc import abstractmethod
 from enum import Enum
-from typing import Optional
 
-from fastapi.background import P
 
 class PieceType(str,Enum):
     # quân tốt 
@@ -178,6 +176,9 @@ class IChess:
     def moves(self, from_cell: CellName) -> list[InternalMove]:
         pass
     @abstractmethod
+    def moves_of_color(self, color: PieceColor) -> list[InternalMove]:
+        pass
+    @abstractmethod
     def move(self, from_cell: CellName, to_cell: CellName) -> InternalMove:
         pass
     @abstractmethod
@@ -195,3 +196,13 @@ class IChess:
     @abstractmethod
     def is_stalemate(self, color: PieceColor) -> bool:
         pass
+    @abstractmethod
+    def is_attacked(self, x: int, y: int, color: PieceColor) -> bool:
+        pass
+    @abstractmethod
+    def squares_of_color(self, color: PieceColor) -> list[CellName]:
+        pass
+    @abstractmethod
+    def getPiece(self, cell: CellName) -> Piece:
+        pass
+
