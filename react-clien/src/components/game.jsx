@@ -45,19 +45,30 @@ export default function Game({ data }) {
       let temp = [...gameState.messages]
       temp = temp.reverse();
       return temp
-        .map((msg, index) => (
-          <Flex key={index} justifyContent={msg.sender === socket.id ? "flex-end" : "flex-start"}>
-            <chakra.span bg={"gray.700"} p={"2"} borderRadius={"5px"}>
-              {msg.message}
-            </chakra.span>
-          </Flex>
-        ));
+
+      .map((msg, index) => (
+        <Flex
+        key={index}
+        justifyContent={
+          msg.sender === socket.id ? "flex-end" : "flex-start"
+        }
+      >
+        <chakra.span
+          bg={msg.sender === socket.id ? "blue.500" : "gray.200"}
+          p={"2"}
+          borderRadius={"5px"}
+          color={msg.sender === socket.id ? "white" : "black"}
+        >
+          {msg.message}
+        </chakra.span>
+      </Flex>
+      ));
     } else {
       return <p>No messages</p>;
     }
   };
   const messageEl = renderMessages();
-  //
+
   const surrenderGame = () => {
     const confirmSurrender = window.confirm("Bạn có chắc chắn muốn đầu hàng?");
     if (confirmSurrender) {
