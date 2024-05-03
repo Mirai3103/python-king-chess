@@ -54,7 +54,7 @@ export default function Game({ data }) {
     }
   };
   const messageEl = renderMessages();
-  //
+
   const surrenderGame = () => {
     const confirmSurrender = window.confirm("Bạn có chắc chắn muốn đầu hàng?");
     if (confirmSurrender) {
