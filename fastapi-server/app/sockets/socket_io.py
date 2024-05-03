@@ -43,7 +43,7 @@ async def make_move_to_bot(sid, data):
         if game.is_game_over():
             winner = "white" if botColor == PieceColor.BLACK else "black"
             is_over = True
-        print(game.moves_of_color(botColor))
+
     if is_over:
         await sio.emit("game_over", room=sid, data={"winner": winner})
     newFen= bot.get_best_move(botColor,game)
@@ -54,10 +54,12 @@ async def make_move_to_bot(sid, data):
         if game.is_game_over():
             winner = "white" if current_color == PieceColor.BLACK else "black"
             is_over = True
-        print(game.moves_of_color(current_color))
     if is_over:
         await sio.emit("game_over", room=sid, data={"winner": winner})
     await sio.emit("update_fen", room=sid, data={"fen": newFen,  "checked": checked})
+    validMoves= game.moves_of_color(current_color)
+    for move in validMoves:
+        print(move.__dict__)
     
 
 
