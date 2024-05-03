@@ -1,6 +1,7 @@
 
 from typing import Optional
 from stockfish import Stockfish
+from app.core.chess.bot_algorithm import Dificulty, get_bot
 from app.dtos.response import Response
 import uuid
 import os
@@ -29,30 +30,11 @@ async def make_move_to_bot(sid, data):
     current_color = PieceColor.WHITE if game._turn == PieceColor.BLACK else PieceColor.BLACK    
     newFen = game.fen()
     await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
-    async def get_move_from_bot_async( fen):
-        isWindows = os.name == 'nt'
-        if isWindows:
-            path = "stockfish/windows/stockfish.exe"
-        else:
-            path = "stockfish/linux/stockfish"
-        st= Stockfish(path=path,
-                        depth=1,
-                        parameters={
-                            "Threads": 1, "Minimum Thinking Time": 30
-                        }
-                        )
-        st.set_skill_level(1)
-        st.set_fen_position(fen)
-        bot_move = st.get_best_move()
-        
-        st.make_moves_from_current_position([ bot_move])
-        newFen = st.get_fen_position()
-        return newFen, bot_move
-    #promise= get_move_from_bot_async(newFen)
-    #await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
-    #print("waiting for bot move")
-    #newFen, bot_move = await promise
-    newFen, bot_move=await get_move_from_bot_async(newFen)
+    session = await sio.get_session(sid)
+    dificulty = session.get("dificulty") if session.get("dificulty") is not None else Dificulty.MEDIUM 
+    bot=get_bot(dificulty)
+
+    newFen= bot.get_best_move(current_color.swap(),game)
     game.load(newFen)
     checked = False
     winner = None
@@ -66,7 +48,7 @@ async def make_move_to_bot(sid, data):
     if is_over:
         await sio.emit("game_over", room=sid, data={"winner": winner})
     print("waiting for bot move")
-    await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": bot_move, "checked": checked})
+    await sio.emit("update_fen", room=sid, data={"fen": newFen,  "checked": checked})
     
     print("bot move done")
 
