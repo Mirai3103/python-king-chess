@@ -1,10 +1,9 @@
 
 from typing import Optional
 from stockfish import Stockfish
-from app.core.chess.bot_algorithm import Dificulty, get_bot
+from app.core.bot_algorithm import Dificulty, get_bot
 from app.dtos.response import Response
 import uuid
-import os
 
 from socketio import AsyncServer, ASGIApp
 from app.core.chess import chess
@@ -54,8 +53,6 @@ async def make_move_to_bot(sid, data):
 
 
 
-
-# todo: refactor this and implement your own logic
 
 class Room:
     id: str
