@@ -3,6 +3,7 @@
 from abc import abstractmethod
 from enum import Enum
 import os
+import random
 
 from stockfish import Stockfish    
 
@@ -23,8 +24,9 @@ class BotAlgorithmStrategy():
 
 class RandomBot(BotAlgorithmStrategy):
     def get_best_move(self,color:PieceColor,chess:IChess) -> str:
-        import random
         moves = chess.moves_of_color(color)
+        if len(moves)==0:
+            return chess.fen()
         move = random.choice(moves)
         chess.move(move._from, move._to)
         return chess.fen()

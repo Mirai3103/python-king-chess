@@ -18,15 +18,12 @@ import {
   RadioGroup,
   Stack,
   Radio,
-
-
 } from "@chakra-ui/react";
 import { Chessboard } from "react-chessboard";
 import { DEFAULT_POSITION } from "chess.js";
 import useGame from "../hooks/useGame";
 import { useNavigate } from "@tanstack/react-router";
 import { joinRoom, socket } from "../shared/socket";
-//import { useHistory } from "react-router-dom";
 
 export default function Game({ data }) {
   const gameState = useGame({});

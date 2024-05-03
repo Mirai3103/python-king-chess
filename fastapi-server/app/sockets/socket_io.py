@@ -1,6 +1,5 @@
 
 from typing import Optional
-from stockfish import Stockfish
 from app.core.bot_algorithm import Dificulty, get_bot
 from app.dtos.response import Response
 import uuid
@@ -34,18 +33,28 @@ async def make_move_to_bot(sid, data):
     print(difficulty)
     bot=get_bot(difficulty)
 
-    newFen= bot.get_best_move(current_color.swap(),game)
-    game.load(newFen)
+    
     checked = False
     winner = None
     is_over = False
+    botColor=current_color.swap()
+    if game.is_check(botColor):
+        checked =True
+        if game.is_game_over():
+            winner = "white" if botColor == PieceColor.BLACK else "black"
+            is_over = True
+        print(game.moves_of_color(botColor))
+    if is_over:
+        await sio.emit("game_over", room=sid, data={"winner": winner})
+    newFen= bot.get_best_move(botColor,game)
+    game.load(newFen) 
+    checked=False 
     if game.is_check(current_color):
         checked =True
         if game.is_game_over():
             winner = "white" if current_color == PieceColor.BLACK else "black"
             is_over = True
         print(game.moves_of_color(current_color))
-            
     if is_over:
         await sio.emit("game_over", room=sid, data={"winner": winner})
     await sio.emit("update_fen", room=sid, data={"fen": newFen,  "checked": checked})
