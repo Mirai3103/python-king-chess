@@ -558,7 +558,7 @@ const renderDrawRequest = () => {
               }
  
               onMakeMove({ from, to, piece });
-              return false;
+              return true;
             }}
           />
         </chakra.div>
