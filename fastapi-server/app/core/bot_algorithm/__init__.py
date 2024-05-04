@@ -95,7 +95,7 @@ class StockfishBot(BotAlgorithmStrategy):
 if __name__ == "__main__":
     chess = Chess("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1")
     bot = RandomBot()
-    print(bot.get_best_move(chess._turn,chess))
+    print(bot.get_best_move(chess.turn, chess))
     
 def get_bot(dificulty:Dificulty) -> BotAlgorithmStrategy:
     if dificulty == Dificulty.EASY:

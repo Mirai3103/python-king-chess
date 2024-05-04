@@ -73,7 +73,7 @@ function leaveRoom() {
           navigate("/");
       } else {
           toast({
-              title: "Error",
+              title: "Lỗi",
               description: data.message,
               status: "error",
               duration: 5000,
@@ -100,8 +100,8 @@ const offerDraw = () => {
       });
     } else {
       toast({
-        title: "Draw Request",
         description: "Yêu cầu hòa đã được gửi.",
+        title: "Yêu cầu hòa",
         status: "info",
         duration: 2000,
         isClosable: true,
@@ -247,8 +247,8 @@ const renderDrawRequest = () => {
       if (checked) {
         toast({
           colorScheme: "red",
-          title: "Check",
-          description: `${checked} is checked`,
+          title: "Chiếu",
+          description: `${checked=='white'?'Trắng':'Đen'} bị chiếu`,
           duration: 2000,
           isClosable: true,
         });
@@ -264,13 +264,7 @@ const renderDrawRequest = () => {
           ? data.room.player_2_remaining_time
           : data.room.player_1_remaining_time
       );
-      toast({
-        colorScheme: "teal",
-        title: "Moved",
-        description: "Opponent moved",
-        duration: 2000,
-        isClosable: true,
-      });
+     
     }
     function onJoin(data) {
       console.log("joined", data);
@@ -280,8 +274,8 @@ const renderDrawRequest = () => {
       });
       toast({
         colorScheme: "teal",
-        title: "Joined",
-        description: "Opponent joined",
+        title: "Vào phòng",
+        description: "Đối thủ đã vào phòng",
         duration: 2000,
         isClosable: true,
       });
@@ -310,7 +304,7 @@ const renderDrawRequest = () => {
       toast({
         colorScheme: "teal",
         title: "Started",
-        description: white_id == socket.id ? "You play white" : "You play black",
+        description: white_id == socket.id ? "Bạn quân trắng" : "Bạn quân đen",
         duration: 10000,
         isClosable: true,
       });
@@ -319,8 +313,8 @@ const renderDrawRequest = () => {
       console.log("opponent left", data);
       toast({
         colorScheme: "red",
-        title: "The opponent leaves the game",
-        description: "The opponent has left the game",
+        title: "Đối thủ đã rời khỏi game",
+        description: "Đối thủ đã rời khỏi game",
         duration: 10000,
         isClosable: true,
       });
@@ -334,9 +328,9 @@ const renderDrawRequest = () => {
       let winner = data.winner === "white" ? 'Trắng' : 'Đen';
       let description;
       if (data.winner === "draw") {
-        description = "Match Draw.";
+        description = "Game hoà";
       } else {
-        description = `The game ends! ${winner} win.`;
+        description = `Game kết thúc, ${winner} thắng`;
       }
       toast({
         colorScheme: "red",
@@ -360,7 +354,7 @@ const renderDrawRequest = () => {
         toast({
           colorScheme: "red",
           title: "Chiếu",
-          description: "You are checkmate",
+          description: "Bạn bị chiếu",
           duration: 5000,
           isClosable: true,
         });
@@ -368,7 +362,7 @@ const renderDrawRequest = () => {
         toast({
           colorScheme: "green",
           title: "Chiếu",
-          description: "The opponent is checkmated",
+          description: "Đối thủ bị chiếu",
           duration: 5000,
           isClosable: true,
         });
@@ -519,7 +513,6 @@ const renderDrawRequest = () => {
             position={gameState.fen || DEFAULT_POSITION}
             onPieceDrop={(from, to, piece) => {
               setMove({ from, to, piece });
-
               if (gameStopped) {
                 return false;
               }
@@ -528,8 +521,8 @@ const renderDrawRequest = () => {
               console.log(mycolor, piece);
               if (!piece.toLocaleLowerCase().startsWith(mycolor.charAt(0))) {
                 toast({
-                  title: "Invalid move",
-                  description: "It's not your piece",
+                  title: "Lỗi",
+                  description: "Đây không phải quân cờ của bạn",
                   status: "error",
                   duration: 2000,
                   isClosable: true,
@@ -540,8 +533,8 @@ const renderDrawRequest = () => {
 
               if (gameState.fen.split(" ")[1] != mycolor.charAt(0)) {
                 toast({
-                  title: "Invalid move",
-                  description: "It's not your turn",
+                  title: "Nước đi không hợp lệ",
+                  description: "Chưa đến lượt của bạn",
                   status: "error",
                   duration: 2000,
                   isClosable: true,
@@ -549,33 +542,12 @@ const renderDrawRequest = () => {
                 });
                 return false;
               }
-              console.log(from, to, piece);
-              const room_id = data.room.id;
-              const payload = {
-                move: { from, to, piece,
-                  promotion: piece[1].toLowerCase() ?? "q"
-                },
-                room_id,
-                remaining_time: gameState.myRemainingTime,
-              };
-              socket.emit("move", payload, (data) => {
-                if (data.is_error) {
-                  toast({
-                    title: "Error",
-                    description: data.message,
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                    colorScheme: "red",
-                  });
-                }
-              });
               const isWhite = mycolor === "white";
               const isPromotion = (isWhite && to[1] === "8") || (!isWhite && to[1] === "1");
               if (isPromotion) {
                 toast({
-                  title: "Promotion",
-                  description: "Choose a piece to promote to",
+                  title: "Phong cấp",
+                  description: "Chọn quân cờ để phong cấp",
                   status: "info",
                   duration: 2000,
                   isClosable: true,
@@ -586,7 +558,7 @@ const renderDrawRequest = () => {
               }
  
               onMakeMove({ from, to, piece });
-              return true;
+              return false;
             }}
           />
         </chakra.div>

@@ -166,7 +166,7 @@ class IllegalMoveError(Exception):
 
 class IChess:
     _board:Board
-    _turn:PieceColor
+    turn:PieceColor
     _castling:dict[PieceColor,dict[str,bool]]
     
     @abstractmethod
