@@ -412,39 +412,3 @@ async def leave_room(sid, data):
         return Response(False, message="Left room").to_dict()
     else:
         return Response(True, message="You are not in this room").to_dict()
-
-@sio.on("draw_request")
-async def draw_request(sid, data):
-    room_id = data["room_id"]
-    room = get_room(room_id)
-    if room is None:
-        return Response(True, message="Room not found").to_dict()
-    
-    opponent_sid = room.get_opponent_sid(sid)
-    if opponent_sid:
-        await sio.emit("draw_request", room=room_id, skip_sid=opponent_sid)
-    return Response(False, message="Draw request sent").to_dict()
-
-@sio.on("draw_response")
-async def draw_response(sid, data):
-    room_id = data["room_id"]
-    accepted = data["accepted"]
-    room = get_room(room_id)
-    if room is None:
-        return Response(True, message="Room not found").to_dict()
-    if accepted:
-        await sio.emit("game_over", room=room_id, data={"result": "draw"})
-    else:
-        await sio.emit("draw_declined", room=room_id)
-    await sio.emit("draw_response", room=room_id, data={"accepted": accepted})
-    return Response(False, message="Draw response processed").to_dict()
-@sio.on("draw_declined")
-async def draw_declined(sid, data):
-    room_id = data["room_id"]
-    room = get_room(room_id)
-    if room is None:
-        return Response(True, message="Room not found").to_dict()
-    opponent_sid = room.get_opponent_sid(sid)
-    if opponent_sid:
-        await sio.emit("draw_declined", room=room_id, skip_sid=opponent_sid)
-    return Response(False, message="Draw declined processed").to_dict()
