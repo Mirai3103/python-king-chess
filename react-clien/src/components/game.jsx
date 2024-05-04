@@ -84,6 +84,9 @@ function leaveRoom() {
   });
 }
 
+const [drawRequest, setDrawRequest] = React.useState(null);
+
+// Phương thức để gửi yêu cầu hòa
 const offerDraw = () => {
   const room_id = data.room.id;
   socket.emit("draw_request", { room_id }, (response) => {
@@ -98,16 +101,101 @@ const offerDraw = () => {
     } else {
       toast({
         title: "Draw Request",
-        description: "Draw request sent.",
+        description: "Yêu cầu hòa đã được gửi.",
         status: "info",
         duration: 2000,
         isClosable: true,
       });
-      setIsDrawOffered(true);
+      // Thiết lập trạng thái yêu cầu hòa
+      setDrawRequest({
+        from: response.from, // Đối thủ gửi yêu cầu
+        accepted: false, // Chưa được chấp nhận
+      });
     }
   });
 };
 
+// Phương thức để đối thủ chấp nhận yêu cầu hòa
+const acceptDraw = () => {
+  const room_id = data.room.id;
+  socket.emit("draw_response", { room_id, accepted: true }, (response) => {
+    if (response.error) {
+      toast({
+        title: "Error",
+        description: response.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Draw Accepted",
+        description: "Đã chấp nhận yêu cầu hòa.",
+        status: "info",
+        duration: 2000,
+        isClosable: true,
+      });
+      // Loại bỏ yêu cầu hòa từ trạng thái
+      setDrawRequest(null);
+    }
+  });
+};
+
+// Phương thức để từ chối yêu cầu hòa từ đối thủ
+const rejectDraw = () => {
+  const room_id = data.room.id;
+  socket.emit("draw_response", { room_id, accepted: false }, (response) => {
+    if (response.error) {
+      toast({
+        title: "Error",
+        description: response.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Draw Rejected",
+        description: "Đã từ chối yêu cầu hòa.",
+        status: "info",
+        duration: 2000,
+        isClosable: true,
+      });
+      // Loại bỏ yêu cầu hòa từ trạng thái
+      setDrawRequest(null);
+    }
+  });
+};
+
+// Phương thức để hiển thị xác nhận yêu cầu hòa cho đối thủ
+const renderDrawRequest = () => {
+  if (drawRequest) {
+    return (
+      <Flex justifyContent="space-between" alignItems="center">
+        <chakra.span>
+          Yêu cầu hòa từ: {drawRequest.from}
+        </chakra.span>
+        <Flex>
+          <Button
+            colorScheme="teal"
+            size="sm"
+            onClick={acceptDraw}
+            mr={2}
+          >
+            Chấp nhận
+          </Button>
+          <Button
+            colorScheme="red"
+            size="sm"
+            onClick={rejectDraw}
+          >
+            Từ chối
+          </Button>
+        </Flex>
+      </Flex>
+    );
+  }
+};
   const surrenderGame = () => {
     const confirmSurrender = window.confirm("Are you sure you want to surrender?");
     if (confirmSurrender) {
@@ -540,6 +628,7 @@ const offerDraw = () => {
         <Divider my={"4"} orientation="horizontal" />
         <chakra.h3 fontSize={"xl"}>Chat</chakra.h3>
         <Flex direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
+        {renderDrawRequest()}
           <Flex gap={1}>
             <Input
               id="message-input"
