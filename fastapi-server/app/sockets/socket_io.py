@@ -440,7 +440,7 @@ async def draw_request(sid, data):
 
     opponent_sid = room.get_opponent_sid(sid)
     if opponent_sid:
-        await sio.emit("draw_request", room=room_id, skip_sid=opponent_sid)
+        await sio.emit("draw_request", room=opponent_sid, data={"room_id": room_id})
     return Response(False, message="Draw request sent").to_dict()
 
 
@@ -454,7 +454,7 @@ async def draw_response(sid, data):
     if accepted:
         await sio.emit("game_over", room=room_id, data={"result": "draw"})
     else:
-        await sio.emit("draw_declined", room=room_id)
+        await sio.emit("draw_declined", room=room.get_opponent_sid(sid))
     await sio.emit("draw_response", room=room_id, data={"accepted": accepted})
     return Response(False, message="Draw response processed").to_dict()
 
