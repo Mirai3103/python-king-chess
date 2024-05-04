@@ -83,8 +83,7 @@ function leaveRoom() {
   });
 }
 
-<<<<<<< HEAD
-=======
+
 const [drawRequest, setDrawRequest] = React.useState(null);
 
 // Phương thức để gửi yêu cầu hòa
@@ -197,7 +196,6 @@ const renderDrawRequest = () => {
     );
   }
 };
->>>>>>> 3e535040d87cc57a0004b5c715f647ead3629a0e
   const surrenderGame = () => {
     const confirmSurrender = window.confirm("Are you sure you want to surrender?");
     if (confirmSurrender) {
