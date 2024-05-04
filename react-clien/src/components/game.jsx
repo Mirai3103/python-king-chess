@@ -28,7 +28,6 @@ import { joinRoom, socket } from "../shared/socket";
 export default function Game({ data }) {
   const gameState = useGame({});
   const [roomData, setRoomData] = React.useState(data.room);
-  const [isDrawOffered, setIsDrawOffered] = React.useState(false);
   const sendMessage = () => {
     const messageInput = document.getElementById("message-input");
     const message = messageInput.value.trim();
@@ -84,6 +83,8 @@ function leaveRoom() {
   });
 }
 
+<<<<<<< HEAD
+=======
 const [drawRequest, setDrawRequest] = React.useState(null);
 
 // Phương thức để gửi yêu cầu hòa
@@ -196,6 +197,7 @@ const renderDrawRequest = () => {
     );
   }
 };
+>>>>>>> 3e535040d87cc57a0004b5c715f647ead3629a0e
   const surrenderGame = () => {
     const confirmSurrender = window.confirm("Are you sure you want to surrender?");
     if (confirmSurrender) {
@@ -216,7 +218,6 @@ const renderDrawRequest = () => {
       });
     }
   };
-  //over
   const [gameStopped, setGameStopped] = React.useState(false);
   React.useEffect(() => {
     socket.on("stop_game", () => {
@@ -226,12 +227,10 @@ const renderDrawRequest = () => {
       socket.off("stop_game");
     };
   }, []);
-  //over
   const rootBoardRef = React.useRef(null);
   const [boardWidth, setBoardWidth] = React.useState(400);
   const toast = useToast();
   const navigate = useNavigate();
-  //const history = useHistory();
   React.useEffect(() => {
     if (rootBoardRef.current) {
       setBoardWidth(rootBoardRef.current.offsetHeight);
@@ -585,11 +584,9 @@ const renderDrawRequest = () => {
           <Button colorScheme="teal" size="sm" onClick={leaveRoom}>
             Rời phòng
           </Button>
-          {gameState.isGamePending && !isDrawOffered && (
-            <Button colorScheme="teal" size="sm" onClick={offerDraw}>
+          <Button colorScheme="teal" size="sm">
               Xin hòa
             </Button>
-          )}
           <Button colorScheme="teal" size="sm" onClick={surrenderGame}>
             Đầu hàng
           </Button>
@@ -600,7 +597,6 @@ const renderDrawRequest = () => {
         <Divider my={"4"} orientation="horizontal" />
         <chakra.h3 fontSize={"xl"}>Chat</chakra.h3>
         <Flex direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
-        {renderDrawRequest()}
           <Flex gap={1}>
             <Input
               id="message-input"

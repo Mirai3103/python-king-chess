@@ -428,6 +428,8 @@ async def leave_room(sid, data):
         return Response(False, message="Left room").to_dict()
     else:
         return Response(True, message="You are not in this room").to_dict()
+<<<<<<< HEAD
+=======
 
 
 @sio.on("draw_request")
@@ -468,3 +470,4 @@ async def draw_declined(sid, data):
     if opponent_sid:
         await sio.emit("draw_declined", room=room_id, skip_sid=opponent_sid)
     return Response(False, message="Draw declined processed").to_dict()
+>>>>>>> 3e535040d87cc57a0004b5c715f647ead3629a0e
