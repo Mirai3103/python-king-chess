@@ -7,7 +7,7 @@ from app.core.chess.piece import PIECES_STRATEGY
 
 class Chess(IChess):
     _board: Board = [[Piece() for _ in range(8)] for _ in range(8)]
-    _turn: PieceColor = PieceColor.WHITE
+    turn: PieceColor = PieceColor.WHITE
     _history: list[InternalMove] = []
     _castling: Dict[PieceColor, Dict[str, bool]] = {
         PieceColor.WHITE: {'K': True, 'Q': True},
@@ -115,7 +115,7 @@ class Chess(IChess):
     def load(self, fen: str):
         arr = fen.split(' ')
         # rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-        self._turn = PieceColor.WHITE if arr[1] == 'w' else PieceColor.BLACK
+        self.turn = PieceColor.WHITE if arr[1] == 'w' else PieceColor.BLACK
         self._castling = {
             PieceColor.WHITE: {'K': 'K' in arr[2], 'Q': 'Q' in arr[2]},
             PieceColor.BLACK: {'K': 'k' in arr[2], 'Q': 'q' in arr[2]}
@@ -145,8 +145,8 @@ class Chess(IChess):
         return '\n'.join([' '.join([str(self._board[x][y]) for x in range(8)]) for y in range(8)])
 
     def _move(self, move: InternalMove):
-        us = self._turn
-        them = self._turn.swap()
+        us = self.turn
+        them = self.turn.swap()
         fromX, fromY = CellName.to_2d(move._from)
         toX, toY = CellName.to_2d(move._to)
 
@@ -220,7 +220,7 @@ class Chess(IChess):
         if us == PieceColor.BLACK:
             self._move_number += 1
 
-        self._turn = them
+        self.turn = them
         self._history.append(move)
 
     def fen(self) -> str:
@@ -241,7 +241,7 @@ class Chess(IChess):
             if y < 7:
                 res += '/'
         res += ' '
-        res += 'w' if self._turn == PieceColor.WHITE else 'b'
+        res += 'w' if self.turn == PieceColor.WHITE else 'b'
         res += ' '
         castling = ''
         if self._castling[PieceColor.WHITE]['K']:

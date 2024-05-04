@@ -72,7 +72,7 @@ function leaveRoom() {
           navigate("/");
       } else {
           toast({
-              title: "Error",
+              title: "Lỗi",
               description: data.message,
               status: "error",
               duration: 5000,
@@ -83,6 +83,121 @@ function leaveRoom() {
   });
 }
 
+<<<<<<< HEAD
+=======
+const [drawRequest, setDrawRequest] = React.useState(null);
+
+// Phương thức để gửi yêu cầu hòa
+const offerDraw = () => {
+  const room_id = data.room.id;
+  socket.emit("draw_request", { room_id }, (response) => {
+    if (response.error) {
+      toast({
+        title: "Error",
+        description: response.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        description: "Yêu cầu hòa đã được gửi.",
+        title: "Yêu cầu hòa",
+        status: "info",
+        duration: 2000,
+        isClosable: true,
+      });
+      // Thiết lập trạng thái yêu cầu hòa
+      setDrawRequest({
+        from: response.from, // Đối thủ gửi yêu cầu
+        accepted: false, // Chưa được chấp nhận
+      });
+    }
+  });
+};
+
+// Phương thức để đối thủ chấp nhận yêu cầu hòa
+const acceptDraw = () => {
+  const room_id = data.room.id;
+  socket.emit("draw_response", { room_id, accepted: true }, (response) => {
+    if (response.error) {
+      toast({
+        title: "Error",
+        description: response.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Draw Accepted",
+        description: "Đã chấp nhận yêu cầu hòa.",
+        status: "info",
+        duration: 2000,
+        isClosable: true,
+      });
+      // Loại bỏ yêu cầu hòa từ trạng thái
+      setDrawRequest(null);
+    }
+  });
+};
+
+// Phương thức để từ chối yêu cầu hòa từ đối thủ
+const rejectDraw = () => {
+  const room_id = data.room.id;
+  socket.emit("draw_response", { room_id, accepted: false }, (response) => {
+    if (response.error) {
+      toast({
+        title: "Error",
+        description: response.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Draw Rejected",
+        description: "Đã từ chối yêu cầu hòa.",
+        status: "info",
+        duration: 2000,
+        isClosable: true,
+      });
+      // Loại bỏ yêu cầu hòa từ trạng thái
+      setDrawRequest(null);
+    }
+  });
+};
+
+// Phương thức để hiển thị xác nhận yêu cầu hòa cho đối thủ
+const renderDrawRequest = () => {
+  if (drawRequest) {
+    return (
+      <Flex justifyContent="space-between" alignItems="center">
+        <chakra.span>
+          Yêu cầu hòa từ: {drawRequest.from}
+        </chakra.span>
+        <Flex>
+          <Button
+            colorScheme="teal"
+            size="sm"
+            onClick={acceptDraw}
+            mr={2}
+          >
+            Chấp nhận
+          </Button>
+          <Button
+            colorScheme="red"
+            size="sm"
+            onClick={rejectDraw}
+          >
+            Từ chối
+          </Button>
+        </Flex>
+      </Flex>
+    );
+  }
+};
+>>>>>>> 3e535040d87cc57a0004b5c715f647ead3629a0e
   const surrenderGame = () => {
     const confirmSurrender = window.confirm("Are you sure you want to surrender?");
     if (confirmSurrender) {
@@ -131,8 +246,8 @@ function leaveRoom() {
       if (checked) {
         toast({
           colorScheme: "red",
-          title: "Check",
-          description: `${checked} is checked`,
+          title: "Chiếu",
+          description: `${checked=='white'?'Trắng':'Đen'} bị chiếu`,
           duration: 2000,
           isClosable: true,
         });
@@ -148,13 +263,7 @@ function leaveRoom() {
           ? data.room.player_2_remaining_time
           : data.room.player_1_remaining_time
       );
-      toast({
-        colorScheme: "teal",
-        title: "Moved",
-        description: "Opponent moved",
-        duration: 2000,
-        isClosable: true,
-      });
+     
     }
     function onJoin(data) {
       console.log("joined", data);
@@ -164,8 +273,8 @@ function leaveRoom() {
       });
       toast({
         colorScheme: "teal",
-        title: "Joined",
-        description: "Opponent joined",
+        title: "Vào phòng",
+        description: "Đối thủ đã vào phòng",
         duration: 2000,
         isClosable: true,
       });
@@ -194,7 +303,7 @@ function leaveRoom() {
       toast({
         colorScheme: "teal",
         title: "Started",
-        description: white_id == socket.id ? "You play white" : "You play black",
+        description: white_id == socket.id ? "Bạn quân trắng" : "Bạn quân đen",
         duration: 10000,
         isClosable: true,
       });
@@ -203,8 +312,8 @@ function leaveRoom() {
       console.log("opponent left", data);
       toast({
         colorScheme: "red",
-        title: "The opponent leaves the game",
-        description: "The opponent has left the game",
+        title: "Đối thủ đã rời khỏi game",
+        description: "Đối thủ đã rời khỏi game",
         duration: 10000,
         isClosable: true,
       });
@@ -218,9 +327,9 @@ function leaveRoom() {
       let winner = data.winner === "white" ? 'Trắng' : 'Đen';
       let description;
       if (data.winner === "draw") {
-        description = "Match Draw.";
+        description = "Game hoà";
       } else {
-        description = `The game ends! ${winner} win.`;
+        description = `Game kết thúc, ${winner} thắng`;
       }
       toast({
         colorScheme: "red",
@@ -244,7 +353,7 @@ function leaveRoom() {
         toast({
           colorScheme: "red",
           title: "Chiếu",
-          description: "You are checkmate",
+          description: "Bạn bị chiếu",
           duration: 5000,
           isClosable: true,
         });
@@ -252,7 +361,7 @@ function leaveRoom() {
         toast({
           colorScheme: "green",
           title: "Chiếu",
-          description: "The opponent is checkmated",
+          description: "Đối thủ bị chiếu",
           duration: 5000,
           isClosable: true,
         });
@@ -403,7 +512,6 @@ function leaveRoom() {
             position={gameState.fen || DEFAULT_POSITION}
             onPieceDrop={(from, to, piece) => {
               setMove({ from, to, piece });
-
               if (gameStopped) {
                 return false;
               }
@@ -412,8 +520,8 @@ function leaveRoom() {
               console.log(mycolor, piece);
               if (!piece.toLocaleLowerCase().startsWith(mycolor.charAt(0))) {
                 toast({
-                  title: "Invalid move",
-                  description: "It's not your piece",
+                  title: "Lỗi",
+                  description: "Đây không phải quân cờ của bạn",
                   status: "error",
                   duration: 2000,
                   isClosable: true,
@@ -424,8 +532,8 @@ function leaveRoom() {
 
               if (gameState.fen.split(" ")[1] != mycolor.charAt(0)) {
                 toast({
-                  title: "Invalid move",
-                  description: "It's not your turn",
+                  title: "Nước đi không hợp lệ",
+                  description: "Chưa đến lượt của bạn",
                   status: "error",
                   duration: 2000,
                   isClosable: true,
@@ -433,33 +541,12 @@ function leaveRoom() {
                 });
                 return false;
               }
-              console.log(from, to, piece);
-              const room_id = data.room.id;
-              const payload = {
-                move: { from, to, piece,
-                  promotion: piece[1].toLowerCase() ?? "q"
-                },
-                room_id,
-                remaining_time: gameState.myRemainingTime,
-              };
-              socket.emit("move", payload, (data) => {
-                if (data.is_error) {
-                  toast({
-                    title: "Error",
-                    description: data.message,
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                    colorScheme: "red",
-                  });
-                }
-              });
               const isWhite = mycolor === "white";
               const isPromotion = (isWhite && to[1] === "8") || (!isWhite && to[1] === "1");
               if (isPromotion) {
                 toast({
-                  title: "Promotion",
-                  description: "Choose a piece to promote to",
+                  title: "Phong cấp",
+                  description: "Chọn quân cờ để phong cấp",
                   status: "info",
                   duration: 2000,
                   isClosable: true,
