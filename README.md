@@ -54,14 +54,14 @@ docker-compose up --build
 ## Demo
 
 #### Màn hình chính
-![alt text](https://cdn.discordapp.com/attachments/1109544174711218248/1235947446429941810/image.png?ex=66363942&is=6634e7c2&hm=54f4b064717e7dde27f499757595deb9f4ada73fcaafc5476a15e4c91085fff7&)
+![alt text](https://cdn.discordapp.com/attachments/1109544174711218248/1235947446429941810/image.png?ex=6638dc42&is=66378ac2&hm=ed755c0cc348825f5895351880fbd8ec1bf0ee2ca6d00dddc79fcf86aacf92f9&)
 
 #### Chơi 2 người
 ![alt text](https://cdn.discordapp.com/attachments/979590301113020496/1236742408272875560/image.png?ex=66391d9f&is=6637cc1f&hm=a6aa0c6fc323d2e483a11d24378419c98c0cf2ae6b54948e63800875ac640a19&)
 
 #### Chơi với máy
-
-![alt text](https://cdn.discordapp.com/attachments/1109544174711218248/1235953875899514960/0503.gif?ex=66363f3e&is=6634edbe&hm=b215960da0b384b62826491b1e7c8f66c5dcf71bd859d266bb2844ba6a2125cd&)
+![alt text](https://cdn.discordapp.com/attachments/1109544174711218248/1235953225908224062/image.png?ex=6638e1a3&is=66379023&hm=0e8be0654a1a16057d65fd330479945025cfbe7a92c7587471fb30155f043e3f&)
+![alt text](https://cdn.discordapp.com/attachments/1109544174711218248/1235953875899514960/0503.gif?ex=6638e23e&is=663790be&hm=9425cab7f3b702b5ec1a989ed1c834312a25cf1c7da5524802faf5d3d9486e5b&)
 
 
 ## License
