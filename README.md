@@ -18,9 +18,9 @@
 
 #### 1. Clone repository về máy
 ```bash
-git clone https://github.com/Mirai3103/python-king-chess.git && cd fastapi-server
+git clone https://github.com/Mirai3103/python-king-chess.git && cd python-king-chess && cd fastapi-server
 ```
-#### 2. Tạo virtual environment và cài đặt các thư viện cần thiết**
+#### 2. Tạo virtual environment và cài đặt các thư viện cần thiết
 ##### Đối với Windows
 ```bash
 python -m venv venv
@@ -42,7 +42,15 @@ python main.py
 ```bash
 cd react-client && npm install && npm dev
 ```
-
+### Chạy với docker
+#### 1. Clone repository về máy
+```bash
+git clone https://github.com/Mirai3103/python-king-chess.git && cd python-king-chess && cd fastapi-server
+```
+#### 2. Run docker container
+```bash
+docker-compose up --build
+```
 ## Demo
 
 #### Màn hình chính
