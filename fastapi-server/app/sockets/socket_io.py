@@ -191,7 +191,7 @@ async def start_game(sid, data):
     if room.player_1 != sid:
         return Response(True, message="You are not the host").to_dict()
     if room.is_full():
-        room.game = chess.Chess()
+        room.game = chess.Chess("")
         await sio.emit("game_started", room=room.id, data=await room.to_dict())
         return Response(False, message="Game started").to_dict()
     return Response(True, message="Room is not full").to_dict()
@@ -218,16 +218,7 @@ async def join_invite(sid, data):
 
 @sio.on("time_out")
 async def time_out(sid, data):
-    # room = rooms_dict.get(data)
-    # if room is None:
-    #     return Response(True, message="Room not found").to_dict()
-    # room = rooms_dict[room]
-    # if room.white_id == sid:
-    #     room.player_1_remaining_time = 0
-    # else:
-    #     room.player_2_remaining_time = 0
-    # await sio.emit("time_out", room=room.id, data=room.to_dict())
-    #
+
     room_id = data["room_id"]
     room = get_room(room_id)
     if room is None:
@@ -443,6 +434,19 @@ async def draw_request(sid, data):
         await sio.emit("draw_request", room=opponent_sid, data={"room_id": room_id})
     return Response(False, message="Draw request sent").to_dict()
 
+@sio.on("is_promotion")
+async def is_promotion(sid, data):
+    room_id = data["room_id"]
+    from_square = data["from"]
+    to_square = data["to"]
+    room = get_room(room_id)
+    game = room.game
+    if game is None:
+        return Response(True, message="Game not started").to_dict()
+    if game.is_promotion(CellName(from_square), CellName(to_square)):
+        return Response(False, message="Promotion",data={"is_promotion": True}).to_dict()
+    return Response(False, message="Not promotion",data={"is_promotion": False}).to_dict()
+    
 
 @sio.on("draw_response")
 async def draw_response(sid, data):

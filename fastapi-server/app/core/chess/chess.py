@@ -269,6 +269,12 @@ class Chess(IChess):
                 if piece.pieceColor == color:
                     moves += self.moves(CellName.from_2d(x, y))
         return moves
+    def is_promotion(self, from_cell: CellName, to_cell: CellName) -> bool:
+        x, y = CellName.to_2d(from_cell)
+        is_pawn = self._board[x][y].pieceType == PieceType.PAWN
+        return is_pawn and (to_cell[1] == '1' or to_cell[1] == '8')
+    
+    
 
     def move(self, from_cell: CellName, to_cell: CellName, promotion: str = 'q') -> InternalMove:
         promotion= PieceType(promotion.lower())

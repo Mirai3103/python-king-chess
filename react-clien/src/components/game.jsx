@@ -434,7 +434,6 @@ export default function Game({ data }) {
   const [promoPiece, setPromoPiece] = React.useState("q");
   const [move, setMove] = React.useState({ from: "", to: "", piece: "" });
   function onMakeMove({ from, to, piece }) {
-    console.log({ from, to, piece, promotion: promoPiece })
     const room_id = data.room.id;
     const payload = {
       move: { from, to, piece, promotion: promoPiece },
@@ -501,10 +500,11 @@ export default function Game({ data }) {
                 });
                 return;
               }
+              console.log({ ...move, piece: move.piece[0] + promoPiece });
               onMakeMove({ ...move, piece: move.piece[0] + promoPiece });
               onClose();
             }}>
-              Close
+              Chọn
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -528,8 +528,9 @@ export default function Game({ data }) {
             boardOrientation={gameState.myColor}
             boardWidth={boardWidth}
             position={gameState.fen || DEFAULT_POSITION}
-            onPieceDrop={(from, to, piece) => {
-              setMove({ from, to, piece });
+            onPieceDrop={(from, to, piece,...args) => {
+              console.log({ from, to, piece, args });
+             
               if (gameStopped) {
                 return false;
               }
@@ -560,21 +561,39 @@ export default function Game({ data }) {
                 return false;
               }
               const isWhite = mycolor === "white";
-              const isPromotion = ((isWhite && to[1] === "8") || (!isWhite && to[1] === "1") ) && piece[1].toLocaleLowerCase() === "p";
-              if (isPromotion) {
-                toast({
-                  title: "Phong cấp",
-                  description: "Chọn quân cờ để phong cấp",
-                  status: "info",
-                  duration: 2000,
-                  isClosable: true,
-                  colorScheme: "blue",
-                });
-                onOpen();
-                return false;
+//               @sio.on("is_promotion")
+// async def is_promotion(sid, data):
+//     room_id = data["room_id"]
+//     from_square = data["from"]
+//     to_square = data["to"]
+//     room = get_room(room_id)
+//     game = room.game
+//     if game is None:
+//         return Response(True, message="Game not started").to_dict()
+//     if game.is_promotion(CellName(from_square), CellName(to_square)):
+//         return Response(False, message="Promotion",data={"is_promotion": True}).to_dict()
+//     return Response(False, message="Not promotion",data={"is_promotion": False}).to_dict()
+              socket.emit("is_promotion", { room_id: data.room.id, from: from, to: to }, (data) => {
+                console.log("is_promotion", data);
+                if (data.data.is_promotion) {
+                    toast({
+                      title: "Phong cấp",
+                      description: "Chọn quân cờ để phong cấp",
+                      status: "info",
+                      duration: 2000,
+                      isClosable: true,
+                      colorScheme: "blue",
+                    });
+                    setMove({ from, to, piece });
+                    console.log({ from, to, piece});
+                    onOpen();
+                 
+                } else {
+                    onMakeMove({ from, to, piece });
+                }
               }
-
-              onMakeMove({ from, to, piece });
+              );
+              
               return true;
             }}
           />
@@ -649,6 +668,7 @@ export default function Game({ data }) {
     //#region
   );
 }
+
 
 function seccondsToTime(seconds) {
   let minutes = Math.floor(seconds / 60);
