@@ -78,9 +78,9 @@ class StockfishBot(BotAlgorithmStrategy):
         else:
             path = "stockfish/linux/stockfish"
         st= Stockfish(path=path,
-                        depth=10,
+                        depth=12,
                         parameters={
-                            "Threads": 1,
+                            "Threads": 4,
                             "Skill Level": 16,
                             "Hash": 64,
                         }
