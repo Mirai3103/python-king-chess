@@ -16,8 +16,10 @@ class Chess(IChess):
     _move_number: int = 0
     _ep_square: tuple[int, int] = None
     _half_moves: int = 0
+
     def is_game_over(self) -> bool:
         pass
+
     def is_check(self, color: PieceColor) -> bool:
         for x in range(8):
             for y in range(8):
@@ -25,6 +27,7 @@ class Chess(IChess):
                 if piece.pieceType == PieceType.KING and piece.pieceColor == color:
                     return self.is_attacked(x, y, color)
         return False
+
     def squares_of_color(self, color: PieceColor) -> list[CellName]:
         squares = []
         for x in range(8):
@@ -32,51 +35,54 @@ class Chess(IChess):
                 if self._board[x][y].pieceColor == color and self._board[x][y].pieceType != PieceType.EMPTY:
                     squares.append(CellName.from_2d(x, y))
         return squares
+
     def getPiece(self, cell: CellName) -> Piece:
         x, y = CellName.to_2d(cell)
         return self._board[x][y]
-    
+
     def simulate_move(self, move: InternalMove) -> 'Chess':
         cloned = Chess(self.fen())
         cloned._move(move)
         return cloned
+
     def moves(self, from_cell: CellName) -> list[InternalMove]:
         x, y = CellName.to_2d(from_cell)
         strategy = PIECES_STRATEGY[self._board[x][y].pieceType]
         return strategy.get_moves(self, CellName.to_2d(from_cell))
+
     def is_attacked(self, x: int, y: int, color: PieceColor) -> bool:
         for dx in range(-1, 2):
-                for dy in range(-1, 2):
-                    if dx == 0 and dy == 0:
-                        continue
-                    for i in range(1, 8):
-                        tx = x + i * dx
-                        ty = y + i * dy
-                        if tx < 0 or tx >= 8 or ty < 0   or ty >= 8:
+            for dy in range(-1, 2):
+                if dx == 0 and dy == 0:
+                    continue
+                for i in range(1, 8):
+                    tx = x + i * dx
+                    ty = y + i * dy
+                    if tx < 0 or tx >= 8 or ty < 0 or ty >= 8:
+                        break
+                    piece = self._board[tx][ty]
+                    if piece.pieceType != PieceType.EMPTY:
+                        if piece.pieceColor == color:
                             break
-                        piece = self._board[tx][ty]
-                        if piece.pieceType != PieceType.EMPTY:
-                            if piece.pieceColor == color:
-                                break
-                            if (dx == 0 or dy == 0) and piece.pieceType in [PieceType.ROOK, PieceType.QUEEN]:
-                                return True
-                            if (dx != 0 and dy != 0) and piece.pieceType in [PieceType.BISHOP, PieceType.QUEEN]:
-                                return True
-                            if i == 1 and piece.pieceType == PieceType.KING:
-                                return True
-                            if i == 1 and piece.pieceType == PieceType.PAWN:
-                                if color == PieceColor.WHITE:
-                                    if dx == -1 and dy == -1:
-                                        return True
-                                    if dx == 1 and dy == -1:
-                                        return True
-                                else:
-                                    if dx == 1 and dy == 1:
-                                        return True
-                                    if dx == -1 and dy == 1:
-                                        return True
-                            break
-            #  hướng di chuyển của quân mã
+                        if (dx == 0 or dy == 0) and piece.pieceType in [PieceType.ROOK, PieceType.QUEEN]:
+                            return True
+                        if (dx != 0 and dy != 0) and piece.pieceType in [PieceType.BISHOP, PieceType.QUEEN]:
+                            return True
+                        if i == 1 and piece.pieceType == PieceType.KING:
+                            return True
+                        if i == 1 and piece.pieceType == PieceType.PAWN:
+                            if color == PieceColor.WHITE:
+                                if dx == -1 and dy == -1:
+                                    return True
+                                if dx == 1 and dy == -1:
+                                    return True
+                            else:
+                                if dx == 1 and dy == 1:
+                                    return True
+                                if dx == -1 and dy == 1:
+                                    return True
+                        break
+        #  hướng di chuyển của quân mã
         for dx, dy in [(1, 2), (2, 1), (-1, 2), (2, -1), (-2, 1), (1, -2), (-2, -1), (-1, -2)]:
             tx = x + dx
             ty = y + dy
@@ -87,15 +93,18 @@ class Chess(IChess):
                 continue
             if piece.pieceType == PieceType.KNIGHT and piece.pieceColor != color:
                 return True
+
     def get_piece_color(self, cell: CellName) -> PieceColor:
         x, y = CellName.to_2d(cell)
         return self._board[x][y].pieceColor
+
     def get_piece_type(self, cell: CellName) -> PieceType:
         x, y = CellName.to_2d(cell)
         return self._board[x][y].pieceType
-    
-    def _can_piece_attack(self, piece: Piece, piece_position: tuple[int, int], target_position: tuple[int, int]) -> bool:
-    # Lấy tất cả các nước đi có thể của quân cờ
+
+    def _can_piece_attack(self, piece: Piece, piece_position: tuple[int, int],
+                          target_position: tuple[int, int]) -> bool:
+        # Lấy tất cả các nước đi có thể của quân cờ
         if piece.pieceType == PieceType.EMPTY:
             return False
         if piece_position[0] < 0 or piece_position[0] > 7 or piece_position[1] < 0 or piece_position[1] > 7:
@@ -103,11 +112,12 @@ class Chess(IChess):
         if target_position[0] < 0 or target_position[0] > 7 or target_position[1] < 0 or target_position[1] > 7:
             return False
         moves = PIECES_STRATEGY[piece.pieceType].get_moves(self, piece_position)
-    # Kiểm tra xem có nước đi nào đến vị trí mục tiêu không
+        # Kiểm tra xem có nước đi nào đến vị trí mục tiêu không
         for move in moves:
             if move._to == CellName.from_2d(target_position[0], target_position[1]):
-               return True
+                return True
         return False
+
     #
     def __init__(self, fen: str = DEFAULT_FEN_POSITION):
         self.load(fen)
@@ -151,10 +161,12 @@ class Chess(IChess):
         toX, toY = CellName.to_2d(move._to)
 
         def capture():
-            self._board[fromX + (1 if us == PieceColor.WHITE else -1)][fromY] = Piece()
+            self._board[fromX ][fromY] = Piece()
+            #self._board[fromX + (1 if us == PieceColor.WHITE else -1)][fromY] = Piece()
 
-        if move._moveType == MoveType.EP_CAPTURE:
-            capture()
+
+        # if move._moveType == MoveType.EP_CAPTURE:
+        #     capture()
         # // di chuyển quân cờ
         self._board[toX][toY] = self._board[fromX][fromY]
 
@@ -173,12 +185,10 @@ class Chess(IChess):
             print("Chuyển xe từ", toX + 1, toY, "đến", toX - 1, toY)
             self._board[toX - 1][toY] = Piece(PieceType.ROOK, us)
             self._board[7][toY] = Piece()
-        
+
         # // nếu ta di chuyển quân vua, tắt quyền nhập thành
 
-
         if self._board[toX][toY].pieceType == PieceType.KING:
-
             self._castling[us] = {'K': False, 'Q': False}
 
         # // tắt quyền nhập thành nếu ta di chuyển quân xe
@@ -269,28 +279,30 @@ class Chess(IChess):
                 if piece.pieceColor == color:
                     moves += self.moves(CellName.from_2d(x, y))
         return moves
+
     def is_promotion(self, from_cell: CellName, to_cell: CellName) -> bool:
         x, y = CellName.to_2d(from_cell)
+        print(x, y)
         is_pawn = self._board[x][y].pieceType == PieceType.PAWN
         if not is_pawn:
             return False
         strategy = PIECES_STRATEGY[self._board[x][y].pieceType]
         moves = strategy.check_move(self, CellName.to_2d(from_cell), CellName.to_2d(to_cell))
-        if moves is not None and (moves._moveType == MoveType.PROMOTION or moves._moveType == MoveType.CAPTURE_AND_PROMOTION):
+        if moves is not None and (
+                moves._moveType == MoveType.PROMOTION or moves._moveType == MoveType.CAPTURE_AND_PROMOTION):
             return True
-        
+
         return False
-    
-    
 
     def move(self, from_cell: CellName, to_cell: CellName, promotion: str = 'q') -> InternalMove:
-        promotion= PieceType(promotion.lower())
+        promotion = PieceType(promotion.lower())
         x, y = CellName.to_2d(from_cell)
         strategy = PIECES_STRATEGY[(self._board[x][y].pieceType)]
         move = strategy.check_move(self, CellName.to_2d(from_cell), CellName.to_2d(to_cell))
-        if move is not None and (move._moveType == MoveType.PROMOTION or move._moveType == MoveType.CAPTURE_AND_PROMOTION):
+        if move is not None and (
+                move._moveType == MoveType.PROMOTION or move._moveType == MoveType.CAPTURE_AND_PROMOTION):
             move._promotion = promotion
-        
+
         if move is not None:
             self._move(move)
         return move
@@ -303,7 +315,8 @@ class Chess(IChess):
         self.load(DEFAULT_FEN_POSITION)
         for move in self._history:
             self._move(move)
-    #        
+
+    #
     def is_stalemate(self, color: PieceColor) -> bool:
         for x in range(8):
             for y in range(8):
@@ -314,7 +327,8 @@ class Chess(IChess):
                         new_board = self.simulate_move(move)
                         if not new_board.is_check(color):
                             return False
-        return True 
+        return True
+
     def is_checkmate(self, color: PieceColor) -> bool:
         for x in range(8):
             for y in range(8):
@@ -325,12 +339,12 @@ class Chess(IChess):
                         new_board = self.simulate_move(move)
                         if not new_board.is_check(color):
                             return False
-        return True 
+        return True
+
     def is_game_over(self):
         return (
-        self.is_checkmate(PieceColor.WHITE)
-        or self.is_checkmate(PieceColor.BLACK)
-        or self.is_stalemate(PieceColor.WHITE)
-        or self.is_stalemate(PieceColor.BLACK)
-    )
-      
+                self.is_checkmate(PieceColor.WHITE)
+                or self.is_checkmate(PieceColor.BLACK)
+                or self.is_stalemate(PieceColor.WHITE)
+                or self.is_stalemate(PieceColor.BLACK)
+        )

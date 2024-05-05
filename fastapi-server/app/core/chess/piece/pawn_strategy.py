@@ -28,7 +28,7 @@ class PawnStrategy(PieceStrategy):
         # // ăn quân
         if fromX > 0 and board[fromX - 1][fromY + direction].pieceColor != piece.pieceColor and board[fromX - 1][fromY + direction].pieceType != PieceType.EMPTY:
             move=InternalMove(CellName.from_2d(fromX, fromY), CellName.from_2d(fromX - 1, fromY + direction), PieceType.QUEEN, board[fromX - 1][fromY + direction], piece, MoveType.CAPTURE_AND_PROMOTION if self.is_promotion((fromX - 1,fromY + direction),piece.pieceColor) else MoveType.CAPTURE)
-            if not game.simulate_move(move).is_check(piece.pieceColor)  :
+            if not game.simulate_move(move).is_check(piece.pieceColor):
                 moves.append(move)
         if fromX < 7 and board[fromX + 1][fromY + direction].pieceColor != piece.pieceColor and board[fromX + 1][fromY + direction].pieceType != PieceType.EMPTY:
             move=InternalMove(CellName.from_2d(fromX, fromY), CellName.from_2d(fromX + 1, fromY + direction), PieceType.QUEEN, board[fromX + 1][fromY + direction], piece, MoveType.CAPTURE_AND_PROMOTION if self.is_promotion((fromX + 1,fromY + direction),piece.pieceColor) else MoveType.CAPTURE)
