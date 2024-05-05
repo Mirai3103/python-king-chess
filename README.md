@@ -49,7 +49,7 @@ cd react-client && npm install && npm dev
 ![alt text](https://cdn.discordapp.com/attachments/1109544174711218248/1235947446429941810/image.png?ex=66363942&is=6634e7c2&hm=54f4b064717e7dde27f499757595deb9f4ada73fcaafc5476a15e4c91085fff7&)
 
 #### Chơi 2 người
-![alt text](https://cdn.discordapp.com/attachments/1109544174711218248/1235947940917542942/image.png?ex=663639b7&is=6634e837&hm=e5e04a9e55be758a1e2e4d3ee4640a8bac8f3db7b2f541d5638c6bd6f751428f&)
+![alt text](https://cdn.discordapp.com/attachments/979590301113020496/1236742408272875560/image.png?ex=66391d9f&is=6637cc1f&hm=a6aa0c6fc323d2e483a11d24378419c98c0cf2ae6b54948e63800875ac640a19&)
 
 #### Chơi với máy
 
