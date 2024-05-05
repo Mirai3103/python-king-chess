@@ -196,7 +196,7 @@ async def start_game(sid, data):
     if room.player_1 != sid:
         return Response(True, message="You are not the host").to_dict()
     if room.is_full():
-        room.game = chess.Chess("rnbqkbn1/pppppppP/8/8/5P2/8/PPPPP2P/RNBQK1Nb w KQq - 0 7")
+        room.game = chess.Chess()
         await sio.emit("game_started", room=room.id, data=await room.to_dict())
         return Response(False, message="Game started").to_dict()
     return Response(True, message="Room is not full").to_dict()
@@ -214,7 +214,7 @@ async def join_invite(sid, data):
     session['room_id'] = data
     await sio.emit("a_player_joined", room=data)
     room.player_2 = sid
-    room.game = chess.Chess("rnbqkbn1/pppppppP/8/8/5P2/8/PPPPP2P/RNBQK1Nb w KQq - 0 7")
+    room.game = chess.Chess()
     room.white_id = room.white_id if room.white_id is not None else sid
     room.player_2_name = session.get("display_name", "")
     await sio.emit("game_started", room=room.id, data=await room.to_dict())
