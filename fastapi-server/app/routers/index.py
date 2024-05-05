@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Request
 from app.templates import templates
 from fastapi.responses import HTMLResponse
 from app.sockets.socket_io import get_room

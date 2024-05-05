@@ -560,7 +560,7 @@ export default function Game({ data }) {
                 return false;
               }
               const isWhite = mycolor === "white";
-              const isPromotion = (isWhite && to[1] === "8") || (!isWhite && to[1] === "1");
+              const isPromotion = ((isWhite && to[1] === "8") || (!isWhite && to[1] === "1") ) && piece[1].toLocaleLowerCase() === "p";
               if (isPromotion) {
                 toast({
                   title: "Phong cấp",
