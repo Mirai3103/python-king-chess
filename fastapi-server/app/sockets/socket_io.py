@@ -14,7 +14,10 @@ sio_app = ASGIApp(sio,
                   socketio_path='socket.io',
                   )
 
-
+@sio.on("*")
+async def catch_all(sid, data):
+    print(f"catch_all {sid} {data}")
+    
 @sio.event
 async def make_move_to_bot(sid, data):
     fen = data["fen"]

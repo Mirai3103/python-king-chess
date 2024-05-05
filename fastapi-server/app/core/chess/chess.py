@@ -272,7 +272,14 @@ class Chess(IChess):
     def is_promotion(self, from_cell: CellName, to_cell: CellName) -> bool:
         x, y = CellName.to_2d(from_cell)
         is_pawn = self._board[x][y].pieceType == PieceType.PAWN
-        return is_pawn and (to_cell[1] == '1' or to_cell[1] == '8')
+        if not is_pawn:
+            return False
+        strategy = PIECES_STRATEGY[self._board[x][y].pieceType]
+        moves = strategy.check_move(self, CellName.to_2d(from_cell), CellName.to_2d(to_cell))
+        if moves is not None and (moves._moveType == MoveType.PROMOTION or moves._moveType == MoveType.CAPTURE_AND_PROMOTION):
+            return True
+        
+        return False
     
     
 
