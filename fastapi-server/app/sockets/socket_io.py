@@ -24,7 +24,7 @@ async def make_move_to_bot(sid, data):
     moveRs = game.move(CellName(move["from"]), CellName(move["to"]),
                        move.get("promotion") if move.get("promotion") is not None else 'q')
     if moveRs is None:
-        return Response(True, message="Invalid move").to_dict()
+        return Response(True, message="Nước đi không hợp lệ").to_dict()
     current_color = PieceColor.WHITE if game.turn == PieceColor.BLACK else PieceColor.BLACK
     newFen = game.fen()
     await sio.emit("update_fen", room=sid, data={"fen": newFen, "move": move})
@@ -300,7 +300,7 @@ async def move(sid, data):
     moveRs = game.move(CellName(from_square), CellName(to_square),
                        move.get("promotion") if move.get("promotion") is not None else 'q')
     if moveRs is None:
-        return Response(True, message="Invalid move").to_dict()
+        return Response(True, message="Nước đi không hợp lệ").to_dict()
 
     if game.is_check(PieceColor.WHITE):
         await sio.emit("checked", room=room.id, data={"color": "white"})
