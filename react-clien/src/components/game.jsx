@@ -7,23 +7,13 @@ import {
   Divider,
   Input,
   useToast,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  RadioGroup,
-  Stack,
-  Radio,
 } from "@chakra-ui/react";
 import { Chessboard } from "react-chessboard";
 import { DEFAULT_POSITION } from "chess.js";
 import useGame from "../hooks/useGame";
 import { useNavigate } from "@tanstack/react-router";
 import { joinRoom, socket } from "../shared/socket";
+//import { useHistory } from "react-router-dom";
 
 export default function Game({ data }) {
   const gameState = useGame({});
@@ -39,10 +29,9 @@ export default function Game({ data }) {
   const renderMessages = () => {
     if (gameState.messages && gameState.messages.length > 0) {
       console.log(gameState.messages);
-      let temp = [...gameState.messages]
+      let temp =[...gameState.messages]
       temp = temp.reverse();
       return temp
-
       .map((msg, index) => (
         <Flex
         key={index}
@@ -72,7 +61,7 @@ function leaveRoom() {
           navigate("/");
       } else {
           toast({
-              title: "Lỗi",
+              title: "Error",
               description: data.message,
               status: "error",
               duration: 5000,
@@ -83,121 +72,6 @@ function leaveRoom() {
   });
 }
 
-<<<<<<< HEAD
-=======
-const [drawRequest, setDrawRequest] = React.useState(null);
-
-// Phương thức để gửi yêu cầu hòa
-const offerDraw = () => {
-  const room_id = data.room.id;
-  socket.emit("draw_request", { room_id }, (response) => {
-    if (response.error) {
-      toast({
-        title: "Error",
-        description: response.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    } else {
-      toast({
-        description: "Yêu cầu hòa đã được gửi.",
-        title: "Yêu cầu hòa",
-        status: "info",
-        duration: 2000,
-        isClosable: true,
-      });
-      // Thiết lập trạng thái yêu cầu hòa
-      setDrawRequest({
-        from: response.from, // Đối thủ gửi yêu cầu
-        accepted: false, // Chưa được chấp nhận
-      });
-    }
-  });
-};
-
-// Phương thức để đối thủ chấp nhận yêu cầu hòa
-const acceptDraw = () => {
-  const room_id = data.room.id;
-  socket.emit("draw_response", { room_id, accepted: true }, (response) => {
-    if (response.error) {
-      toast({
-        title: "Error",
-        description: response.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: "Draw Accepted",
-        description: "Đã chấp nhận yêu cầu hòa.",
-        status: "info",
-        duration: 2000,
-        isClosable: true,
-      });
-      // Loại bỏ yêu cầu hòa từ trạng thái
-      setDrawRequest(null);
-    }
-  });
-};
-
-// Phương thức để từ chối yêu cầu hòa từ đối thủ
-const rejectDraw = () => {
-  const room_id = data.room.id;
-  socket.emit("draw_response", { room_id, accepted: false }, (response) => {
-    if (response.error) {
-      toast({
-        title: "Error",
-        description: response.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: "Draw Rejected",
-        description: "Đã từ chối yêu cầu hòa.",
-        status: "info",
-        duration: 2000,
-        isClosable: true,
-      });
-      // Loại bỏ yêu cầu hòa từ trạng thái
-      setDrawRequest(null);
-    }
-  });
-};
-
-// Phương thức để hiển thị xác nhận yêu cầu hòa cho đối thủ
-const renderDrawRequest = () => {
-  if (drawRequest) {
-    return (
-      <Flex justifyContent="space-between" alignItems="center">
-        <chakra.span>
-          Yêu cầu hòa từ: {drawRequest.from}
-        </chakra.span>
-        <Flex>
-          <Button
-            colorScheme="teal"
-            size="sm"
-            onClick={acceptDraw}
-            mr={2}
-          >
-            Chấp nhận
-          </Button>
-          <Button
-            colorScheme="red"
-            size="sm"
-            onClick={rejectDraw}
-          >
-            Từ chối
-          </Button>
-        </Flex>
-      </Flex>
-    );
-  }
-};
->>>>>>> 3e535040d87cc57a0004b5c715f647ead3629a0e
   const surrenderGame = () => {
     const confirmSurrender = window.confirm("Are you sure you want to surrender?");
     if (confirmSurrender) {
@@ -218,6 +92,7 @@ const renderDrawRequest = () => {
       });
     }
   };
+  //over
   const [gameStopped, setGameStopped] = React.useState(false);
   React.useEffect(() => {
     socket.on("stop_game", () => {
@@ -227,10 +102,12 @@ const renderDrawRequest = () => {
       socket.off("stop_game");
     };
   }, []);
+  //over
   const rootBoardRef = React.useRef(null);
   const [boardWidth, setBoardWidth] = React.useState(400);
   const toast = useToast();
   const navigate = useNavigate();
+  //const history = useHistory();
   React.useEffect(() => {
     if (rootBoardRef.current) {
       setBoardWidth(rootBoardRef.current.offsetHeight);
@@ -246,8 +123,8 @@ const renderDrawRequest = () => {
       if (checked) {
         toast({
           colorScheme: "red",
-          title: "Chiếu",
-          description: `${checked=='white'?'Trắng':'Đen'} bị chiếu`,
+          title: "Check",
+          description: `${checked} is checked`,
           duration: 2000,
           isClosable: true,
         });
@@ -263,7 +140,13 @@ const renderDrawRequest = () => {
           ? data.room.player_2_remaining_time
           : data.room.player_1_remaining_time
       );
-     
+      toast({
+        colorScheme: "teal",
+        title: "Moved",
+        description: "Opponent moved",
+        duration: 2000,
+        isClosable: true,
+      });
     }
     function onJoin(data) {
       console.log("joined", data);
@@ -273,15 +156,15 @@ const renderDrawRequest = () => {
       });
       toast({
         colorScheme: "teal",
-        title: "Vào phòng",
-        description: "Đối thủ đã vào phòng",
+        title: "Joined",
+        description: "Opponent joined",
         duration: 2000,
         isClosable: true,
       });
     }
     function onStarted(data) {
       gameState.setMyColor(data.white_id == socket.id ? "white" : "black");
-
+     
       const {
         white_id,
         fen,
@@ -303,7 +186,7 @@ const renderDrawRequest = () => {
       toast({
         colorScheme: "teal",
         title: "Started",
-        description: white_id == socket.id ? "Bạn quân trắng" : "Bạn quân đen",
+        description: white_id == socket.id ? "You play white" : "You play black",
         duration: 10000,
         isClosable: true,
       });
@@ -312,8 +195,8 @@ const renderDrawRequest = () => {
       console.log("opponent left", data);
       toast({
         colorScheme: "red",
-        title: "Đối thủ đã rời khỏi game",
-        description: "Đối thủ đã rời khỏi game",
+        title: "The opponent leaves the game",
+        description: "The opponent has left the game",
         duration: 10000,
         isClosable: true,
       });
@@ -322,14 +205,14 @@ const renderDrawRequest = () => {
       });
     }
     function onOver(data) {
-      console.log(data.winner + "--over")
+      console.log(data.winner+"--over")
       gameState.setIsGamePending(false);
-      let winner = data.winner === "white" ? 'Trắng' : 'Đen';
+      let winner= data.winner === "white" ? 'Trắng' : 'Đen';
       let description;
       if (data.winner === "draw") {
-        description = "Game hoà";
+        description = "Match Draw.";
       } else {
-        description = `Game kết thúc, ${winner} thắng`;
+        description = `The game ends! ${winner} win.`;
       }
       toast({
         colorScheme: "red",
@@ -337,23 +220,23 @@ const renderDrawRequest = () => {
         description: description,
         duration: 10000,
         isClosable: true,
-
+     
       });
       setTimeout(() => {
         const confirmQuit = window.confirm("Do you want to return to the home page?");
         if (confirmQuit) {
-          window.location.href = "/";
+        window.location.href = "/";
         }
       }, 10000);
     }
     function onCheck(data) {
       const mycolor = gameState.myColor;
       console.log("checked", data.color, mycolor);
-      if (mycolor.trim() === data.color.trim()) {
+      if (mycolor.trim()===data.color.trim()) {
         toast({
           colorScheme: "red",
           title: "Chiếu",
-          description: "Bạn bị chiếu",
+          description: "You are checkmate",
           duration: 5000,
           isClosable: true,
         });
@@ -361,7 +244,7 @@ const renderDrawRequest = () => {
         toast({
           colorScheme: "green",
           title: "Chiếu",
-          description: "Đối thủ bị chiếu",
+          description: "The opponent is checkmated",
           duration: 5000,
           isClosable: true,
         });
@@ -381,17 +264,15 @@ const renderDrawRequest = () => {
     return () => {
       // gỡ bỏ các sự kiện socket
       socket.off("receive_message");
-      socket.off("moved");
-      socket.off("joined");
-      socket.off("a_player_left");
-      socket.off("game_over");
-      socket.off("checked");
+      socket.off("moved", onMove);
+      socket.off("joined", onJoin);
+      socket.off("game_started ", onStarted);
+      socket.off("a_player_left", onOpponentLeft);
+      socket.off("game_over", onOver);
+      socket.off("checked", onCheck);
       socket.off("stop_game");
       socket.off("checked");
       socket.off("a_player_left");
-      socket.off("game_started");
-      socket.off("a_player_joined");
-      
     };
   }, [data, gameState, navigate]);
 
@@ -405,37 +286,6 @@ const renderDrawRequest = () => {
       ? roomData?.player_1_name
       : roomData?.player_2_name;
   }
-  const chatBoxRef = React.useRef(null);
-  React.useEffect(() => {
-    if (chatBoxRef.current) {
-      const height = chatBoxRef.current.clientHeight - 20;
-      chatBoxRef.current.style.maxHeight = height + "px";
-    }
-  }, [])
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [promoPiece, setPromoPiece] = React.useState("q");
-  const [move, setMove] = React.useState({ from: "", to: "", piece: "" });
-  function onMakeMove({ from, to, piece }) {
-    console.log( { from, to, piece, promotion: promoPiece })
-    const room_id = data.room.id;
-    const payload = {
-      move: { from, to, piece, promotion: promoPiece },
-      room_id,
-      remaining_time: gameState.myRemainingTime,
-    };
-    socket.emit("move", payload, (data) => {
-      if (data.is_error) {
-        toast({
-          title: "Lỗi",
-          description: data.message,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          colorScheme: "red",
-        });
-      }
-    });
-  }
   return (
     <Flex
       direction={"row"}
@@ -446,57 +296,12 @@ const renderDrawRequest = () => {
       justifyContent={"center"}
       columnGap={"30px"}
     >
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            Phong cấp
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <RadioGroup onChange={setPromoPiece} value={promoPiece}>
-              <Stack direction='row'>
-                <Radio value='q'>Hậu</Radio>
-                <Radio value='r'>Xe</Radio>
-                <Radio value='n'>Mã</Radio>
-                <Radio value='b'>Tượng</Radio>
-              </Stack>
-            </RadioGroup>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button variant='ghost'
-              onClick={onClose}>
-              Huỷ</Button>
-
-            <Button colorScheme='blue' mr={3} onClick={() => {
-              console.log("making move", promoPiece);
-              if (!promoPiece) {
-                toast({
-                  title: "Lỗi",
-                  description: "Vui lòng chọn quân cờ để phong cấp",
-                  status: "error",
-                  duration: 2000,
-                  isClosable: true,
-                  colorScheme: "red",
-                });
-                return;
-              }
-              onMakeMove({ ...move, piece: move.piece[0] + promoPiece });
-              onClose();
-            }}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
       <Flex direction={"column"} rowGap={"4"}>
         <Flex justifyContent={"space-between"} fontSize={"2xl"}>
           <h2>
             <chakra.span color={"red"}>
               {
-                getOpponentName() || "Đối thủ"
+               getOpponentName()||"Đối thủ"
               }
             </chakra.span>
           </h2>
@@ -506,12 +311,11 @@ const renderDrawRequest = () => {
         </Flex>
         <chakra.div flexGrow={1} ref={rootBoardRef}>
           <Chessboard
-            autoPromoteToQueen={true}
             boardOrientation={gameState.myColor}
             boardWidth={boardWidth}
             position={gameState.fen || DEFAULT_POSITION}
             onPieceDrop={(from, to, piece) => {
-              setMove({ from, to, piece });
+              //
               if (gameStopped) {
                 return false;
               }
@@ -520,8 +324,8 @@ const renderDrawRequest = () => {
               console.log(mycolor, piece);
               if (!piece.toLocaleLowerCase().startsWith(mycolor.charAt(0))) {
                 toast({
-                  title: "Lỗi",
-                  description: "Đây không phải quân cờ của bạn",
+                  title: "Invalid move",
+                  description: "It's not your piece",
                   status: "error",
                   duration: 2000,
                   isClosable: true,
@@ -529,11 +333,10 @@ const renderDrawRequest = () => {
                 });
                 return false;
               }
-
               if (gameState.fen.split(" ")[1] != mycolor.charAt(0)) {
                 toast({
-                  title: "Nước đi không hợp lệ",
-                  description: "Chưa đến lượt của bạn",
+                  title: "Invalid move",
+                  description: "It's not your turn",
                   status: "error",
                   duration: 2000,
                   isClosable: true,
@@ -541,22 +344,27 @@ const renderDrawRequest = () => {
                 });
                 return false;
               }
-              const isWhite = mycolor === "white";
-              const isPromotion = (isWhite && to[1] === "8") || (!isWhite && to[1] === "1");
-              if (isPromotion) {
-                toast({
-                  title: "Phong cấp",
-                  description: "Chọn quân cờ để phong cấp",
-                  status: "info",
-                  duration: 2000,
-                  isClosable: true,
-                  colorScheme: "blue",
-                });
-                onOpen();
-                return false;
-              }
- 
-              onMakeMove({ from, to, piece });
+              console.log(from, to, piece);
+              const room_id = data.room.id;
+              const payload = {
+                move: { from, to, piece,
+                  promotion: piece[1].toLowerCase() ?? "q"
+                },
+                room_id,
+                remaining_time: gameState.myRemainingTime,
+              };
+              socket.emit("move", payload, (data) => {
+                if (data.is_error) {
+                  toast({
+                    title: "Error",
+                    description: data.message,
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                    colorScheme: "red",
+                  });
+                }
+              });
               return true;
             }}
           />
@@ -565,7 +373,7 @@ const renderDrawRequest = () => {
           <h2>
             <chakra.span color={"red"}>
               {
-                getMyName() || "Bạn"
+                getMyName()||"Bạn"
               }
             </chakra.span>
           </h2>
@@ -575,9 +383,9 @@ const renderDrawRequest = () => {
       <Flex direction={"column"} basis={"300px"} bg={"gray.900"} p={"2"}>
         <Flex gap={"2"} wrap={"wrap"} w={"100%"}>
           <Button colorScheme="teal" size="sm"
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-            }}
+          onClick={() => {
+            navigator.clipboard.writeText(window.location.href);
+          }}
           >
             Copy link
           </Button>
@@ -616,17 +424,14 @@ const renderDrawRequest = () => {
               Gửi
             </Button>
           </Flex>
-          <Flex overflowY={'auto'}
-            ref={chatBoxRef}
-            paddingRight={2}
-            direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
-            {messageEl}
+          <Flex direction={"column-reverse"} flexGrow={1} gap={2} h={"100%"}>
+          {messageEl}
           </Flex>
         </Flex>
       </Flex>
     </Flex>
     //#endregion
-
+    
     //#region
   );
 }
